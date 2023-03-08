@@ -1,3 +1,15 @@
+
+//------------------------------------------------------------------------------
+// Title:         Seven Segment Manager Behavioural
+// Author:        Paiyun Chen (Circle)
+// Team:          C4 Chip Designed
+// Version:       5.0
+// Verification:  Not Done
+// Comment:       Being able to display all four fundamental modes.
+//                Added an extra Mode E to display the setting mode.
+//                Whether the numbers should be blinking is still in consideration.
+//------------------------------------------------------------------------------
+
 module seven_segment(
   // AHB signals
   input wire HCLK,
@@ -25,18 +37,14 @@ module seven_segment(
   output logic [3:0] nDigit
 );
 
-  timeunit 1ns;
-  timeprecision 100ps;
+  timeunit 1ns; timeprecision 100ps;
 
-  localparam 
-    Store_Frac_Addr = 0,
-    Store_Int_Addr  = 1,
-    Store_Mode_Addr = 2,
-    Stop_Transferring = 2'b0;
-
-  // For read signals one clock delay
-  logic [ 1:0] Addr_Reg;
-  logic Write;
+//------------------------------------------------------------------------------
+// Memory Map: (Only showing the valid bits)
+// A000_0000: 8bits  | Storing BCD code of the fraction part
+// C000_0004: 12bits | Storing BCD code of the integer part
+// C000_0008: 4bits  | Storing Mode Information
+//------------------------------------------------------------------------------
 
   // Address 0xA0000000 for fraction part
   logic [ 7:0] Store_Frac;
@@ -45,11 +53,28 @@ module seven_segment(
   // Address 0xA0000008 for mode selection
   logic [ 3:0] Store_Mode;
 
+//------------------------------------------------------------------------------
+// Control and Status Signals
+//------------------------------------------------------------------------------
+
+  // For read signals one clock delay
+  logic [ 1:0] Addr_Reg;
+  logic Write;
+
   // Seven segment display
   logic [ 1:0] Display_Counter;
   logic [ 3:0] Disp_Data;
 
-  // One clock delay new read write signals generation
+  localparam 
+    Store_Frac_Addr = 0,
+    Store_Int_Addr  = 1,
+    Store_Mode_Addr = 2,
+    Stop_Transferring = 2'b0;
+
+//------------------------------------------------------------------------------
+// AHB Control Signal Generation
+//------------------------------------------------------------------------------
+
   always_ff @ (posedge HCLK, negedge HRESETn) begin
     if (!HRESETn) begin
       Write <= '0;
@@ -65,25 +90,9 @@ module seven_segment(
     end
   end
 
-  // Not readable
-  assign HRDATA = '0;
-
-  // Write SevenSeg Store reg
-  always_ff @ (posedge HCLK, negedge HRESETn) begin
-    if (!HRESETn) begin
-      Store_Frac <= '0;
-      Store_Int <= '0;
-      Store_Mode <= '0;
-    end
-    // Software write
-    else if (Write) begin
-      case (Addr_Reg)
-        Store_Frac_Addr: Store_Frac <= HWDATA[7:0];
-        Store_Int_Addr: Store_Int <= HWDATA[11:0];
-        Store_Mode_Addr: Store_Mode <= HWDATA[3:0];
-      endcase
-    end
-  end
+//------------------------------------------------------------------------------
+// Seven Segment Display
+//------------------------------------------------------------------------------
 
   // SevenSeg Display
   always_ff @ (posedge HCLK, negedge HRESETn) begin
@@ -161,7 +170,30 @@ module seven_segment(
     endcase
   end
 
-  // Ready signal generation
+//------------------------------------------------------------------------------
+// AHB Input
+//------------------------------------------------------------------------------
+
+  always_ff @ (posedge HCLK, negedge HRESETn) begin
+    if (!HRESETn) begin
+      Store_Frac <= '0;
+      Store_Int <= '0;
+      Store_Mode <= '0;
+    end
+    else if (Write) begin
+      case (Addr_Reg)
+        Store_Frac_Addr: Store_Frac <= HWDATA[7:0];
+        Store_Int_Addr: Store_Int <= HWDATA[11:0];
+        Store_Mode_Addr: Store_Mode <= HWDATA[3:0];
+      endcase
+    end
+  end
+
+//------------------------------------------------------------------------------
+// AHB Output
+//------------------------------------------------------------------------------
+
+  assign HRDATA = '0;
   assign HREADYOUT = '1; 
 
 endmodule
