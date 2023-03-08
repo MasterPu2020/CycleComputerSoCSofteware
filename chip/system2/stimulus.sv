@@ -429,8 +429,6 @@ initial begin
     @(posedge Clock);
     DisplayRefresh_Seg = 0;
 
-    $stop;
-
   end
 
   #1s;
