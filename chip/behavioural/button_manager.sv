@@ -77,253 +77,196 @@ module button_manager(
   end
 
   // Trip button debounce
-  always_ff @ (posedge HCLK, negedge HRESETn)
-  begin
-      if (!HRESETn)
-      begin
-          state_before_trip <= STATE_IDLE_BEFORE_TRIP;
-          Trip_Counter <= '0;
-      end
-      else
-          unique case (state_before_trip)
-              STATE_IDLE_BEFORE_TRIP:
-              begin
-                  if (!Trip && Trip_Last)
-                  begin
-                      state_before_trip <= STATE_COUNTER_BEFORE_TRIP;
-                      Trip_Counter <= Trip_Counter + 1;
-                  end
-              end
-              STATE_COUNTER_BEFORE_TRIP:
-              begin
-                  if ((Trip_Counter == Time_25MS) || (Trip))
-                  begin
-                      state_before_trip <= STATE_IDLE_BEFORE_TRIP;
-                      Trip_Counter <= '0;
-                  end
-                  else
-                      Trip_Counter <= Trip_Counter + 1;
-              end
-          endcase
+  always_ff @ (posedge HCLK, negedge HRESETn) begin
+    if (!HRESETn) begin
+      state_before_trip <= STATE_IDLE_BEFORE_TRIP;
+      Trip_Counter <= '0;
+    end
+    else
+      unique case (state_before_trip)
+        STATE_IDLE_BEFORE_TRIP: begin
+          if (!Trip && Trip_Last) begin
+            state_before_trip <= STATE_COUNTER_BEFORE_TRIP;
+            Trip_Counter <= Trip_Counter + 1;
+          end
+        end
+        STATE_COUNTER_BEFORE_TRIP: begin
+          if ((Trip_Counter == Time_25MS) || (Trip)) begin
+            state_before_trip <= STATE_IDLE_BEFORE_TRIP;
+            Trip_Counter <= '0;
+          end
+          else
+            Trip_Counter <= Trip_Counter + 1;
+        end
+      endcase
   end
 
-  always_comb
-  begin
-      if (Trip_Counter == Time_25MS)
-          Trip_Button_Debounce = '1;
-      else
-          Trip_Button_Debounce = '0;
+  always_comb begin
+    if (Trip_Counter == Time_25MS)
+      Trip_Button_Debounce = '1;
+    else
+      Trip_Button_Debounce = '0;
   end
 
   // Mode button debounce
-  always_ff @ (posedge HCLK, negedge HRESETn)
-  begin
-      if (!HRESETn)
-      begin
-          state_before_mode <= STATE_IDLE_BEFORE_MODE;
-          Mode_Counter <= '0;
-      end
+  always_ff @ (posedge HCLK, negedge HRESETn) begin
+    if (!HRESETn) begin
+      state_before_mode <= STATE_IDLE_BEFORE_MODE;
+      Mode_Counter <= '0;
+    end
       else
-          unique case (state_before_mode)
-              STATE_IDLE_BEFORE_MODE:
-              begin
-                  if (!Mode && Mode_Last)
-                  begin
-                      state_before_mode <= STATE_COUNTER_BEFORE_MODE;
-                      Mode_Counter <= Mode_Counter + 1;
-                  end
-              end
-              STATE_COUNTER_BEFORE_MODE:
-              begin
-                  if ((Mode_Counter == Time_25MS) || (Mode))
-                  begin
-                      Mode_Counter <= '0;
-                      state_before_mode <= STATE_IDLE_BEFORE_MODE;
-                  end
-                  else
-                      Mode_Counter <= Mode_Counter + 1;
-              end
-          endcase
+        unique case (state_before_mode)
+          STATE_IDLE_BEFORE_MODE: begin
+            if (!Mode && Mode_Last) begin
+              state_before_mode <= STATE_COUNTER_BEFORE_MODE;
+              Mode_Counter <= Mode_Counter + 1;
+            end
+          end
+          STATE_COUNTER_BEFORE_MODE: begin
+            if ((Mode_Counter == Time_25MS) || (Mode)) begin
+              Mode_Counter <= '0;
+              state_before_mode <= STATE_IDLE_BEFORE_MODE;
+            end
+            else
+              Mode_Counter <= Mode_Counter + 1;
+          end
+        endcase
   end
 
   always_comb
   begin
-      if (Mode_Counter == Time_25MS)
-          Mode_Button_Debounce = '1;
-      else
-          Mode_Button_Debounce = '0;
+    if (Mode_Counter == Time_25MS)
+      Mode_Button_Debounce = '1;
+    else
+      Mode_Button_Debounce = '0;
   end
 
   // 500MS after Trip button has been pressed
-  always_ff @ (posedge HCLK, negedge HRESETn)
-  begin
-      if (!HRESETn)
-      begin
-          state_after_trip <= STATE_IDLE_AFTER_TRIP;
-          Trip_Click_Counter <= '0;
-      end
+  always_ff @ (posedge HCLK, negedge HRESETn) begin
+    if (!HRESETn) begin
+      state_after_trip <= STATE_IDLE_AFTER_TRIP;
+      Trip_Click_Counter <= '0;
+    end
       else
-          unique case (state_after_trip)
-              STATE_IDLE_AFTER_TRIP:
-              begin
-                  if ((Trip_Button_Debounce) && (Trip_Click_Counter == 0) && (Mode_Click_Counter == 0)) // ensure that no button has been pressed 500ms before
-                  begin
-                      state_after_trip <= STATE_COUNTER_AFTER_TRIP;
-                      Trip_Click_Counter <= Trip_Click_Counter + 1;
-                  end
-              end
-              STATE_COUNTER_AFTER_TRIP:
-              begin
-                  if ((Trip_Click_Counter == Time_500MS) || (Trip_Button_Debounce) || (Mode_Button_Debounce)) // Trip single click || Trip double click || Mode Trip click at the same time
-                  begin
-                      state_after_trip <= STATE_IDLE_AFTER_TRIP;
-                      Trip_Click_Counter <= '0;
-                  end
-                  else
-                      Trip_Click_Counter <= Trip_Click_Counter + 1;
-              end
-          endcase
+        unique case (state_after_trip)
+          STATE_IDLE_AFTER_TRIP: begin
+            if ((Trip_Button_Debounce) && (Trip_Click_Counter == 0) && (Mode_Click_Counter == 0)) begin
+              state_after_trip <= STATE_COUNTER_AFTER_TRIP;
+              Trip_Click_Counter <= Trip_Click_Counter + 1;
+            end
+          end
+          STATE_COUNTER_AFTER_TRIP: begin
+            if ((Trip_Click_Counter == Time_500MS) || (Trip_Button_Debounce) || (Mode_Button_Debounce)) begin
+              state_after_trip <= STATE_IDLE_AFTER_TRIP;
+              Trip_Click_Counter <= '0;
+            end
+            else
+              Trip_Click_Counter <= Trip_Click_Counter + 1;
+          end
+        endcase
   end
 
   // 500MS after Mode button has been pressed
-  always_ff @ (posedge HCLK, negedge HRESETn)
-  begin
-      if (!HRESETn)
-      begin
-          state_after_mode <= STATE_IDLE_AFTER_MODE;
-          Mode_Click_Counter <= '0;
-      end
-      else
-          unique case (state_after_mode)
-              STATE_IDLE_AFTER_MODE:
-              begin
-                  if ((Mode_Button_Debounce) && (Mode_Click_Counter == 0) && (Trip_Click_Counter == 0))
-                  begin
-                      state_after_mode <= STATE_COUNTER_AFTER_MODE;
-                      Mode_Click_Counter <= Mode_Click_Counter + 1;
-                  end
-              end
-              STATE_COUNTER_AFTER_TRIP:
-              begin
-                  if ((Mode_Click_Counter == Time_500MS) || (Mode_Button_Debounce) || (Trip_Button_Debounce)) // Mode single click || Mode double click || Mode Trip click at the same time
-                  begin
-                      state_after_mode <= STATE_IDLE_AFTER_MODE;
-                      Mode_Click_Counter <= '0;
-                  end
-                  else
-                      Mode_Click_Counter <= Mode_Click_Counter + 1;
-              end
-          endcase
+  always_ff @ (posedge HCLK, negedge HRESETn) begin
+    if (!HRESETn) begin
+      state_after_mode <= STATE_IDLE_AFTER_MODE;
+      Mode_Click_Counter <= '0;
+    end
+    else
+      unique case (state_after_mode)
+        STATE_IDLE_AFTER_MODE: begin
+          if ((Mode_Button_Debounce) && (Mode_Click_Counter == 0) && (Trip_Click_Counter == 0)) begin
+            state_after_mode <= STATE_COUNTER_AFTER_MODE;
+            Mode_Click_Counter <= Mode_Click_Counter + 1;
+          end
+        end
+        STATE_COUNTER_AFTER_TRIP: begin
+          if ((Mode_Click_Counter == Time_500MS) || (Mode_Button_Debounce) || (Trip_Button_Debounce)) begin
+            state_after_mode <= STATE_IDLE_AFTER_MODE;
+            Mode_Click_Counter <= '0;
+          end
+          else
+            Mode_Click_Counter <= Mode_Click_Counter + 1;
+        end
+      endcase
   end
 
   // One clock delay new read and write signals generation
-  always_ff @ (posedge HCLK, negedge HRESETn)
-  begin
-      if (!HRESETn)
-      begin
-          WriteEnable <= '0;
-          Addr_Reg <= '0;
-      end
-      else if (HSEL && HREADY && (HTRANS != Stop_Transferring))
-      begin
-          WriteEnable <= HWRITE;
-          Addr_Reg <= HADDR[4:2];
-      end
-      else
-      begin
-          WriteEnable <= '0;
-          Addr_Reg <= 4;
-      end
+  always_ff @ (posedge HCLK, negedge HRESETn) begin
+    if (!HRESETn) begin
+      WriteEnable <= '0;
+      Addr_Reg <= '0;
+    end
+    else if (HSEL && HREADY && (HTRANS != Stop_Transferring)) begin
+      WriteEnable <= HWRITE;
+      Addr_Reg <= HADDR[4:2];
+    end
+    else begin
+      WriteEnable <= '0;
+      Addr_Reg <= 4;
+    end
   end
 
   // Read button registers
-  always_comb
-  begin
-      if (WriteEnable)
-          HRDATA = '0;
-      else
-          unique case (Addr_Reg)
-              DayNight_Reg_Addr:
-              begin
-                  HRDATA = {31'b0, DayNight_Store};
-              end
-              Mode_Reg_Addr:
-              begin
-                  HRDATA = {31'b0, Mode_Store};
-              end
-              Trip_Reg_Addr:
-              begin
-                  HRDATA = {31'b0, Trip_Store};
-              end
-              Setting_Reg_Addr:
-              begin
-                  HRDATA = {31'b0, Setting_Store};
-              end
-              NewData_Reg_Addr:
-              begin
-                  HRDATA = {31'b0, NewData};
-              end
-              default:
-                  HRDATA = '0;
-          endcase
+  always_comb begin
+    if (WriteEnable)
+        HRDATA = '0;
+    else
+      HRDATA = '0;
+      case (Addr_Reg)
+        DayNight_Reg_Addr:  begin HRDATA = {31'b0, DayNight_Store}; end
+        Mode_Reg_Addr:      begin HRDATA = {31'b0, Mode_Store};     end
+        Trip_Reg_Addr:      begin HRDATA = {31'b0, Trip_Store};     end
+        Setting_Reg_Addr:   begin HRDATA = {31'b0, Setting_Store};  end
+        NewData_Reg_Addr:   begin HRDATA = {31'b0, NewData};        end
+      endcase
   end
   
   // Write button registers
-  always_ff @ (posedge HCLK, negedge HRESETn)
-  begin
-      if (!HRESETn)
-      begin
-          Setting_Store <= '0;
-          Trip_Store <= '0;
-          Mode_Store <= '0;
-          DayNight_Store <= '0;
-      end
-      /*
-      // Software write
-      else if (WriteEnable)
-          case (Addr_Reg)
-              DayNight_Reg_Addr:
-                  DayNight_Store <= HWDATA[0];
-              Mode_Reg_Addr:
-                    Mode_Store <= HWDATA[0];
-              Trip_Reg_Addr:
-                  Trip_Store <= HWDATA[0];
-              Setting_Reg_Addr:
-                  Setting_Store <= HWDATA[0];
-              NewData_Reg_Addr:
-              begin
-                  NewData <= HWDATA[0];
-              end
-          endcase
-      */
-      // Hardware write
-      // Read register refresh
-      else if (
-                  ((Addr_Reg == Mode_Reg_Addr) && (Mode_Store)) ||
-                  ((Addr_Reg == Trip_Reg_Addr) && (Trip_Store)) ||
-                  ((Addr_Reg == Setting_Reg_Addr) && (Setting_Store)) ||
-                  ((Addr_Reg == DayNight_Reg_Addr) && (DayNight_Store))
-              )
-      begin
-          Setting_Store <= '0;
-          Mode_Store <= '0;
-          Trip_Store <= '0;
-          DayNight_Store <= '0;
-      end
-      else
-      begin
-          if (DayNight_Condition)
-              DayNight_Store <= 1;
+  always_ff @ (posedge HCLK, negedge HRESETn) begin
+    if (!HRESETn) begin
+        Setting_Store <= '0;
+        Trip_Store <= '0;
+        Mode_Store <= '0;
+        DayNight_Store <= '0;
+    end
+    /*
+    // Software write
+    else if (WriteEnable)
+      case (Addr_Reg)
+        DayNight_Reg_Addr:  DayNight_Store <= HWDATA[0];
+        Mode_Reg_Addr:      Mode_Store <= HWDATA[0];
+        Trip_Reg_Addr:      Trip_Store <= HWDATA[0];
+        Setting_Reg_Addr:   Setting_Store <= HWDATA[0];
+        NewData_Reg_Addr:   NewData <= HWDATA[0];
+      endcase
+    */
+    // Hardware write
+    // Read register refresh
+    else if (
+                ((Addr_Reg == Mode_Reg_Addr) && (Mode_Store)) ||
+                ((Addr_Reg == Trip_Reg_Addr) && (Trip_Store)) ||
+                ((Addr_Reg == Setting_Reg_Addr) && (Setting_Store)) ||
+                ((Addr_Reg == DayNight_Reg_Addr) && (DayNight_Store))
+            ) begin
+        Setting_Store <= '0;
+        Mode_Store <= '0;
+        Trip_Store <= '0;
+        DayNight_Store <= '0;
+    end
+    else begin
+        if (DayNight_Condition)
+            DayNight_Store <= 1;
 
-          if (Setting_Condition)
-              Setting_Store <= 1;
-          
-          if (Trip_Condition)
-              Trip_Store <= 1;
-          
-            if (Mode_Condition)
-              Mode_Store <= 1;
-      end
+        if (Setting_Condition)
+            Setting_Store <= 1;
+        
+        if (Trip_Condition)
+            Trip_Store <= 1;
+        
+          if (Mode_Condition)
+            Mode_Store <= 1;
+    end
   end
 
   assign Trip_Condition = (Trip_Click_Counter == Time_500MS);
