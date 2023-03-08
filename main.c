@@ -72,7 +72,8 @@ uint32_t  read_time_long(void){return  TIMER[0];}
 uint32_t      read_crank(void){return SENSOR[1];}
 uint32_t       read_fork(void){return SENSOR[0];}
 void          clear_fork(void){SENSOR[0] = 0; return;}
-void    clear_timer_long(void){TIMER[0] = 0; post_time = 0; return;}
+void          clear_long(void){TIMER[0] = 0; post_time = 0; return;}
+void          write_fork(uint32_t write_16bit){SENSOR[0] = write_16bit; return;}
 void     display_segment(uint32_t Integer, uint32_t Fraction){SEGMENT[0] = Fraction; SEGMENT[1] = Integer; return;}
 
 //------------------------------------------------------------------------------
@@ -184,7 +185,7 @@ int main(void) {
             clear_fork();
           }else if (mode == 1) {           //时间
             post_time = 0;
-            clear_timer_long(); 
+            clear_long(); 
             clear_fork();
           }
         }
