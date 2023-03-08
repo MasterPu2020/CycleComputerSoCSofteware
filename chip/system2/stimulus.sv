@@ -416,12 +416,18 @@ initial begin
 
     OdometerVerification;
 
-    @ (posedge COMPUTER.COMP_core.seven_segment_1.Write);
+    @ (posedge Clock);
+    @ (posedge Clock);
+    @ (posedge Clock);
     @ (posedge Clock);
 
     DisplayRefresh_Seg = 0;
     @(posedge Clock);
     DisplayRefresh_Seg = 1;
+    @(posedge Clock);
+    DisplayRefresh_Seg = 0;
+
+    $stop;
 
   end
 
