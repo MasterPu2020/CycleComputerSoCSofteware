@@ -1,12 +1,27 @@
-You should use gitclone first!
-I'm trying to create a conflict here as well
-I'm trying to create a conflict here as well
-I'm trying to create a conflict here as well
-this is a test!
-I'm trying to create a conflict here as well
-I'm trying to create a conflict here as well
-I'm trying to create a conflict here as well
+# 这是一个放置Cycle Computer SoC 软件设计代码的远程仓库
 
-And this is a conflict
+## 请使用http协议来push和pull
 
-this is a test!
+-----------------------------------------------------------
+
+### 如何初始化你的工作区
+
+1. 请首先安装git软件
+
+2. 然后打开 VS code，点击左侧竖直栏的源代码管理，将git与VScode工具绑定
+
+3. 然后选择克隆github仓库，选择存放地址，复制当前远程仓库http协议链接进行clone
+
+-----------------------------------------------------------
+
+### 如何上传你的修改
+
+1. 打开源代码管理，点击提交按钮
+
+2. 输入你修改内容的介绍
+
+3. 点击右上角小勾勾提交
+
+4. 解决冲突: 若你的代码与云端代码产生了冲突，请手动合并冲突。若不会合并冲突，请观看teams上“github合并”教学
+
+-----------------------------------------------------------
