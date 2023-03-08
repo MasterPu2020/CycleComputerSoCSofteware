@@ -1,0 +1,215 @@
+#! /bin/sh
+
+# This versions includes -modelsim option which runs a modelsim batch simulation
+#   this picks up otherwise undetected problems with variables (logic/reg) being
+#   used where wires should have been used
+
+SYS=system
+SYS2=system2
+LIB=example
+SOFT=software
+SDF_FILE=
+SIM_OPT=
+LIB_OPT=
+SYS2_OPT=
+SIM_TIME=
+TIMESCALE=
+
+simcommand="xmverilog +sv +gui +access+r"
+general_options=""
+vsim_options=""
+simtype=XM_GUI
+include_gate_models="false"
+tech="c35b4"
+
+while
+  case $1 in
+    -*) true ;;
+    *) false ;;
+  esac
+do
+  option="$1"
+  shift
+  if [ "${option}" = "-no_graphics" ] 
+  then
+    # ignore -no_graphics option for modelsim
+    if [ "${simtype}" = "XM_GUI" ]
+    then
+      simcommand="xmverilog +sv"
+      simtype=XM
+    fi
+  elif [ "${option}" = "-modelsim" ] 
+  then
+    simcommand="vlog -sv"
+    vsim_options="-R -do vsim.cmd -c"
+    simtype=MODELSIM
+  elif [ "${option}" = "-q" ]
+  then
+    SIM_OPT="$SIM_OPT -q"
+  elif [ "${option}" = "-tech" ]
+  then
+    if [ "$1" = "" ]
+    then
+      echo "No valid technology name is specified provided"
+      exit
+    fi
+    tech="$1"
+    shift
+  elif [ "${option}" = "-gate" ] # include models of ams cells
+  then
+    include_gate_models="true"
+    TIMESCALE="+xmtimescale+1ns/10ps"
+  elif [ "${option}" = "-lib" ] 
+  then
+    if [ ! -f "$1" ]
+    then
+      echo "No verilog library file provided: $1"
+      exit
+    fi
+    LIB_OPT="${LIB_OPT} -v $1"
+    shift
+  elif [ "${option}" = "-sdf" ] 
+  then
+    SDF_FILE="$1"
+    shift
+  else
+    echo "unknown option for simulate: ${option}"
+    exit
+  fi
+done
+
+if $include_gate_models
+then
+  gate_models_file="/opt/cad/designkits/ecs/verilog/$tech/gate_models.inc"
+  if [ ! -f "$gate_models_file" ]
+  then
+    echo "No verilog gate models found for technology: $tech"
+    exit
+  fi
+  LIB_OPT="${LIB_OPT} -f $gate_models_file"
+  if [ "$tech" = "c35b4" ]
+  then
+    general_options="${general_options} +define+external_pullup"
+  fi
+fi
+
+SYS2=`dirname $LIB`/$SYS2
+
+if [ -d "$SYS2" ]
+then
+  SYS2_OPT="-y $SYS2"
+fi
+
+if [ -d "$1" ]
+then
+   LIB=$1
+   shift
+fi
+
+LIB_PARENT=`dirname ${LIB}`
+
+if [ -d "${LIB_PARENT}/macro_models/simulation" ]
+then
+  general_options="${general_options} -y ${LIB_PARENT}/macro_models/simulation/"
+fi
+
+if [ -f "$1" ]
+then
+  PROG=$1
+  if [ `basename ${PROG} .bin` != `basename ${PROG}` ]
+  then
+    echo Found bin program file ${PROG}
+    BINPROG="${PROG}"
+    shift
+  elif [ `basename ${PROG} .hex` != `basename ${PROG}` ]
+  then
+    echo Found hex program file ${PROG}
+    HEXPROG="${PROG}"
+    shift
+  elif [ `basename ${PROG} .vmem` != `basename ${PROG}` ]
+  then
+    echo Found vmem program file ${PROG}
+    VMEMPROG="${PROG}"
+    shift
+  fi
+fi
+
+if [ "$HEXPROG" = "" ] && [ "$BINPROG" = "" ] && [ "$VMEMPROG" = "" ]
+then
+  [ -d "${SOFT}" ] && general_options="${general_options} +incdir+${SOFT}"
+  [ -f "${SOFT}/code.hex" ] && HEXPROG="${SOFT}/code.hex"
+  [ -f "${SOFT}/code.bin" ] && BINPROG="${SOFT}/code.bin"
+  [ -f "${SOFT}/code.vmem" ] && VMEMPROG="code.vmem"
+fi
+
+[ "$HEXPROG" != "" ] && PROGRAM=" +define+prog_file=${HEXPROG}"
+[ "$BINPROG" != "" ] && PROGRAM=" $PROGRAM +define+prog_file_bin=${BINPROG}"
+[ "$VMEMPROG" != "" ] && PROGRAM=" $PROGRAM +define+prog_file_vmem=${VMEMPROG}"
+
+
+if [ "$SDF_FILE" != "" ]
+then
+  if [ -f "${LIB}/${SDF_FILE}" ]
+  then
+    general_options="${general_options} +define+sdf_file=${LIB}/${SDF_FILE}"
+  elif [ -f "${SDF_FILE}" ]
+  then
+    general_options="${general_options} +define+sdf_file=${SDF_FILE}"
+  else
+    echo "ERROR: cannot find SDF file '${LIB}/${SDF_FILE}' (or '${SDF_FILE}')"
+    exit
+  fi
+else
+  general_options="${general_options} +define+functional"
+fi
+
+case $1 in
+   0*s | 1*s | 2*s | 3*s | 4*s | 5*s | 6*s | 7*s | 8*s | 9*s )
+      echo Setting simulation time
+      SIM_TIME="+define+sim_time=${1}"
+      shift
+      ;;
+   0* | 1* | 2* | 3* | 4* | 5* | 6* | 7* | 8* | 9* )
+      echo Setting simulation time
+      SIM_TIME="+define+sim_time=${1}ms"
+      shift
+      ;;
+esac
+
+
+if [ "$simtype" = "XM" ] || [ "$simtype" = "XM_GUI" ]
+then
+  rm -rf xcelium.d
+elif [ "$simtype" = "MODELSIM" ]
+then
+  PATH=/opt/cad/soft/mentor/modeltech/bin:${PATH}
+
+  /bin/rm -rf work
+  vlib work
+
+  /bin/rm -f vsim.cmd
+  echo "run -all" >> vsim.cmd
+  echo "exit" >> vsim.cmd
+
+fi
+
+if [ "$simtype" = "XM_GUI" ]
+then
+  rm -f .simvisionrc
+  if [ -f ${LIB}/system.tcl ]
+  then
+     simcommand="${simcommand} +tcl+${LIB}/system.tcl"
+  fi
+fi
+
+echo ${simcommand} $SIM_OPT -y $LIB $SYS2_OPT -y $SYS $LIB_OPT \
++libext+.sv +libext+.v +incdir+$LIB $SYS/system.sv ${PROGRAM} \
+$SIM_TIME $TIMESCALE ${general_options} $* ${vsim_options}
+
+export LIB
+export SYS
+export SYS2
+
+${simcommand} $SIM_OPT -y $LIB $SYS2_OPT -y $SYS $LIB_OPT \
++libext+.sv +libext+.v +incdir+$LIB $SYS/system.sv ${PROGRAM} \
+$SIM_TIME $TIMESCALE ${general_options} $* ${vsim_options}

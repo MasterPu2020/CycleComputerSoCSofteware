@@ -1,0 +1,215 @@
+module seven_segment(
+  // AHB signals
+  input wire HCLK,
+  input wire HRESETn,
+
+  input wire [31:0] HADDR,    // Only HADDR[3:2] is used (other bits are ignored)
+  input wire [31:0] HWDATA,
+  input wire HWRITE,
+  input wire HREADY,
+  input wire HSEL,
+  input wire [2:0] HSIZE,
+  input wire [1:0] HTRANS,
+
+  output wire [31:0] HRDATA,
+  output HREADYOUT,
+
+  output logic SegA,
+  output logic SegB,
+  output logic SegC,
+  output logic SegD,
+  output logic SegE,
+  output logic SegF,
+  output logic SegG,
+  output logic DP,
+  output logic [3:0] nDigit
+);
+
+  timeunit 1ns;
+  timeprecision 100ps;
+
+  localparam Store_Frac_Addr = 0;
+  localparam Store_Int_Addr = 1;
+  localparam Store_Mode_Addr = 2;
+
+  localparam Stop_Transferring = 2'b0;
+
+  // For read signals one clock delay
+  logic [1:0] Addr_Reg;
+  logic Write;
+
+  // Address 0xA0000000 for fraction part
+  logic [7:0] Store_Frac;
+  // Address 0xA0000004 for integer part
+  logic [11:0] Store_Int;
+  // Address 0xA0000008 for mode selection
+  logic [3:0] Store_Mode;
+
+  // Seven segment display
+  logic [1:0] Display_Counter;
+  logic [3:0] Disp_Data;
+
+  // One clock delay new read write signals generation
+  always_ff @ (posedge HCLK, negedge HRESETn) begin
+    if (!HRESETn) begin
+      Write <= '0;
+      Addr_Reg <= '0;
+    end
+    else if (HSEL && HREADY && (HTRANS != Stop_Transferring)) begin
+      Write <= HWRITE;
+      Addr_Reg <= HADDR[3:2];
+    end
+    else begin
+      Write <= '0;
+      Addr_Reg <= '0;
+    end
+  end
+
+  // Not readable
+  assign HRDATA = '0;
+
+  // Write SevenSeg Store reg
+  always_ff @ (posedge HCLK, negedge HRESETn) begin
+    if (!HRESETn) begin
+      Store_Frac <= '0;
+      Store_Int <= '0;
+      Store_Mode <= '0;
+    end
+    // Software write
+    else if (Write) begin
+      case (Addr_Reg)
+        Store_Frac_Addr: Store_Frac <= HWDATA[7:0];
+        Store_Int_Addr: Store_Int <= HWDATA[11:0];
+        Store_Mode_Addr: Store_Mode <= HWDATA[3:0];
+      endcase
+    end
+  end
+
+  // SevenSeg Display
+  always_ff @ (posedge HCLK, negedge HRESETn) begin
+    if (!HRESETn)
+      Display_Counter <= '0;
+    else if (Display_Counter == 3)
+      Display_Counter <= '0;
+    else
+      Display_Counter <= Display_Counter + 1;
+  end
+
+  always_comb begin
+    unique case (Display_Counter)
+      0: nDigit = 4'b1110;
+      1: nDigit = 4'b1101;
+      2: nDigit = 4'b1011;
+      3: nDigit = 4'b0111;
+      default: nDigit = 4'b1111;
+    endcase
+  end
+
+  // float point
+  always_comb begin
+    if (Store_Mode == 4'hD) begin
+      unique case (Display_Counter)
+        0:        begin Disp_Data = Store_Int[3:0];  DP = '1; end
+        1:        begin Disp_Data = Store_Int[7:4];  DP = '0; end
+        2:        begin Disp_Data = Store_Int[11:8]; DP = '0; end
+        3:        begin Disp_Data = Store_Mode;      DP = '0; end
+        default:  begin Disp_Data = '0;              DP = '0; end
+      endcase
+    end
+    else begin
+      if (Store_Int[11:8] != '0)
+        unique case (Display_Counter)
+          0:        begin Disp_Data = Store_Int[3:0];  DP = '1; end
+          1:        begin Disp_Data = Store_Int[7:4];  DP = '0; end
+          2:        begin Disp_Data = Store_Int[11:8]; DP = '0; end
+          3:        begin Disp_Data = Store_Mode;      DP = '0; end
+          default:  begin Disp_Data = '0;              DP = '0; end
+        endcase
+      else if (Store_Int[7:4] != '0)
+        unique case (Display_Counter)
+          0:        begin Disp_Data = Store_Frac[7:4];  DP = '0; end
+          1:        begin Disp_Data = Store_Int[3:0];   DP = '1; end
+          2:        begin Disp_Data = Store_Int[7:4];   DP = '0; end
+          3:        begin Disp_Data = Store_Mode;       DP = '0; end
+          default:  begin Disp_Data = '0;               DP = '0; end
+        endcase
+      else
+        unique case (Display_Counter)
+          0:        begin Disp_Data = Store_Frac[3:0];  DP = '0; end
+          1:        begin Disp_Data = Store_Frac[7:4];  DP = '0; end
+          2:        begin Disp_Data = Store_Int[3:0];   DP = '1; end
+          3:        begin Disp_Data = Store_Mode;       DP = '0; end
+          default:  begin Disp_Data = '0;               DP = '0; end
+        endcase
+    end
+  end
+
+    always_comb begin
+      unique case (Disp_Data)
+        4'h0: begin
+          SegA = '1; SegB = '1; SegC = '1; SegD = '1;
+          SegE = '1; SegF = '1; SegG = '0;
+        end
+        4'h1: begin
+          SegA = '0; SegB = '1; SegC = '1; SegD = '0;
+          SegE = '0; SegF = '0; SegG = '0;
+        end
+        4'h2: begin
+          SegA = '1; SegB = '1; SegC = '0; SegD = '1;
+          SegE = '1; SegF = '0; SegG = '1;
+        end
+        4'h3: begin
+          SegA = '1; SegB = '1; SegC = '1; SegD = '1;
+          SegE = '0; SegF = '0; SegG = '1;
+        end
+        4'h4: begin
+          SegA = '0; SegB = '1; SegC = '1; SegD = '0;
+          SegE = '0; SegF = '1; SegG = '1;
+        end
+        4'h5: begin
+          SegA = '1; SegB = '0; SegC = '1; SegD = '1;
+          SegE = '0; SegF = '1; SegG = '1;
+        end
+        4'h6: begin
+          SegA = '1; SegB = '0; SegC = '1; SegD = '1;
+          SegE = '1; SegF = '1; SegG = '1;
+        end
+        4'h7: begin
+          SegA = '1; SegB = '1; SegC = '1; SegD = '0;
+          SegE = '0; SegF = '0; SegG = '0;
+        end
+        4'h8: begin
+          SegA = '1; SegB = '1; SegC = '1; SegD = '1;
+          SegE = '1; SegF = '1; SegG = '1;
+        end
+        4'h9: begin
+          SegA = '1; SegB = '1; SegC = '1; SegD = '1;
+          SegE = '0; SegF = '1; SegG = '1;
+        end
+        4'ha: begin
+          SegA = '0; SegB = '1; SegC = '1; SegD = '1;
+          SegE = '1; SegF = '0; SegG = '1;
+        end
+        4'hb: begin
+          SegA = '0; SegB = '0; SegC = '0; SegD = '1;
+          SegE = '1; SegF = '1; SegG = '1;
+        end
+        4'hc: begin
+          SegA = '0; SegB = '0; SegC = '1; SegD = '1;
+          SegE = '0; SegF = '0; SegG = '0;
+        end
+        4'hd: begin
+          SegA = '0; SegB = '0; SegC = '0; SegD = '1;
+          SegE = '1; SegF = '0; SegG = '1;
+        end
+        default: begin
+          SegA = '0; SegB = '0; SegC = '0; SegD = '0;
+          SegE = '0; SegF = '0; SegG = '0;
+        end
+      endcase
+    end
+
+  // Ready signal generation
+  assign HREADYOUT = '1; 
+
+endmodule
