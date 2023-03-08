@@ -2,7 +2,7 @@
 // Titile:  Cortex M0 Software Main C File
 // Author:  ChangXin Shen & Clark Pu
 // Team:    C4 Chip Designed
-// Version: 5.0
+// Version: 5.1
 // Verification: Verified SoC.
 // Comment: This is a test of hardware functions
 //------------------------------------------------------------------------------
@@ -308,6 +308,30 @@ void check_time_stop(void) {
 
 }
 
+void refresh_segment(void) {
+
+  if (mode == 0xA){
+
+    display_segment(mode, total_distance_f_bcd, total_distance_b_bcd);
+
+  } else if (mode == 0xB) {
+
+    display_segment(mode, time_h_bcd, time_m_bcd);
+    
+
+  } else if (mode == 0xC) {
+
+    display_segment(mode, speed_f_bcd, speed_b_bcd);
+    
+
+  } else if (mode == 0xD){
+
+    display_segment(mode, cadence_bcd, 0);
+
+  }
+
+}
+
 void initiate(void) {
 
   post_time = 0;
@@ -446,6 +470,8 @@ int main(void) {
     cadence_bcd = int2bcd(cadence);
 
     check_speed();
+
+    refresh_segment();
 
     //display_segment(total_distance_f, total_distance_b);
 
