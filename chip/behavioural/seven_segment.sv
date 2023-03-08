@@ -42,16 +42,13 @@ module seven_segment(
 //------------------------------------------------------------------------------
 // Memory Map: (Only showing the valid bits)
 // A000_0000: 8bits  | Storing BCD code of the fraction part
-// C000_0004: 12bits | Storing BCD code of the integer part
-// C000_0008: 4bits  | Storing Mode Information
+// A000_0004: 12bits | Storing BCD code of the integer part
+// A000_0008: 4bits  | Storing Mode Information
 //------------------------------------------------------------------------------
 
-  // Address 0xA0000000 for fraction part
-  logic [ 7:0] Store_Frac;
-  // Address 0xA0000004 for integer part
-  logic [11:0] Store_Int;
-  // Address 0xA0000008 for mode selection
-  logic [ 3:0] Store_Mode;
+  logic [ 7:0] Store_Frac;  // Address 0xA0000000 for fraction part
+  logic [11:0] Store_Int;   // Address 0xA0000004 for integer part
+  logic [ 3:0] Store_Mode;  // Address 0xA0000008 for mode selection
 
 //------------------------------------------------------------------------------
 // Control and Status Signals
