@@ -39,24 +39,24 @@ module button_manager(
     // Button debounce
     logic Trip_Last;
     logic Mode_Last;
-    logic [9:0] Trip_Counter;           // Trip button debounce counter
-    logic [9:0] Mode_Counter;           // Mode button debounce counter
-    logic [14:0] Trip_Click_Counter;    // Trip button after counter
-    logic [14:0] Mode_Click_Counter;    // Mode button after counter
-    logic Trip_Button_Debounce;
-    logic Mode_Button_Debounce;
-    wire DayNight_Condition;
-    wire Trip_Condition;
-    wire Mode_Condition;
-    wire Setting_Condition;
-    enum logic [1:0] {STATE_IDLE_BEFORE_TRIP, STATE_COUNTER_BEFORE_TRIP} state_before_trip;
-    enum logic [1:0] {STATE_IDLE_BEFORE_MODE, STATE_COUNTER_BEFORE_MODE} state_before_mode;
-    enum logic [1:0] {STATE_IDLE_AFTER_TRIP, STATE_COUNTER_AFTER_TRIP} state_after_trip;
-    enum logic [1:0] {STATE_IDLE_AFTER_MODE, STATE_COUNTER_AFTER_MODE} state_after_mode;
+    logic [9:0] DebCount_Trip;           // Trip button debounce counter
+    logic [9:0] DebCount_Mode;           // Mode button debounce counter
+    logic [14:0] InterCount_Trip;    // Trip button after counter
+    logic [14:0] InterCount_Mode;    // Mode button after counter
+    logic DebFlag_Trip;
+    logic DebFlag_Mode;
+    wire Con_DayNight;
+    wire Con_Trip;
+    wire Con_Mode;
+    wire Con_Setting;
+    enum logic [1:0] {STATE_IDLE_DEBTRIP, STATE_COUNT_DEBTRIP} state_debtrip;
+    enum logic [1:0] {STATE_IDLE_DEBMODE, STATE_COUNT_DEBMODE} state_debmode;
+    enum logic [1:0] {STATE_IDLE_INTERTRIP, STATE_COUNT_INTERTRIP} state_intertrip;
+    enum logic [1:0] {STATE_IDLE_INTERMODE, STATE_COUNT_INTERMODE} state_intermode;
 
     // For read and read signals one clock delay
     logic [2:0] Addr_Reg;
-    logic WriteEnable;
+    logic Write;
 
     // Memory map definition
     wire NewData;
@@ -85,38 +85,38 @@ module button_manager(
     begin
         if (!HRESETn)
         begin
-            state_before_trip <= STATE_IDLE_BEFORE_TRIP;
-            Trip_Counter <= '0;
+            state_debtrip <= STATE_IDLE_DEBTRIP;
+            DebCount_Trip <= '0;
         end
         else
-            unique case (state_before_trip)
-                STATE_IDLE_BEFORE_TRIP:
+            unique case (state_debtrip)
+                STATE_IDLE_DEBTRIP:
                 begin
                     if (!Trip && Trip_Last)
                     begin
-                        state_before_trip <= STATE_COUNTER_BEFORE_TRIP;
-                        Trip_Counter <= Trip_Counter + 1;
+                        state_debtrip <= STATE_COUNT_DEBTRIP;
+                        DebCount_Trip <= DebCount_Trip + 1;
                     end
                 end
-                STATE_COUNTER_BEFORE_TRIP:
+                STATE_COUNT_DEBTRIP:
                 begin
-                    if ((Trip_Counter == Time_25MS) || (Trip))
+                    if ((DebCount_Trip == Time_25MS) || (Trip))
                     begin
-                        state_before_trip <= STATE_IDLE_BEFORE_TRIP;
-                        Trip_Counter <= '0;
+                        state_debtrip <= STATE_IDLE_DEBTRIP;
+                        DebCount_Trip <= '0;
                     end
                     else
-                        Trip_Counter <= Trip_Counter + 1;
+                        DebCount_Trip <= DebCount_Trip + 1;
                 end
             endcase
     end
 
     always_comb
     begin
-        if (Trip_Counter == Time_25MS)
-            Trip_Button_Debounce = '1;
+        if (DebCount_Trip == Time_25MS)
+            DebFlag_Trip = '1;
         else
-            Trip_Button_Debounce = '0;
+            DebFlag_Trip = '0;
     end
 
     // Mode button debounce
@@ -124,38 +124,38 @@ module button_manager(
     begin
         if (!HRESETn)
         begin
-            state_before_mode <= STATE_IDLE_BEFORE_MODE;
-            Mode_Counter <= '0;
+            state_debmode <= STATE_IDLE_DEBMODE;
+            DebCount_Mode <= '0;
         end
         else
-            unique case (state_before_mode)
-                STATE_IDLE_BEFORE_MODE:
+            unique case (state_debmode)
+                STATE_IDLE_DEBMODE:
                 begin
                     if (!Mode && Mode_Last)
                     begin
-                        state_before_mode <= STATE_COUNTER_BEFORE_MODE;
-                        Mode_Counter <= Mode_Counter + 1;
+                        state_debmode <= STATE_COUNT_DEBMODE;
+                        DebCount_Mode <= DebCount_Mode + 1;
                     end
                 end
-                STATE_COUNTER_BEFORE_MODE:
+                STATE_COUNT_DEBMODE:
                 begin
-                    if ((Mode_Counter == Time_25MS) || (Mode))
+                    if ((DebCount_Mode == Time_25MS) || (Mode))
                     begin
-                        Mode_Counter <= '0;
-                        state_before_mode <= STATE_IDLE_BEFORE_MODE;
+                        DebCount_Mode <= '0;
+                        state_debmode <= STATE_IDLE_DEBMODE;
                     end
                     else
-                        Mode_Counter <= Mode_Counter + 1;
+                        DebCount_Mode <= DebCount_Mode + 1;
                 end
             endcase
     end
 
     always_comb
     begin
-        if (Mode_Counter == Time_25MS)
-            Mode_Button_Debounce = '1;
+        if (DebCount_Mode == Time_25MS)
+            DebFlag_Mode = '1;
         else
-            Mode_Button_Debounce = '0;
+            DebFlag_Mode = '0;
     end
 
     // 500MS after Trip button has been pressed
@@ -163,28 +163,28 @@ module button_manager(
     begin
         if (!HRESETn)
         begin
-            state_after_trip <= STATE_IDLE_AFTER_TRIP;
-            Trip_Click_Counter <= '0;
+            state_intertrip <= STATE_IDLE_INTERTRIP;
+            InterCount_Trip <= '0;
         end
         else
-            unique case (state_after_trip)
-                STATE_IDLE_AFTER_TRIP:
+            unique case (state_intertrip)
+                STATE_IDLE_INTERTRIP:
                 begin
-                    if ((Trip_Button_Debounce) && (Trip_Click_Counter == 0) && (Mode_Click_Counter == 0)) // ensure that no button has been pressed 500ms before
+                    if ((DebFlag_Trip) && (InterCount_Trip == 0) && (InterCount_Mode == 0)) // ensure that no button has been pressed 500ms before
                     begin
-                        state_after_trip <= STATE_COUNTER_AFTER_TRIP;
-                        Trip_Click_Counter <= Trip_Click_Counter + 1;
+                        state_intertrip <= STATE_COUNT_INTERTRIP;
+                        InterCount_Trip <= InterCount_Trip + 1;
                     end
                 end
-                STATE_COUNTER_AFTER_TRIP:
+                STATE_COUNT_INTERTRIP:
                 begin
-                    if ((Trip_Click_Counter == Time_500MS) || (Trip_Button_Debounce) || (Mode_Button_Debounce)) // Trip single click || Trip double click || Mode Trip click at the same time
+                    if ((InterCount_Trip == Time_500MS) || (DebFlag_Trip) || (DebFlag_Mode)) // Trip single click || Trip double click || Mode Trip click at the same time
                     begin
-                        state_after_trip <= STATE_IDLE_AFTER_TRIP;
-                        Trip_Click_Counter <= '0;
+                        state_intertrip <= STATE_IDLE_INTERTRIP;
+                        InterCount_Trip <= '0;
                     end
                     else
-                        Trip_Click_Counter <= Trip_Click_Counter + 1;
+                        InterCount_Trip <= InterCount_Trip + 1;
                 end
             endcase
     end
@@ -194,28 +194,28 @@ module button_manager(
     begin
         if (!HRESETn)
         begin
-            state_after_mode <= STATE_IDLE_AFTER_MODE;
-            Mode_Click_Counter <= '0;
+            state_intermode <= STATE_IDLE_INTERMODE;
+            InterCount_Mode <= '0;
         end
         else
-            unique case (state_after_mode)
-                STATE_IDLE_AFTER_MODE:
+            unique case (state_intermode)
+                STATE_IDLE_INTERMODE:
                 begin
-                    if ((Mode_Button_Debounce) && (Mode_Click_Counter == 0) && (Trip_Click_Counter == 0))
+                    if ((DebFlag_Mode) && (InterCount_Mode == 0) && (InterCount_Trip == 0))
                     begin
-                        state_after_mode <= STATE_COUNTER_AFTER_MODE;
-                        Mode_Click_Counter <= Mode_Click_Counter + 1;
+                        state_intermode <= STATE_COUNT_INTERMODE;
+                        InterCount_Mode <= InterCount_Mode + 1;
                     end
                 end
-                STATE_COUNTER_AFTER_TRIP:
+                STATE_COUNT_INTERTRIP:
                 begin
-                    if ((Mode_Click_Counter == Time_500MS) || (Mode_Button_Debounce) || (Trip_Button_Debounce)) // Mode single click || Mode double click || Mode Trip click at the same time
+                    if ((InterCount_Mode == Time_500MS) || (DebFlag_Mode) || (DebFlag_Trip)) // Mode single click || Mode double click || Mode Trip click at the same time
                     begin
-                        state_after_mode <= STATE_IDLE_AFTER_MODE;
-                        Mode_Click_Counter <= '0;
+                        state_intermode <= STATE_IDLE_INTERMODE;
+                        InterCount_Mode <= '0;
                     end
                     else
-                        Mode_Click_Counter <= Mode_Click_Counter + 1;
+                        InterCount_Mode <= InterCount_Mode + 1;
                 end
             endcase
     end
@@ -225,17 +225,17 @@ module button_manager(
     begin
         if (!HRESETn)
         begin
-            WriteEnable <= '0;
+            Write <= '0;
             Addr_Reg <= '0;
         end
         else if (HSEL && HREADY && (HTRANS != Stop_Transferring))
         begin
-            WriteEnable <= HWRITE;
+            Write <= HWRITE;
             Addr_Reg <= HADDR[4:2];
         end
         else
         begin
-            WriteEnable <= '0;
+            Write <= '0;
             Addr_Reg <= 4;
         end
     end
@@ -243,7 +243,7 @@ module button_manager(
     // Read button registers
     always_comb
     begin
-        if (WriteEnable)
+        if (Write)
             HRDATA = '0;
         else
             unique case (Addr_Reg)
@@ -284,7 +284,7 @@ module button_manager(
         end
         /*
         // Software write
-        else if (WriteEnable)
+        else if (Write)
             case (Addr_Reg)
                 DayNight_Reg_Addr:
                     DayNight_Store <= HWDATA[0];
@@ -316,26 +316,26 @@ module button_manager(
         end
         else
         begin
-            if (DayNight_Condition)
+            if (Con_DayNight)
                 DayNight_Store <= 1;
 
-            if (Setting_Condition)
+            if (Con_Setting)
                 Setting_Store <= 1;
             
-            if (Trip_Condition)
+            if (Con_Trip)
                 Trip_Store <= 1;
             
-             if (Mode_Condition)
+             if (Con_Mode)
                 Mode_Store <= 1;
         end
     end
 
-    assign Trip_Condition = (Trip_Click_Counter == Time_500MS);
-    assign Mode_Condition = (Mode_Click_Counter == Time_500MS);
-    assign DayNight_Condition = (Mode_Button_Debounce) && (Mode_Click_Counter < Time_500MS) && (Mode_Click_Counter != 0);
-    assign Setting_Condition = ((Mode_Button_Debounce) && (Trip_Click_Counter < Time_500MS) && (Trip_Click_Counter != 0)) ||
-                                ((Trip_Button_Debounce) && (Mode_Click_Counter < Time_500MS) && (Mode_Click_Counter != 0)) ||
-                                ((Mode_Button_Debounce) && (Trip_Button_Debounce));
+    assign Con_Trip = (InterCount_Trip == Time_500MS);
+    assign Con_Mode = (InterCount_Mode == Time_500MS);
+    assign Con_DayNight = (DebFlag_Mode) && (InterCount_Mode < Time_500MS) && (InterCount_Mode != 0);
+    assign Con_Setting = ((DebFlag_Mode) && (InterCount_Trip < Time_500MS) && (InterCount_Trip != 0)) ||
+                                ((DebFlag_Trip) && (InterCount_Mode < Time_500MS) && (InterCount_Mode != 0)) ||
+                                ((DebFlag_Mode) && (DebFlag_Trip));
     assign NewData = Setting_Store || Trip_Store || Mode_Store || DayNight_Store; 
 
     // Ready signal generation
