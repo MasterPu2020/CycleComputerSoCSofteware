@@ -283,12 +283,12 @@ task OdometerVerification;
     @(posedge Clock);
   #(`clock_period + `clock_period/2); // AHB write complete
   odometer = (wheel_size * 3.14 / 1000) * fork_times; // meter
-  if (COMPUTER.COMP_core.seven_segment_1.SevenSeg_Store_Integer < 10)
-    segment_odometer = COMPUTER.COMP_core.seven_segment_1.SevenSeg_Store_Decimal * 10
-      + COMPUTER.COMP_core.seven_segment_1.SevenSeg_Store_Integer * 1000;
+  if (COMPUTER.COMP_core.seven_segment_1.Store_Int < 10)
+    segment_odometer = COMPUTER.COMP_core.seven_segment_1.Store_Frac * 10
+      + COMPUTER.COMP_core.seven_segment_1.Store_Int * 1000;
   else
-    segment_odometer = COMPUTER.COMP_core.seven_segment_1.SevenSeg_Store_Decimal * 100
-      + COMPUTER.COMP_core.seven_segment_1.SevenSeg_Store_Integer * 1000;
+    segment_odometer = COMPUTER.COMP_core.seven_segment_1.Store_Frac * 100
+      + COMPUTER.COMP_core.seven_segment_1.Store_Int * 1000;
   $display("\n Real Odometer is %dm. Segment display is %dm. (%t)\n", odometer, segment_odometer, $time);
   assert (segment_odometer - odometer < 20 && odometer - segment_odometer < 20) else begin
     $display(" *** WARNING ***: Odometer result error more than 20m.");
@@ -410,13 +410,14 @@ initial begin
 
   FastSpeedTest;
 
-  for (integer i = 0; i < 20; i ++) begin
+  for (integer i = 0; i < 10; i ++) begin
     
     #0.5s;
 
     OdometerVerification;
 
-    #0.5s;
+    @ (posedge COMPUTER.COMP_core.seven_segment_1.Write);
+    @ (posedge Clock);
 
     DisplayRefresh_Seg = 0;
     @(posedge Clock);

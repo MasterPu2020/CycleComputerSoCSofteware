@@ -38,9 +38,9 @@ module seven_segment(
     logic Write;
 
     // Address 0xA0000000 for decimal
-    logic [6:0] SevenSeg_Store_Decimal;
+    logic [6:0] Store_Frac;
     // Address 0xA0000004 for integer
-    logic [6:0] SevenSeg_Store_Integer;
+    logic [6:0] Store_Int;
 
     // Decoder binary to BCD
     enum logic [2:0] {STATE_IDLE, STATE_ADD, STATE_SHIFT, STATE_END} state;
@@ -86,11 +86,11 @@ module seven_segment(
             unique case (Addr_Reg)
                 SevenSeg_Decimal_Reg_Addr:
                 begin
-                    HRDATA = {25'b0, SevenSeg_Store_Decimal};
+                    HRDATA = {25'b0, Store_Frac};
                 end
                 SevenSeg_Integer_Reg_Addr:
                 begin
-                    HRDATA = {25'b0, SevenSeg_Store_Integer};
+                    HRDATA = {25'b0, Store_Int};
                 end
                 default:
                 begin
@@ -104,17 +104,17 @@ module seven_segment(
     begin
         if (!HRESETn)
         begin
-            SevenSeg_Store_Decimal <= '0;
-            SevenSeg_Store_Integer <= '0;
+            Store_Frac <= '0;
+            Store_Int <= '0;
         end
         // Software write
         else if (Write)
         begin
             case (Addr_Reg)
                 SevenSeg_Decimal_Reg_Addr:
-                    SevenSeg_Store_Decimal <= HWDATA[6:0];
+                    Store_Frac <= HWDATA[6:0];
                 SevenSeg_Integer_Reg_Addr:
-                    SevenSeg_Store_Integer <= HWDATA[6:0];
+                    Store_Int <= HWDATA[6:0];
             endcase
         end
     end
@@ -147,8 +147,8 @@ module seven_segment(
                     if (Decoder_Control)
                     begin
                         state <= STATE_ADD;
-                        Decoder_Shift_Decimal <= {8'b0, SevenSeg_Store_Decimal};
-                        Decoder_Shift_Integer <= {8'b0, SevenSeg_Store_Integer};
+                        Decoder_Shift_Decimal <= {8'b0, Store_Frac};
+                        Decoder_Shift_Integer <= {8'b0, Store_Int};
                     end
                 end
                 STATE_ADD:
