@@ -1,4 +1,6 @@
-# 这是一个放置Cycle Computer 设计代码的Github远程仓库
+# 这是一个放置 Cycle Computer 设计代码的Github远程仓库
+
+## Team C4 Chip
 
 -----------------------------------------------------------
 
@@ -6,7 +8,7 @@
 
 -----------------------------------------------------------
 
-### ./chip 文件夹下是 "behavioural milestone (DDL)" 的工作文件夹
+### chip 文件夹下是 "behavioural milestone (DDL)" 的工作文件夹
 
 - [SoC硬件代码](./chip/behavioural)
 - [SoC软件代码](./chip/software/code/main.c)
