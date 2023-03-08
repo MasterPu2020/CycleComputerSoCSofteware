@@ -80,7 +80,6 @@ void     display_segment(uint32_t Integer, uint32_t Fraction){SEGMENT[0] = Fract
 //------------------------------------------------------------------------------
 
 bool wait_for_press(void){
-  // 若三秒内没有按下，则返回假
   while(1){
     if(check_button())
       return true;
@@ -92,54 +91,34 @@ bool wait_for_press(void){
 }
 
 void wait_for_setting(void){
-
-    uint32_t press_times = 0;
-    uint32_t wheel_1, wheel_2, wheel_3;
-
-    while (1){
-
-        wheel_3 = wheel / 100;
-        wheel_2 = (wheel - wheel_3 * 100)/10;
-        wheel_1 = (wheel - wheel_3 * 100) - (wheel_2 * 10);
-
-        if(check_button()){
-          
-          if(press_mode()){
-
-            press_times ++;
-            if (press_times == 3){
-
-              return;
-             
-            }
-
-          } else if(press_trip()){
-
-            if(press_times == 0){
-            
-                wheel_1 = (wheel_1 + 1) % 10;
-                
-            } else if(press_times == 1){
-               
-                wheel_2 = (wheel_2 + 1) % 10;               
-
-            } else if(press_times == 2){                
-                
-                wheel_3 = (wheel_3 + 1) % 10;
-                
-            }
-            
-            wheel = wheel_3 * 100 + wheel_2 * 10 + wheel_1;
-            //get_setting_image();
-            //display_oled();
-
-          }
-        }
-    }  
+  uint32_t press_times = 0;
+  uint32_t wheel_1, wheel_2, wheel_3;
+  while (1){
+    wheel_3 = wheel / 100;
+    wheel_2 = (wheel - wheel_3 * 100)/10;
+    wheel_1 = (wheel - wheel_3 * 100) - (wheel_2 * 10);
+    if(check_button()){
+      if(press_mode()){
+        press_times ++;
+        if (press_times == 3)
+          return;
+      } 
+      else if(press_trip()){
+        if(press_times == 0)
+          wheel_1 = (wheel_1 + 1) % 10;
+        else if(press_times == 1)
+          wheel_2 = (wheel_2 + 1) % 10;               
+        else if(press_times == 2)           
+          wheel_3 = (wheel_3 + 1) % 10;
+        wheel = wheel_3 * 100 + wheel_2 * 10 + wheel_1;
+        //get_setting_image();
+        //display_oled();
+      }
+    }
+  }  
 }
 
 void check_speed(void){
-
   if (max_speed < speed)
       max_speed = speed;
   if (max_speed > 40)
@@ -147,38 +126,27 @@ void check_speed(void){
   else
       speed_red = false;
   return;
-
 }
 
 float get_distance(uint32_t bike_fork, uint32_t wheel){
-
   float f_distance;
   const float PI = 3.14;
-
   return f_distance = bike_fork * ( PI * wheel/1000)/1000;
-
 }
 
 float get_speed(float distance, uint32_t time){
-
   float f_speed;
-
   return f_speed = (distance * 3600)/time;
-
 }
 
 uint32_t get_cadence(uint32_t crank, uint32_t time){
-
   uint32_t cadence, cadence_5;
-
   cadence = (crank * 60)/time;
   cadence_5 = cadence / 5;
   return cadence = 5 * cadence_5;
-
 }
 
 void initiate(void){
-
   post_time = 0;
   wheel = 700;
   speed_red = false;
@@ -191,12 +159,9 @@ void initiate(void){
   total_distance_f = 0;
   total_distance_b = 0;
   post_distance = 0;
-
   display_segment(total_distance_f, total_distance_b);
   //display_oled();
-
   return;
-    
 }
 
 //------------------------------------------------------------------------------
@@ -204,17 +169,13 @@ void initiate(void){
 //------------------------------------------------------------------------------
 
 int main(void) {
-
-    initiate();
-
-    // repeat forever (embedded programs generally do not terminate)
+  initiate();
   while(1){
     if(wait_for_press()){ // 等待三秒或等待按钮按下后
     // 按钮按下后，处理按钮操作
-      if(setting()){
+      if(setting())
         // 设置操作，更改wheel 
         wait_for_setting();
-      }
       else{
         if (press_trip()){
           //根据模式清零
@@ -225,23 +186,21 @@ int main(void) {
             post_time = 0;
             clear_timer_long(); 
             clear_fork();
-          }     
+          }
         }
         else if(press_mode()){     // 0里程  1时间  2速度  3踏频
-          if (mode == 0){
+          if (mode == 0)
             mode = 1;
-          } else if (mode == 1){
+          else if (mode == 1)
             mode = 2;
-          } else if (mode == 2){
+          else if (mode == 2)
             mode = 3;
-          } else {
+          else
             mode = 0;
-          }
           switchDisplay = true;
         }
-        else if(press_d_mode()){
+        else if(press_d_mode())
           isNight = ~ isNight;
-        }
       }
     }
     // 按钮按下则在处理完按钮操作后立即刷新，没有按下则三秒刷新一次
