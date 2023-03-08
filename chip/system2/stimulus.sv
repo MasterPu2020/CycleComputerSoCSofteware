@@ -573,135 +573,142 @@ initial begin
     @(posedge DisplayRefresh_Seg);
 
     $display("Refresh Seven Segment LED: ");
-
     seg_row = "   ";
 
     // SegA
-    for (integer m = 0; m < 4; m++)
-    begin
+    for (integer m = 0; m < 4; m++) begin
       if (seg_data[m][7])
-          seg_row = {seg_row, "######------"};
+        seg_row = {seg_row, "---######---"};
+      else if ((seg_data[m][2]) && (seg_data[m][6]))
+        seg_row = {seg_row, "---#----#---"};
+      else if ((seg_data[m][2]) && (!seg_data[m][6]))
+        seg_row = {seg_row, "---#--------"};
+      else if ((!seg_data[m][2]) && (seg_data[m][6]))
+        seg_row = {seg_row, "--------#---"};
       else
-          seg_row = {seg_row, "------------"};
+        seg_row = {seg_row, "------------"};
     end
     $display("%s", seg_row);
     seg_row = "   ";
 
     // SegF & SegB
-    for (integer m = 0; m < 4; m++)
-    begin
+    for (integer m = 0; m < 4; m++) begin
       if ((seg_data[m][2]) && (seg_data[m][6]))
-          seg_row = {seg_row, "#----#------"};
+        seg_row = {seg_row, "---#----#---"};
       else if ((seg_data[m][2]) && (!seg_data[m][6]))
-          seg_row = {seg_row, "#-----------"};
+        seg_row = {seg_row, "---#--------"};
       else if ((!seg_data[m][2]) && (seg_data[m][6]))
-          seg_row = {seg_row, "-----#------"};
+        seg_row = {seg_row, "--------#---"};
       else
-          seg_row = {seg_row, "------------"};
+        seg_row = {seg_row, "------------"};
     end
     $display("%s", seg_row);
     seg_row = "   ";
 
-    for (integer m = 0; m < 4; m++)
-    begin
+    for (integer m = 0; m < 4; m++) begin
       if ((seg_data[m][2]) && (seg_data[m][6]))
-          seg_row = {seg_row, "#----#------"};
+        seg_row = {seg_row, "---#----#---"};
       else if ((seg_data[m][2]) && (!seg_data[m][6]))
-          seg_row = {seg_row, "#-----------"};
+        seg_row = {seg_row, "---#--------"};
       else if ((!seg_data[m][2]) && (seg_data[m][6]))
-          seg_row = {seg_row, "-----#------"};
+        seg_row = {seg_row, "--------#---"};
       else
-          seg_row = {seg_row, "------------"};
+        seg_row = {seg_row, "------------"};
     end
     $display("%s", seg_row);
     seg_row = "   ";
 
-    for (integer m = 0; m < 4; m++)
-    begin
+    for (integer m = 0; m < 4; m++) begin
       if ((seg_data[m][2]) && (seg_data[m][6]))
-          seg_row = {seg_row, "#----#------"};
+        seg_row = {seg_row, "---#----#---"};
       else if ((seg_data[m][2]) && (!seg_data[m][6]))
-          seg_row = {seg_row, "#-----------"};
+        seg_row = {seg_row, "---#--------"};
       else if ((!seg_data[m][2]) && (seg_data[m][6]))
-          seg_row = {seg_row, "-----#------"};
+        seg_row = {seg_row, "--------#---"};
       else
-          seg_row = {seg_row, "------------"};
+        seg_row = {seg_row, "------------"};
     end
     $display("%s", seg_row);
     seg_row = "   ";
 
     // SegG
-    for (integer m = 0; m < 4; m++)
-    begin
+    for (integer m = 0; m < 4; m++) begin
       if (seg_data[m][1])
-          seg_row = {seg_row, "######------"};
+        seg_row = {seg_row, "---######---"};
+      else if (((seg_data[m][3]) || (seg_data[m][2])) && ((seg_data[m][5]) || (seg_data[m][6])))
+        seg_row = {seg_row, "---#----#---"};
+      else if (((seg_data[m][3]) || (seg_data[m][2])) && ((!seg_data[m][5]) && (!seg_data[m][6])))
+        seg_row = {seg_row, "---#--------"};
+      else if (((!seg_data[m][3]) && (!seg_data[m][2])) && ((seg_data[m][5]) || (seg_data[m][6])))
+        seg_row = {seg_row, "--------#---"};
       else
-          seg_row = {seg_row, "------------"};
+        seg_row = {seg_row, "------------"};
     end
     $display("%s", seg_row);
     seg_row = "   ";
 
     // SegE & SegC
-    for (integer m = 0; m < 4; m++)
-    begin
+    for (integer m = 0; m < 4; m++) begin
       if ((seg_data[m][3]) && (seg_data[m][5]))
-          seg_row = {seg_row, "#----#------"};
+        seg_row = {seg_row, "---#----#---"};
       else if ((seg_data[m][3]) && (!seg_data[m][5]))
-          seg_row = {seg_row, "#-----------"};
+        seg_row = {seg_row, "---#--------"};
       else if ((!seg_data[m][3]) && (seg_data[m][5]))
-          seg_row = {seg_row, "-----#------"};
+        seg_row = {seg_row, "--------#---"};
       else
-          seg_row = {seg_row, "------------"};
+        seg_row = {seg_row, "------------"};
     end
     $display("%s", seg_row);
     seg_row = "   ";
 
-    for (integer m = 0; m < 4; m++)
-    begin
+    for (integer m = 0; m < 4; m++) begin
       if ((seg_data[m][3]) && (seg_data[m][5]))
-          seg_row = {seg_row, "#----#------"};
+        seg_row = {seg_row, "---#----#---"};
       else if ((seg_data[m][3]) && (!seg_data[m][5]))
-          seg_row = {seg_row, "#-----------"};
+        seg_row = {seg_row, "---#--------"};
       else if ((!seg_data[m][3]) && (seg_data[m][5]))
-          seg_row = {seg_row, "-----#------"};
+        seg_row = {seg_row, "--------#---"};
       else
-          seg_row = {seg_row, "------------"};
+        seg_row = {seg_row, "------------"};
     end
     $display("%s", seg_row);
     seg_row = "   ";
 
-    for (integer m = 0; m < 4; m++)
-    begin
+    for (integer m = 0; m < 4; m++) begin
       if ((seg_data[m][3]) && (seg_data[m][5]))
-          seg_row = {seg_row, "#----#------"};
+        seg_row = {seg_row, "---#----#---"};
       else if ((seg_data[m][3]) && (!seg_data[m][5]))
-          seg_row = {seg_row, "#-----------"};
+        seg_row = {seg_row, "---#--------"};
       else if ((!seg_data[m][3]) && (seg_data[m][5]))
-          seg_row = {seg_row, "-----#------"};
+        seg_row = {seg_row, "--------#---"};
       else
-          seg_row = {seg_row, "------------"};
+        seg_row = {seg_row, "------------"};
     end
     $display("%s", seg_row);
     seg_row = "   ";
 
     // SegD
-    for (integer m = 0; m < 4; m++)
-    begin
-        if (seg_data[m][4])
-            seg_row = {seg_row, "######------"};
-        else
-            seg_row = {seg_row, "------------"};
+    for (integer m = 0; m < 4; m++) begin
+      if (seg_data[m][4])
+        seg_row = {seg_row, "---######---"};
+      else if ((seg_data[m][3]) && (seg_data[m][5]))
+        seg_row = {seg_row, "---#----#---"};
+      else if ((seg_data[m][3]) && (!seg_data[m][5]))
+        seg_row = {seg_row, "---#--------"};
+      else if ((!seg_data[m][3]) && (seg_data[m][5]))
+        seg_row = {seg_row, "--------#---"};
+      else
+        seg_row = {seg_row, "------------"};
     end
     $display("%s", seg_row);
     seg_row = "   ";
 
     // DP
-    for (integer m = 0; m < 4; m++)
-    begin
-        if (seg_data[m][0])
-            seg_row = {seg_row, "-------#----"};
-        else
-            seg_row = {seg_row, "------------"};
+    for (integer m = 0; m < 4; m++) begin
+      if (seg_data[m][0])
+        seg_row = {seg_row, "----------##"};
+      else
+        seg_row = {seg_row, "------------"};
     end
     $display("%s", seg_row);
     seg_row = "   ";
