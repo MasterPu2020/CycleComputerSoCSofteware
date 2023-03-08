@@ -192,6 +192,8 @@ always @(posedge Clock) begin
       $display(" Write Segment Fraction Control Detected. (%t)", $time);
     else if (ahb_addr[7:2] == 1 && write )
       $display(" Write Segment Integer Control Detected. (%t)", $time);
+    else if (ahb_addr[7:2] == 2 && write)
+      $display(" Write Segment Mode Control Detected. (%t)", $time);
     else begin
       $display(" *** WARNING ***: Selected, but wrong opertion. Address is %h. Write/nRead is %b. (%t)", ahb_addr, write, $time);
       $display("------------------------------------------------------------------------------");
