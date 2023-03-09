@@ -283,10 +283,10 @@ module button_manager(
 
   assign Con_Trip = (InterCount_Trip == Time_500MS);
   assign Con_Mode = (InterCount_Mode == Time_500MS);
-  assign Con_DayNight = (DebFlag_Mode) && (InterCount_Mode < Time_500MS) && (InterCount_Mode != 0);
-  assign Con_Setting = ((DebFlag_Mode) && (InterCount_Trip < Time_500MS) && (InterCount_Trip != 0)) ||
-                              ((DebFlag_Trip) && (InterCount_Mode < Time_500MS) && (InterCount_Mode != 0)) ||
-                              ((DebFlag_Mode) && (DebFlag_Trip));
+  assign Con_DayNight = (DebFlag_Mode) && (InterCount_Mode != Time_500MS) && (InterCount_Mode != 0);
+  assign Con_Setting = ((DebFlag_Mode) && (InterCount_Trip != Time_500MS) && (InterCount_Trip != 0)) ||
+                       ((DebFlag_Trip) && (InterCount_Mode != Time_500MS) && (InterCount_Mode != 0)) ||
+                       ((DebFlag_Mode) && (DebFlag_Trip));
   assign NewData = Setting_Store || Trip_Store || Mode_Store || DayNight_Store; 
 
   // Ready signal generation
