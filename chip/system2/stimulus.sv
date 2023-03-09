@@ -354,9 +354,9 @@ task PressModeButtonTest; // This will test if the press of the mode button will
     @(posedge Clock);
   #(`clock_period/2); // AHB read mode data
   if (data_button == 1)
-    $display("\n Button mode is pressed. (%t)\n" $time);
+    $display("\n Button mode is pressed. (%t)\n", $time);
   assert (data_button == 1) else begin
-    $display("\n *** WARNING ***: Button mode is NOT pressed. (%t)\n" $time);
+    $display("\n *** WARNING ***: Button mode is NOT pressed. (%t)\n", $time);
     error = error + 1;
   end
   $display("\n Press Mode 1 times test end.\n");
@@ -372,12 +372,12 @@ task PressTripButtonTest; // This will test if the press of the trip button will
     @(posedge Clock);
   #(`clock_period/2); // AHB read mode data
   if (data_button == 1) begin
-    $display("\n Button trip is pressed. (%t)\n" $time);
+    $display("\n Button trip is pressed. (%t)\n", $time);
     odometer = 0;
     trip_time = 0;
   end
   assert (data_button == 1) else begin
-    $display("\n *** WARNING ***: Button trip is NOT pressed. (%t)\n" $time);
+    $display("\n *** WARNING ***: Button trip is NOT pressed. (%t)\n", $time);
     error = error + 1;
   end
     $display("\n Press Trip 1 time test end.\n");
@@ -406,10 +406,10 @@ task NightModeTest; // This will test if the button will debaunce
     @(posedge Clock);
   #(`clock_period/2); // AHB read mode data
   if (data_button == 1) begin
-    $display("\n Night/Day Mode is Activated. (%t)\n" $time);
+    $display("\n Night/Day Mode is Activated. (%t)\n", $time);
   end
   assert (data_button == 1) else begin
-    $display("\n *** WARNING ***:  Night/Day Mode activate signal NOT detected. (%t)\n" $time);
+    $display("\n *** WARNING ***:  Night/Day Mode activate signal NOT detected. (%t)\n", $time);
     error = error + 1;
   end
   $display("\n Night mode test end.\n");
@@ -456,7 +456,7 @@ task WheelSizeSwitchTest;
       #1s -> press_trip_button;
     end
     #1s -> press_mode_button;
-    @(posedge Clock);run
+    @(posedge Clock);
     DisplayRefresh_Seg = 0;
     @(posedge Clock);
     DisplayRefresh_Seg = 1;
