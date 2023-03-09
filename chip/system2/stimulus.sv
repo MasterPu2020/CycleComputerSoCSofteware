@@ -248,17 +248,24 @@ end
 //------------------------------------------------------------------------------
 
 integer
-  wheel_size = 700,
+  wheel_size = 2.136,
   crank_cycle = 1200, // ms
   fork_cycle = 800,  // ms
   noise = 24; //ms
 
 integer
   odometer = 0,
+  cadence = 0,
   segment_odometer = 0,
+  segment_speed = 0,
+  segment_cadence = 0,
+  segment_time = 0,
   crank_times = 0,
+  last_crank_times = 0,
   fork_times = 0,
+  last_fork_times = 0,
   trip_time = 0,
+  last_trip_time = 0,
   speed = 0;
 
 initial begin  // Crank will keep rolling
@@ -286,6 +293,26 @@ initial begin // Trip will keep counting
     #1s trip_time ++;
 end
 
+initial begin // Speed will keep measuring
+  start_up_delay();
+  forever begin
+    last_trip_time = trip_time;
+    last_fork_times = fork_times;
+    #1s;
+    speed = (wheel_size * (fork_times - last_fork_times))/(trip_time - last_trip_time);
+  end
+end
+
+initial begin // Cadence will keep measuring
+  start_up_delay();
+  forever begin
+    last_trip_time = trip_time;
+    last_crank_times = crank_times;
+    #1s;
+    cadence = crank_times - last_crank_times;
+  end
+end
+
 //------------------------------------------------------------------------------
 // Tasks
 //------------------------------------------------------------------------------
@@ -296,7 +323,7 @@ task OdometerVerification; // This will test if the recoreded odometer matchs th
   while (!(sel_segment && (ahb_addr[2] == 1))) // AHB write
     @(posedge Clock);
   #(`clock_period + `clock_period/2); // AHB write complete
-  odometer = (wheel_size * 3.14 / 1000) * fork_times; // meter
+  odometer = wheel_size * fork_times; // meter
   if (COMPUTER.COMP_core.seven_segment_1.Store_Int < 10)
     segment_odometer = COMPUTER.COMP_core.seven_segment_1.Store_Frac * 10
       + COMPUTER.COMP_core.seven_segment_1.Store_Int * 1000;
@@ -309,6 +336,48 @@ task OdometerVerification; // This will test if the recoreded odometer matchs th
     error = error + 1;
   end
   $display("\n Odometer verification end.\n");
+  $display("------------------------------------------------------------------------------");
+endtask
+
+task SpeedVerification; // This will test if the recoreded speed matchs the real speed
+  $display("\n Speed verification start.\n");
+  $display("------------------------------------------------------------------------------");
+  while (!(sel_segment && (ahb_addr[2] == 1))) // AHB write
+    @(posedge Clock);
+  #(`clock_period + `clock_period/2); // AHB write complete
+  if (COMPUTER.COMP_core.seven_segment_1.Store_Int < 10)
+    segment_speed = COMPUTER.COMP_core.seven_segment_1.Store_Frac * 10
+      + COMPUTER.COMP_core.seven_segment_1.Store_Int * 1000;
+  else
+    segment_speed = COMPUTER.COMP_core.seven_segment_1.Store_Frac * 100
+      + COMPUTER.COMP_core.seven_segment_1.Store_Int * 1000;
+  $display("\n Real Speed is %dkm/h. Segment display is %dkm/h. (%t)\n", (speed * 3.6), segment_speed, $time);
+  assert (segment_speed - (speed * 3.6) < 2 && (speed * 3.6) - segment_speed < 2) else begin
+    $display(" *** WARNING ***: Speed result error more than 1km/h.");
+    error = error + 1;
+  end
+  $display("\n Speed verification end.\n");
+  $display("------------------------------------------------------------------------------");
+endtask
+
+task CadenceVerification; // This will test if the recoreded speed matchs the real speed
+  $display("\n Speed verification start.\n");
+  $display("------------------------------------------------------------------------------");
+  while (!(sel_segment && (ahb_addr[2] == 1))) // AHB write
+    @(posedge Clock);
+  #(`clock_period + `clock_period/2); // AHB write complete
+  if (COMPUTER.COMP_core.seven_segment_1.Store_Int < 10)
+    segment_speed = COMPUTER.COMP_core.seven_segment_1.Store_Frac * 10
+      + COMPUTER.COMP_core.seven_segment_1.Store_Int * 1000;
+  else
+    segment_speed = COMPUTER.COMP_core.seven_segment_1.Store_Frac * 100
+      + COMPUTER.COMP_core.seven_segment_1.Store_Int * 1000;
+  $display("\n Real Speed is %dkm/h. Segment display is %dkm/h. (%t)\n", (speed * 3.6), segment_speed, $time);
+  assert (segment_speed - (speed * 3.6) < 2 && (speed * 3.6) - segment_speed < 2) else begin
+    $display(" *** WARNING ***: Speed result error more than 1km/h.");
+    error = error + 1;
+  end
+  $display("\n Speed verification end.\n");
   $display("------------------------------------------------------------------------------");
 endtask
 
@@ -437,6 +506,7 @@ endtask
 task StartUp;
   $display("\n Start Up.\n");
   $display("------------------------------------------------------------------------------");
+  wheel_size = 2.136;
   Crank = 0;
   Fork = 0;
   Mode = 0;
@@ -480,17 +550,17 @@ initial begin
 
   PressModeButtonTest;
   #5s;
-  $display("/n This is trip time. And real trip time is %ds:/n", trip_time);
+  $display("\n This is trip time. And real trip time is %ds:\n ", trip_time);
   DisplaySegment;
 
   PressModeButtonTest;
   #5s;
-  $display("/n This is speed:");
+  $display("\n This is speed:");
   DisplaySegment;
 
   PressModeButtonTest;
   #5s;
-  $display("/n This is cadence:");
+  $display("\n This is cadence:");
   DisplaySegment;
 
   #5s;
@@ -501,7 +571,7 @@ initial begin
 
   PressModeButtonTest;
   #5s;
-  $display("/n This is trip time. And real trip time is %ds:/n", trip_time);
+  $display("\n This is trip time. And real trip time is %ds:\n", trip_time);
   DisplaySegment;
 
   #5s;
