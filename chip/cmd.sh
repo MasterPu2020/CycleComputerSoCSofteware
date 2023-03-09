@@ -54,6 +54,8 @@ elif [ "$choice" = "3" ]; then
         ./simulate -no_graphics
 elif [ "$choice" = "4" ]; then
 	echo -e "\n------------------------------------------\n Processing...\n"
+	echo "Check folder chip"
+	format
 	cd ./behavioural
 	echo "Check folder behavioural:"
 	format
@@ -67,11 +69,11 @@ elif [ "$choice" = "4" ]; then
 	cd ..
 	cd ..
 	cd ./system2
-	echo "Check folder software/system2:"
+	echo "Check folder system2:"
 	format
 	cd ..
 	cd ./system
-	echo "Check folder software/system:"
+	echo "Check folder system:"
 	format
 	cd ..
 fi
