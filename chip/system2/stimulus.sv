@@ -244,23 +244,24 @@ end
 `endif
 
 //------------------------------------------------------------------------------
-// Tasks
+// Real Environment Simulation
 //------------------------------------------------------------------------------
 
 integer
   wheel_size = 700,
   crank_cycle = 1200, // ms
   fork_cycle = 800,  // ms
-  noise = 12; //ms
+  noise = 24; //ms
 
 integer
   odometer = 0,
   segment_odometer = 0,
   crank_times = 0,
   fork_times = 0,
+  trip_time = 0,
   speed = 0;
 
-initial begin 
+initial begin  // Crank will keep rolling
   start_up_delay();
   crank_times = 0;
   forever begin
@@ -269,7 +270,7 @@ initial begin
   end
 end
 
-initial begin 
+initial begin // Fork will keep rolling
   start_up_delay();
   fork_times = 0;
   forever begin
@@ -278,7 +279,18 @@ initial begin
   end
 end
 
-task OdometerVerification;
+initial begin // Trip will keep counting
+  start_up_delay();
+  trip_time = 0;
+  forever
+    #1s trip_time ++;
+end
+
+//------------------------------------------------------------------------------
+// Tasks
+//------------------------------------------------------------------------------
+
+task OdometerVerification; // This will test if the recoreded odometer matchs the real odometer
   $display("\n Odometer verification start.\n");
   $display("------------------------------------------------------------------------------");
   while (!(sel_segment && (ahb_addr[2] == 1))) // AHB write
@@ -300,45 +312,82 @@ task OdometerVerification;
   $display("------------------------------------------------------------------------------");
 endtask
 
-task NoiseTest;
+task ButtonNoiseTest; // This will test if the button will debaunce 
   $display("\n Noise test start.\n");
-  #2s;
+  $display("------------------------------------------------------------------------------");
   Trip = 1;
-  #(noise * 1000_000);
-  Trip = 0;
-  #1s;
-  Trip = 1;
-  #(noise * 1000_000);
-  Trip = 0;
-  #1s;
   Mode = 1;
-  #(noise * 1000_000);
-  Mode = 0;
-  #1s;
-  Mode = 1;
-  #(noise * 1000_000);
-  Mode = 0;
+  for (int i = 0; i < 10 ; i ++) begin
+    Trip = 1;
+    #(noise * 1000_000); // 24ms
+    Trip = 0;
+    for (int j = 0; j < 10; j ++) begin
+       @(posedge Clock);
+        assert (COMPUTER.COMP_core.button_manager_1.NewData == 0)  else begin
+          $display(" *** WARNING ***: Button is triggered by noise.");
+          error = error + 1;
+        end
+    end
+    #(noise * 1000_000); // 24ms
+    Mode = 1;
+    #(noise * 1000_000); // 24ms
+    Mode = 0;
+    for (int j = 0; j < 10; j ++) begin
+       @(posedge Clock);
+        assert (COMPUTER.COMP_core.button_manager_1.NewData == 0)  else begin
+          $display(" *** WARNING ***: Button is triggered by noise.");
+          error = error + 1;
+        end
+    end
+    #(noise * 1000_000); // 24ms
+  end
   $display("\n Noise test end.\n");
+  $display("------------------------------------------------------------------------------");
 endtask
 
-task PressModeButtonTest;
-  $display("\n Press Mode 4 times test start.\n");
-  for(int i=0;i<4;i++)
-    #1s -> press_mode_button;
-  $display("\n Press Mode 4 times test end.\n");
+task PressModeButtonTest; // This will test if the press of the mode button will be detected
+  $display("\n Press Mode 1 times test start.\n");
+  $display("------------------------------------------------------------------------------");
+  #1s -> press_mode_button;
+  $display("\n Wait for the software to check to the button.\n");
+  while (!(sel_button && (ahb_addr[4:2] == 1))) // AHB read mode command
+    @(posedge Clock);
+  #(`clock_period/2); // AHB read mode data
+  if (data_button == 1)
+    $display("\n Button mode is pressed. (%t)\n" $time);
+  assert (data_button == 1) else begin
+    $display("\n *** WARNING ***: Button mode is NOT pressed. (%t)\n" $time);
+    error = error + 1;
+  end
+  $display("\n Press Mode 1 times test end.\n");
+  $display("------------------------------------------------------------------------------");
 endtask
 
-task PressTripButtonTest;
+task PressTripButtonTest; // This will test if the press of the trip button will be detected
   $display("\n Press Trip 1 time test start.\n");
+  $display("------------------------------------------------------------------------------");
   #1s -> press_trip_button;
-  odometer = 0;
-  $display("\n Press Trip 1 time test end.\n");
+  $display("\n Wait for the software to check to the button.\n");
+  while (!(sel_button && (ahb_addr[4:2] == 2))) // AHB read mode command
+    @(posedge Clock);
+  #(`clock_period/2); // AHB read mode data
+  if (data_button == 1) begin
+    $display("\n Button trip is pressed. (%t)\n" $time);
+    odometer = 0;
+    trip_time = 0;
+  end
+  assert (data_button == 1) else begin
+    $display("\n *** WARNING ***: Button trip is NOT pressed. (%t)\n" $time);
+    error = error + 1;
+  end
+    $display("\n Press Trip 1 time test end.\n");
+  $display("------------------------------------------------------------------------------");
 endtask
 
-task SettingModeTest;
+task SettingModeTest; // This will test if the press of the mode button twice will be detected
   $display("\n Setting mode test start.\n");
   #1s   -> press_mode_button;
-  #17ms -> press_trip_button;
+  #1ns  -> press_trip_button;
   for(int i=0;i<3;i++) begin
     #1s -> press_mode_button;
     for(int j=0;j<2;j++)
@@ -347,23 +396,24 @@ task SettingModeTest;
   $display("\n Setting mode test end.\n");
 endtask
 
-task SettingModeExtremTest;
-  $display("\n Setting Extrem mode test start.\n");
-  #1s   -> press_mode_button;
-  #1ns  -> press_trip_button;
-  for(int i=0;i<3;i++) begin
-    #1s -> press_mode_button;
-    for(int j=0;j<2;j++)
-      #0.5s -> press_trip_button;
-  end
-  $display("\n Setting Extrem mode test end.\n");
-endtask
-
-task NightModeTest;
+task NightModeTest; // This will test if the button will debaunce 
   $display("\n Night mode test start.\n");
+  $display("------------------------------------------------------------------------------");
   for(int i=0;i<2;i++)
     #0.4s -> press_mode_button;
+  $display("\n Wait for the software to check to the button.\n");
+  while (!(sel_button && (ahb_addr[4:2] == 0))) // AHB read mode command
+    @(posedge Clock);
+  #(`clock_period/2); // AHB read mode data
+  if (data_button == 1) begin
+    $display("\n Night/Day Mode is Activated. (%t)\n" $time);
+  end
+  assert (data_button == 1) else begin
+    $display("\n *** WARNING ***:  Night/Day Mode activate signal NOT detected. (%t)\n" $time);
+    error = error + 1;
+  end
   $display("\n Night mode test end.\n");
+  $display("------------------------------------------------------------------------------");
 endtask
 
 task SuperManSpeed;
