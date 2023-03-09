@@ -601,6 +601,8 @@ initial begin
   // WheelSizeSwitchTest;
 
   // SuperManSpeed;
+  
+  SettingModeTest;
 
   FastSpeedTest;
 
@@ -625,20 +627,7 @@ initial begin
 
   #5s;
   PressTripButtonTest;
-  #50ms;
   OdometerVerification;
-  DisplaySegment;
-
-  #50s;
-
-  PressModeButtonTest;
-  #5s;
-  $display("\n This is trip time. And real trip time is %ds:\n", trip_time);
-  DisplaySegment;
-
-  PressModeButtonTest;
-  #5s;
-  $display("\n This is trip time. And real trip time is %ds:\n", trip_time);
   DisplaySegment;
 
   #5s;
@@ -780,7 +769,7 @@ initial begin
 
     @(posedge DisplayRefresh_Seg);
 
-    $display("Refresh Seven Segment LED: ");
+    $display("\n Refresh Seven Segment LED: \n");
     seg_row = "   ";
 
     // SegA
