@@ -503,6 +503,18 @@ task CustomWheelSizeSwitch(int digit2, int digit1, int digit0);
   #1s;  // Response time
 endtask
 
+task DisplaySegment;
+  @(posedge Clock);
+  @(posedge Clock);
+  @(posedge Clock);
+  @(posedge Clock);
+  DisplayRefresh_Seg = 0;
+  @(posedge Clock);
+  DisplayRefresh_Seg = 1;
+  @(posedge Clock);
+  DisplayRefresh_Seg = 0;
+endtask
+
 //------------------------------------------------------------------------------
 // Custom Stimulus & Verification
 //------------------------------------------------------------------------------
