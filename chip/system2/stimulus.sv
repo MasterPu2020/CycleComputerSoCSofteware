@@ -1,13 +1,13 @@
 
 //------------------------------------------------------------------------------
 //  Titile: System module - 2022/2023 SubFile: Stimulus
-//  Author: Clark Pu, Chen Paiyun
+//  Author: Clark Pu, Paiyun Chen (Circle)
 //    Team: C4 Chip Designed
 // Version: 2.0 Initial Behavioural Simulation
 // Stimulus Process
 //------------------------------------------------------------------------------
 
-`define use_ahb_monitor
+//`define use_ahb_monitor
 `define ingore_read_flag
 
 //------------------------------------------------------------------------------
@@ -627,6 +627,13 @@ initial begin
   PressTripButtonTest;
   #50ms;
   OdometerVerification;
+  DisplaySegment;
+
+  #50s;
+
+  PressModeButtonTest;
+  #5s;
+  $display("\n This is trip time. And real trip time is %ds:\n", trip_time);
   DisplaySegment;
 
   PressModeButtonTest;
