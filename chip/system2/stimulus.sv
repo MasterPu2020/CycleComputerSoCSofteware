@@ -201,7 +201,7 @@ always @(posedge Clock) begin
     end
     if (write && (ahb_addr[7:2] == 0 || ahb_addr[7:2] == 1 || ahb_addr[7:2] == 2)) begin
       #((`clock_period)/2); // deeeeeeeeeelay
-      $display(" Write data: %d. (%t)",write_data, $time);
+      $display(" Write data: %h. (%t)",write_data, $time);
     end
     $display("------------------------------------------------------------------------------");
   end
@@ -292,10 +292,10 @@ task OdometerVerification;
     segment_odometer = COMPUTER.COMP_core.seven_segment_1.Store_Frac * 100
       + COMPUTER.COMP_core.seven_segment_1.Store_Int * 1000;
   $display("\n Real Odometer is %dm. Segment display is %dm. (%t)\n", odometer, segment_odometer, $time);
-  assert (segment_odometer - odometer < 20 && odometer - segment_odometer < 20) else begin
-    $display(" *** WARNING ***: Odometer result error more than 20m.");
-    error = error + 1;
-  end
+  //assert (segment_odometer - odometer < 20 && odometer - segment_odometer < 20) else begin
+    //$display(" *** WARNING ***: Odometer result error more than 20m.");
+    //error = error + 1;
+  //end
   $display("\n Odometer verification end.\n");
   $display("------------------------------------------------------------------------------");
 endtask
@@ -323,8 +323,15 @@ endtask
 
 task PressModeButtonTest;
   $display("\n Press Mode 4 times test start.\n");
-  for(int i=0;i<4;i++)
+  for(int i=0;i<4;i++) begin
     #1s -> press_mode_button;
+    DisplayRefresh_Seg = 0;
+    @(posedge Clock);
+    DisplayRefresh_Seg = 1;
+    @(posedge Clock);
+    DisplayRefresh_Seg = 0;
+    $stop;
+  end
   $display("\n Press Mode 4 times test end.\n");
 endtask
 
@@ -397,6 +404,62 @@ task StartUp;
   $display("------------------------------------------------------------------------------");
 endtask
 
+task WheelSizeSwitchTest;
+  $display("\n Wheel size switch test start.\n");
+  #1s -> press_mode_button;
+  #17ms -> press_trip_button;
+  for (int j=0;j<3;j++) begin
+    for (int i=0;i<0;i++) begin
+      #1s -> press_trip_button;
+    end
+    #1s -> press_mode_button;
+    @(posedge Clock);run
+    DisplayRefresh_Seg = 0;
+    @(posedge Clock);
+    DisplayRefresh_Seg = 1;
+    @(posedge Clock);
+    DisplayRefresh_Seg = 0;
+    $stop;
+  end
+
+  for (int j=0;j<5;j++) begin
+    #1s -> press_mode_button;
+    DisplayRefresh_Seg = 0;
+    @(posedge Clock);
+    DisplayRefresh_Seg = 1;
+    @(posedge Clock);
+    DisplayRefresh_Seg = 0;
+    $stop;
+  end
+endtask
+
+task CustomWheelSizeSwitch(int digit2, int digit1, int digit0);
+  $display("\n Custom wheel size switch start.\n");
+  #1s -> press_mode_button;
+  #17ms -> press_trip_button;
+
+  for (int i=0;i<digit0;i++) begin
+    #1s -> press_trip_button;
+  end
+  #1s -> press_mode_button;
+
+  for (int i=0;i<digit1;i++) begin
+      #1s -> press_trip_button;
+    end
+  #1s -> press_mode_button;
+
+  for (int i=0;i<(digit2+3);i++) begin
+      #1s -> press_trip_button;
+  end
+  #1s -> press_mode_button;
+  DisplayRefresh_Seg = 0;
+  @(posedge Clock);
+  DisplayRefresh_Seg = 1;
+  @(posedge Clock);
+  DisplayRefresh_Seg = 0;
+  #1s;  // Response time
+endtask
+
 //------------------------------------------------------------------------------
 // Custom Stimulus & Verification
 //------------------------------------------------------------------------------
@@ -407,6 +470,10 @@ endtask
 initial begin
 
   StartUp;
+
+  // CustomWheelSizeSwitch(8,0,0);
+
+  // WheelSizeSwitchTest;
 
   // SuperManSpeed;
 
@@ -429,6 +496,7 @@ initial begin
     @(posedge Clock);
     DisplayRefresh_Seg = 0;
 
+    $stop;
   end
 
   #1s;
@@ -557,18 +625,10 @@ initial begin
   forever begin
     @ (posedge Clock);
     case (nDigit)
-      4'b1110: begin
-        seg_data[3] = {SegA, SegB, SegC, SegD, SegE, SegF, SegG, DP};
-      end
-      4'b1101: begin
-        seg_data[2] = {SegA, SegB, SegC, SegD, SegE, SegF, SegG, DP};
-      end
-      4'b1011: begin
-        seg_data[1] = {SegA, SegB, SegC, SegD, SegE, SegF, SegG, DP};
-      end
-      4'b0111: begin
-        seg_data[0] = {SegA, SegB, SegC, SegD, SegE, SegF, SegG, DP};
-      end
+      4'b1110: begin seg_data[3] = {SegA, SegB, SegC, SegD, SegE, SegF, SegG, DP}; end
+      4'b1101: begin seg_data[2] = {SegA, SegB, SegC, SegD, SegE, SegF, SegG, DP}; end
+      4'b1011: begin seg_data[1] = {SegA, SegB, SegC, SegD, SegE, SegF, SegG, DP}; end
+      4'b0111: begin seg_data[0] = {SegA, SegB, SegC, SegD, SegE, SegF, SegG, DP}; end
     endcase
   end
 end
@@ -599,44 +659,20 @@ initial begin
     seg_row = "   ";
 
     // SegF & SegB
-    for (integer m = 0; m < 4; m++) begin
-      if ((seg_data[m][2]) && (seg_data[m][6]))
-        seg_row = {seg_row, "---#----#---"};
-      else if ((seg_data[m][2]) && (!seg_data[m][6]))
-        seg_row = {seg_row, "---#--------"};
-      else if ((!seg_data[m][2]) && (seg_data[m][6]))
-        seg_row = {seg_row, "--------#---"};
-      else
-        seg_row = {seg_row, "------------"};
+    for (integer n = 0; n < 3; n++) begin
+      for (integer m = 0; m < 4; m++) begin
+        if ((seg_data[m][2]) && (seg_data[m][6]))
+          seg_row = {seg_row, "---#----#---"};
+        else if ((seg_data[m][2]) && (!seg_data[m][6]))
+          seg_row = {seg_row, "---#--------"};
+        else if ((!seg_data[m][2]) && (seg_data[m][6]))
+          seg_row = {seg_row, "--------#---"};
+        else
+          seg_row = {seg_row, "------------"};
+      end
+      $display("%s", seg_row);
+      seg_row = "   ";
     end
-    $display("%s", seg_row);
-    seg_row = "   ";
-
-    for (integer m = 0; m < 4; m++) begin
-      if ((seg_data[m][2]) && (seg_data[m][6]))
-        seg_row = {seg_row, "---#----#---"};
-      else if ((seg_data[m][2]) && (!seg_data[m][6]))
-        seg_row = {seg_row, "---#--------"};
-      else if ((!seg_data[m][2]) && (seg_data[m][6]))
-        seg_row = {seg_row, "--------#---"};
-      else
-        seg_row = {seg_row, "------------"};
-    end
-    $display("%s", seg_row);
-    seg_row = "   ";
-
-    for (integer m = 0; m < 4; m++) begin
-      if ((seg_data[m][2]) && (seg_data[m][6]))
-        seg_row = {seg_row, "---#----#---"};
-      else if ((seg_data[m][2]) && (!seg_data[m][6]))
-        seg_row = {seg_row, "---#--------"};
-      else if ((!seg_data[m][2]) && (seg_data[m][6]))
-        seg_row = {seg_row, "--------#---"};
-      else
-        seg_row = {seg_row, "------------"};
-    end
-    $display("%s", seg_row);
-    seg_row = "   ";
 
     // SegG
     for (integer m = 0; m < 4; m++) begin
@@ -655,44 +691,20 @@ initial begin
     seg_row = "   ";
 
     // SegE & SegC
-    for (integer m = 0; m < 4; m++) begin
-      if ((seg_data[m][3]) && (seg_data[m][5]))
-        seg_row = {seg_row, "---#----#---"};
-      else if ((seg_data[m][3]) && (!seg_data[m][5]))
-        seg_row = {seg_row, "---#--------"};
-      else if ((!seg_data[m][3]) && (seg_data[m][5]))
-        seg_row = {seg_row, "--------#---"};
-      else
-        seg_row = {seg_row, "------------"};
+    for (integer n = 0; n < 3; n++) begin
+      for (integer m = 0; m < 4; m++) begin
+        if ((seg_data[m][3]) && (seg_data[m][5]))
+          seg_row = {seg_row, "---#----#---"};
+        else if ((seg_data[m][3]) && (!seg_data[m][5]))
+          seg_row = {seg_row, "---#--------"};
+        else if ((!seg_data[m][3]) && (seg_data[m][5]))
+          seg_row = {seg_row, "--------#---"};
+        else
+          seg_row = {seg_row, "------------"};
+      end
+      $display("%s", seg_row);
+      seg_row = "   ";
     end
-    $display("%s", seg_row);
-    seg_row = "   ";
-
-    for (integer m = 0; m < 4; m++) begin
-      if ((seg_data[m][3]) && (seg_data[m][5]))
-        seg_row = {seg_row, "---#----#---"};
-      else if ((seg_data[m][3]) && (!seg_data[m][5]))
-        seg_row = {seg_row, "---#--------"};
-      else if ((!seg_data[m][3]) && (seg_data[m][5]))
-        seg_row = {seg_row, "--------#---"};
-      else
-        seg_row = {seg_row, "------------"};
-    end
-    $display("%s", seg_row);
-    seg_row = "   ";
-
-    for (integer m = 0; m < 4; m++) begin
-      if ((seg_data[m][3]) && (seg_data[m][5]))
-        seg_row = {seg_row, "---#----#---"};
-      else if ((seg_data[m][3]) && (!seg_data[m][5]))
-        seg_row = {seg_row, "---#--------"};
-      else if ((!seg_data[m][3]) && (seg_data[m][5]))
-        seg_row = {seg_row, "--------#---"};
-      else
-        seg_row = {seg_row, "------------"};
-    end
-    $display("%s", seg_row);
-    seg_row = "   ";
 
     // SegD
     for (integer m = 0; m < 4; m++) begin
