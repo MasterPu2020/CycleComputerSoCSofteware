@@ -447,6 +447,18 @@ task StartUp;
   $display("------------------------------------------------------------------------------");
 endtask
 
+task DisplaySegment;
+    @(posedge Clock);
+    @(posedge Clock);
+    @(posedge Clock);
+    @(posedge Clock);
+    DisplayRefresh_Seg = 0;
+    @(posedge Clock);
+    DisplayRefresh_Seg = 1;
+    @(posedge Clock);
+    DisplayRefresh_Seg = 0;
+endtask
+
 //------------------------------------------------------------------------------
 // Custom Stimulus & Verification
 //------------------------------------------------------------------------------
@@ -462,27 +474,37 @@ initial begin
 
   FastSpeedTest;
 
-  for (integer i = 0; i < 10; i ++) begin
-    
-    #0.5s;
+  #5s;
+  OdometerVerification;
+  DisplaySegment;
 
-    OdometerVerification;
+  PressModeButtonTest;
+  #5s;
+  $display("/n This is trip time. And real trip time is %ds:/n", trip_time);
+  DisplaySegment;
 
-    @ (posedge Clock);
-    @ (posedge Clock);
-    @ (posedge Clock);
-    @ (posedge Clock);
+  PressModeButtonTest;
+  #5s;
+  $display("/n This is speed:");
+  DisplaySegment;
 
-    DisplayRefresh_Seg = 0;
-    @(posedge Clock);
-    DisplayRefresh_Seg = 1;
-    @(posedge Clock);
-    DisplayRefresh_Seg = 0;
+  PressModeButtonTest;
+  #5s;
+  $display("/n This is cadence:");
+  DisplaySegment;
 
-  end
+  #5s;
+  PressTripButtonTest;
+  #50ms;
+  OdometerVerification;
+  DisplaySegment;
 
-  #1s;
-  
+  PressModeButtonTest;
+  #5s;
+  $display("/n This is trip time. And real trip time is %ds:/n", trip_time);
+  DisplaySegment;
+
+  #5s;
   $stop;
   $finish;
 
