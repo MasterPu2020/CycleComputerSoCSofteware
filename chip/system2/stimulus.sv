@@ -351,7 +351,7 @@ task SpeedVerification; // This will test if the recoreded speed matchs the real
   else
     segment_speed = COMPUTER.COMP_core.seven_segment_1.Store_Frac * 100
       + COMPUTER.COMP_core.seven_segment_1.Store_Int * 1000;
-  $display("\n Real Speed is %dkm/h. Segment display is %dkm/h. (%t)\n", (speed * 3.6), segment_speed, $time);
+  $display("\n Real Speed is %d km/h. Segment display is %d km/h. (%t)\n", (speed * 3.6), segment_speed, $time);
   assert (segment_speed - (speed * 3.6) < 2 && (speed * 3.6) - segment_speed < 2) else begin
     $display(" *** WARNING ***: Speed result error more than 1km/h.");
     error = error + 1;
@@ -361,23 +361,23 @@ task SpeedVerification; // This will test if the recoreded speed matchs the real
 endtask
 
 task CadenceVerification; // This will test if the recoreded speed matchs the real speed
-  $display("\n Speed verification start.\n");
+  $display("\n Cadence verification start.\n");
   $display("------------------------------------------------------------------------------");
   while (!(sel_segment && (ahb_addr[2] == 1))) // AHB write
     @(posedge Clock);
   #(`clock_period + `clock_period/2); // AHB write complete
   if (COMPUTER.COMP_core.seven_segment_1.Store_Int < 10)
-    segment_speed = COMPUTER.COMP_core.seven_segment_1.Store_Frac * 10
+    segment_cadence = COMPUTER.COMP_core.seven_segment_1.Store_Frac * 10
       + COMPUTER.COMP_core.seven_segment_1.Store_Int * 1000;
   else
-    segment_speed = COMPUTER.COMP_core.seven_segment_1.Store_Frac * 100
+    segment_cadence = COMPUTER.COMP_core.seven_segment_1.Store_Frac * 100
       + COMPUTER.COMP_core.seven_segment_1.Store_Int * 1000;
-  $display("\n Real Speed is %dkm/h. Segment display is %dkm/h. (%t)\n", (speed * 3.6), segment_speed, $time);
-  assert (segment_speed - (speed * 3.6) < 2 && (speed * 3.6) - segment_speed < 2) else begin
-    $display(" *** WARNING ***: Speed result error more than 1km/h.");
+  $display("\n Real Cadence is %d rp/m. Segment display is %d rp/m. (%t)\n", (cadence * 60), segment_cadence, $time);
+  assert (segment_cadence - (cadence * 60) < 10 && (cadence * 60) - segment_cadence < 10) else begin
+    $display(" *** WARNING ***: Cadence result error more than 10 rp/m.");
     error = error + 1;
   end
-  $display("\n Speed verification end.\n");
+  $display("\n Cadence verification end.\n");
   $display("------------------------------------------------------------------------------");
 endtask
 
