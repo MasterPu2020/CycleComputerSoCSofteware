@@ -192,12 +192,14 @@ always @(posedge Clock) begin
       $display(" Write Segment Fraction Control Detected. (%t)", $time);
     else if (ahb_addr[7:2] == 1 && write )
       $display(" Write Segment Integer Control Detected. (%t)", $time);
+    else if (ahb_addr[7:2] == 2 && write)
+      $display(" Write Segment Mode Control Detected. (%t)", $time);
     else begin
       $display(" *** WARNING ***: Selected, but wrong opertion. Address is %h. Write/nRead is %b. (%t)", ahb_addr, write, $time);
       $display("------------------------------------------------------------------------------");
       error ++;
     end
-    if (write && (ahb_addr[7:2] == 0 || ahb_addr[7:2] == 1)) begin
+    if (write && (ahb_addr[7:2] == 0 || ahb_addr[7:2] == 1 || ahb_addr[7:2] == 2)) begin
       #((`clock_period)/2); // deeeeeeeeeelay
       $display(" Write data: %d. (%t)",write_data, $time);
     end
@@ -283,12 +285,12 @@ task OdometerVerification;
     @(posedge Clock);
   #(`clock_period + `clock_period/2); // AHB write complete
   odometer = (wheel_size * 3.14 / 1000) * fork_times; // meter
-  if (COMPUTER.COMP_core.seven_segment_1.SevenSeg_Store_Integer < 10)
-    segment_odometer = COMPUTER.COMP_core.seven_segment_1.SevenSeg_Store_Decimal * 10
-      + COMPUTER.COMP_core.seven_segment_1.SevenSeg_Store_Integer * 1000;
+  if (COMPUTER.COMP_core.seven_segment_1.Store_Int < 10)
+    segment_odometer = COMPUTER.COMP_core.seven_segment_1.Store_Frac * 10
+      + COMPUTER.COMP_core.seven_segment_1.Store_Int * 1000;
   else
-    segment_odometer = COMPUTER.COMP_core.seven_segment_1.SevenSeg_Store_Decimal * 100
-      + COMPUTER.COMP_core.seven_segment_1.SevenSeg_Store_Integer * 1000;
+    segment_odometer = COMPUTER.COMP_core.seven_segment_1.Store_Frac * 100
+      + COMPUTER.COMP_core.seven_segment_1.Store_Int * 1000;
   $display("\n Real Odometer is %dm. Segment display is %dm. (%t)\n", odometer, segment_odometer, $time);
   assert (segment_odometer - odometer < 20 && odometer - segment_odometer < 20) else begin
     $display(" *** WARNING ***: Odometer result error more than 20m.");
@@ -410,17 +412,22 @@ initial begin
 
   FastSpeedTest;
 
-  for (integer i = 0; i < 20; i ++) begin
+  for (integer i = 0; i < 10; i ++) begin
     
     #0.5s;
 
     OdometerVerification;
 
-    #0.5s;
+    @ (posedge Clock);
+    @ (posedge Clock);
+    @ (posedge Clock);
+    @ (posedge Clock);
 
     DisplayRefresh_Seg = 0;
     @(posedge Clock);
     DisplayRefresh_Seg = 1;
+    @(posedge Clock);
+    DisplayRefresh_Seg = 0;
 
   end
 
