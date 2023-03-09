@@ -15,7 +15,7 @@
 // The following lines indicates that a stimulus time exists and contains
 // custom simulation time information
 //
-`define sim_time 120s
+`define sim_time 200s
 
 // The following line specifies the clock period
 //
