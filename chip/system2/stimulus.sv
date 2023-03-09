@@ -199,7 +199,7 @@ always @(posedge Clock) begin
       $display("------------------------------------------------------------------------------");
       error ++;
     end
-    if (write && (ahb_addr[7:2] == 0 || ahb_addr[7:2] == 1)) begin
+    if (write && (ahb_addr[7:2] == 0 || ahb_addr[7:2] == 1 || ahb_addr[7:2] == 2)) begin
       #((`clock_period)/2); // deeeeeeeeeelay
       $display(" Write data: %d. (%t)",write_data, $time);
     end
