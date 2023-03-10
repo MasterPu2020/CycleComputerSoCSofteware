@@ -572,8 +572,8 @@ end
 
   task ZeroSpeedTest;
     $display("\n Bicycle stopped.\n");
-    crank_cycle = 6100; // ms
-    fork_cycle = 6100;  // ms
+    crank_cycle = 10000; // ms
+    fork_cycle = 10000;  // ms
   endtask
 
   //--------------------------------------------------------------
