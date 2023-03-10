@@ -7,8 +7,8 @@
 // Stimulus Process
 //------------------------------------------------------------------------------
 
-`define use_ahb_monitor
-`define ingore_read_flag
+// `define use_ahb_monitor
+// `define ingore_read_flag
 
 //------------------------------------------------------------------------------
 // Macros for Enabling Test
@@ -871,26 +871,29 @@ end
       StartUp;
 
       FastSpeedTest;
+      $display("Wait for 70s...");
+      $display("------------------------------------------------------------------------------");
       #70s;
 
+      #0.5s;
+      DisplaySegment;
       PressTripButtonTest;
       PressModeButtonTest;
 
       #0.5s;
       DisplaySegment;
-
-      $stop;
-      $finish;
     end
 
   //--------------------------------------------------------------
   // Trip Time Stop Test
   //--------------------------------------------------------------
-  `elsif TripTimeStopTest
+  `ifdef triptimestoptest
     initial begin
       StartUp;
 
       FastSpeedTest;
+      $display("Wait for 70s...");
+      $display("------------------------------------------------------------------------------");
       #70s;
 
       PressModeButtonTest;

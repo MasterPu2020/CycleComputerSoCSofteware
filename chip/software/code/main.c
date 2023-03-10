@@ -2,7 +2,7 @@
 // Titile:  Cortex M0 Software Main C File
 // Author:  ChangXin Shen & Clark Pu
 // Team:    C4 Chip Designed
-// Version: 5.1
+// Version: 5.2
 // Verification: Verified SoC.
 // Comment: This is a test of hardware functions
 //------------------------------------------------------------------------------
@@ -52,7 +52,7 @@ volatile uint32_t* BUTTON  = (volatile uint32_t*) AHB_BUTTON_MANAGER_BASE;
 
 bool speed_red, isNight, switchDisplay;
 float distance, speed, max_speed, total_distance, post_distance;
-uint32_t mode, wheel;
+uint32_t mode, wheel, wheel_d;
 uint32_t time, now_time, post_time, time_h, time_m, time_h_bcd, time_m_bcd;
 uint32_t crank, bike_fork;
 uint32_t speed_f, speed_b, speed_f_bcd, speed_b_bcd;
@@ -100,10 +100,65 @@ uint32_t int2bcd(uint32_t value){
 
 }
 
+void check_time_stop(void) {
+
+  bike_fork = read_fork();
+
+  if (stop_time_mode == 0) {
+
+    if (bike_fork == post_fork) {
+
+      fork_equal = fork_equal + 1;
+      now_stop_time = read_time_long();
+
+      if (fork_equal == 1) {
+
+        post_stop_time = now_stop_time;
+        store_stop_time = now_stop_time;
+
+      }
+
+      stop_time = now_stop_time - post_stop_time;
+
+      if (stop_time >= 6) {
+
+        stop_time_mode = 1;
+
+      }
+
+      post_stop_time = now_stop_time;
+
+    } else {
+
+      fork_equal = 0;
+      store_stop_time = 0;
+
+    }
+
+  } else {
+
+    if (bike_fork != post_fork) {
+
+      stop_time_mode = 0;
+      TIMER[0] = store_stop_time;
+
+    }
+
+  }
+
+  post_fork = bike_fork;
+
+  return;
+
+}
+
 bool wait_for_press(void){
 
   // 若三秒内没有按下，则返回假
   while(1) {
+
+    check_time_stop();
+
     if (check_button())
 
       return true;
@@ -111,9 +166,11 @@ bool wait_for_press(void){
     else if (time_up()) {
 
       read_time_short();
+
       return false;
 
     }
+
   }
 
 }
@@ -124,13 +181,15 @@ void wait_for_setting(void) {
   uint32_t wheel_1, wheel_2, wheel_3;
   uint32_t wheel_f_bcd;
 
+  check_time_stop();
+
   wheel_f_bcd = int2bcd(wheel);
   display_segment(0xE, wheel_f_bcd, 0);
 
   while (1){
 
     wheel_3 = wheel / 100;
-    wheel_2 = (wheel - wheel_3 * 100)/10;
+    wheel_2 = (wheel - wheel_3 * 100) / 10;
     wheel_1 = (wheel - wheel_3 * 100) - (wheel_2 * 10);
 
     if (check_button()) {
@@ -148,7 +207,7 @@ void wait_for_setting(void) {
 
         if (press_times == 0) {
             
-            wheel_1 = (wheel_1 + 1) % 10;
+            wheel_3 = (wheel_3 + 1) % 10;
                 
         } else if (press_times == 1) {
                
@@ -156,7 +215,7 @@ void wait_for_setting(void) {
 
         } else if (press_times == 2) {                
                 
-            wheel_3 = (wheel_3 + 1) % 10;
+            wheel_1 = (wheel_1 + 1) % 10;
                 
         }
             
@@ -186,12 +245,11 @@ void check_speed(void){
 
 }
 
-float get_distance(uint32_t bike_fork, uint32_t wheel){
+float get_distance(uint32_t bike_fork, uint32_t wheel_size){
 
   float f_distance;
-  const float PI = 3.14;
 
-  f_distance = bike_fork * ( PI * wheel / 1000) / 1000;
+  f_distance = bike_fork * (wheel_size / 1000) / 1000 + 0.01;
 
   if (f_distance > 99.99) {
 
@@ -259,55 +317,6 @@ uint32_t get_cadence(uint32_t crank, uint32_t time){
 
 }
 
-void check_time_stop(void) {
-
-  if (stop_time_mode == 0) {
-
-    if (bike_fork == post_fork) {
-
-      fork_equal = fork_equal + 1;
-      now_stop_time = read_time_long();
-
-      if (fork_equal == 1) {
-
-        post_stop_time = now_stop_time;
-
-      }
-
-      stop_time = now_stop_time - post_stop_time;
-
-      if (stop_time >= 6) {
-
-        store_stop_time = read_time_long();
-        stop_time_mode = 1;
-
-      }
-
-      post_stop_time = now_stop_time;
-
-    } else {
-
-      fork_equal = 0;
-
-    }
-
-  } else {
-
-    if (bike_fork != post_fork) {
-
-      stop_time_mode = 0;
-      TIMER[0] = store_stop_time;
-
-    }
-
-  }
-
-  post_fork = bike_fork;
-
-  return;
-
-}
-
 void refresh_segment(void) {
 
   if (mode == 0xA){
@@ -336,6 +345,7 @@ void initiate(void) {
 
   post_time = 0;
   wheel = 700;
+  wheel_d = 2136;
   speed_red = false;
   isNight = false;
   switchDisplay = false;
@@ -347,6 +357,8 @@ void initiate(void) {
   total_distance_b = 0;
   post_distance = 0;
   mode = 0xA;
+  stop_time_mode = 0;
+  post_fork = 0;
 
   display_segment(mode, total_distance_f, total_distance_b);
   //display_oled();
@@ -366,6 +378,8 @@ int main(void) {
     // repeat forever (embedded programs generally do not terminate)
   while(1) {
 
+    check_time_stop();
+
     if (wait_for_press()) { // 等待三秒或等待按钮按下后
 
     // 按钮按下后，处理按钮操作
@@ -378,45 +392,45 @@ int main(void) {
 
         if (press_trip()) {
 
-          //根据模式清零
-          if (mode == 0xA){    //里程
+          total_distance = 0;
+          clear_fork();
+          post_time = 0;
+          clear_timer_long();
 
-            total_distance = 0;
-            clear_fork();
+          if (mode == 0xA){    
+
             display_segment(mode, 0, 0);
 
-          } else if (mode == 0xB) {           //时间
-
-            post_time = 0;
-            clear_timer_long(); 
+          } else if (mode == 0xB) {           
+ 
             display_segment(mode, 0, 0);
 
-          }     
-        }
-      else if (press_mode()) {     // A里程  B时间  C速度  D踏频  E设置
+          }
+               
+        } else if (press_mode()) {     // A里程  B时间  C速度  D踏频  E设置
 
-        if (mode == 0xA){
+          if (mode == 0xA){
 
-          mode = 0xB;
-          display_segment(mode, time_h_bcd, time_m_bcd);
+            mode = 0xB;
+            display_segment(mode, time_h_bcd, time_m_bcd);
 
-        } else if (mode == 0xB) {
+          } else if (mode == 0xB) {
 
-          mode = 0xC;
-          display_segment(mode, speed_f_bcd, speed_b_bcd);
+            mode = 0xC;
+            display_segment(mode, speed_f_bcd, speed_b_bcd);
 
-        } else if (mode == 0xC) {
+          } else if (mode == 0xC) {
 
-          mode = 0xD;
-          display_segment(mode, cadence_bcd, 0);
+            mode = 0xD;
+            display_segment(mode, cadence_bcd, 0);
 
-        } else if (mode == 0xD){
+          } else if (mode == 0xD){
 
-          mode = 0xA;
-          display_segment(mode, total_distance_f_bcd, total_distance_b_bcd);
+            mode = 0xA;
+            display_segment(mode, total_distance_f_bcd, total_distance_b_bcd);
 
-        }
-          switchDisplay = true;
+          }
+            switchDisplay = true;
 
         } else if (press_d_mode()) {
 
@@ -430,11 +444,10 @@ int main(void) {
     // 按钮按下则在处理完按钮操作后立即刷新，没有按下则三秒刷新一次
     
     crank = read_crank();
-    bike_fork = read_fork();
 
     check_time_stop();
     
-    total_distance = get_distance(bike_fork, wheel);
+    total_distance = get_distance(bike_fork, wheel_d);
     distance = total_distance - post_distance;
     post_distance = total_distance;
     total_distance_f = (uint32_t) total_distance;
