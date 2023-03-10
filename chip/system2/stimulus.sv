@@ -308,8 +308,8 @@ initial begin // Cadence will keep measuring
   forever begin
     last_trip_time = trip_time;
     last_crank_times = crank_times;
-    #1s;
-    cadence = crank_times - last_crank_times;
+    #3s;
+    cadence = (crank_times - last_crank_times) * 20;
   end
 end
 
@@ -344,12 +344,11 @@ end
       @(posedge Clock);
     #(`clock_period + `clock_period/2); // AHB write complete
     odometer = wheel_size * fork_times; // meter
-    if (COMPUTER.COMP_core.seven_segment_1.Store_Int < 10)
-      segment_odometer = COMPUTER.COMP_core.seven_segment_1.Store_Frac * 10
-        + COMPUTER.COMP_core.seven_segment_1.Store_Int * 1000;
-    else
-      segment_odometer = COMPUTER.COMP_core.seven_segment_1.Store_Frac * 100
-        + COMPUTER.COMP_core.seven_segment_1.Store_Int * 1000;
+      segment_odometer = COMPUTER.COMP_core.seven_segment_1.Store_Frac[ 3:0] * 10
+        + COMPUTER.COMP_core.seven_segment_1.Store_Frac[ 7:4] * 100
+        + COMPUTER.COMP_core.seven_segment_1.Store_Int [ 3:0] * 1000
+        + COMPUTER.COMP_core.seven_segment_1.Store_Int [ 7:4] * 10000
+        + COMPUTER.COMP_core.seven_segment_1.Store_Int [11:8] * 100000
     $display("\n Real Odometer is %dm. Segment display is %dm. (%t)\n", odometer, segment_odometer, $time);
     //assert (segment_odometer - odometer < 20 && odometer - segment_odometer < 20) else begin
       //$display(" *** WARNING ***: Odometer result error more than 20m.");
@@ -392,14 +391,11 @@ end
     while (!(sel_segment && (ahb_addr[2] == 1))) // AHB write
       @(posedge Clock);
     #(`clock_period + `clock_period/2); // AHB write complete
-    if (COMPUTER.COMP_core.seven_segment_1.Store_Int < 10)
-      segment_cadence = COMPUTER.COMP_core.seven_segment_1.Store_Frac * 10
-        + COMPUTER.COMP_core.seven_segment_1.Store_Int * 1000;
-    else
-      segment_cadence = COMPUTER.COMP_core.seven_segment_1.Store_Frac * 100
-        + COMPUTER.COMP_core.seven_segment_1.Store_Int * 1000;
-    $display("\n Real Cadence is %d rp/m. Segment display is %d rpm. (%t)\n", (cadence * 60), segment_cadence, $time);
-    assert (segment_cadence - (cadence * 60) < 10 && (cadence * 60) - segment_cadence < 10) else begin
+    segment_cadence = COMPUTER.COMP_core.seven_segment_1.Store_Int[3:0]
+      + COMPUTER.COMP_core.seven_segment_1.Store_Int[7:4] * 10
+      + COMPUTER.COMP_core.seven_segment_1.Store_Int[11:8] * 100;
+    $display("\n Real Cadence is %d rpm. Segment display is %d rpm. (%t)\n", cadence, segment_cadence, $time);
+    assert (segment_cadence - cadence < 10 && cadence - segment_cadence < 10) else begin
       $display(" *** WARNING ***: Cadence result error more than 10 rpm.");
       error = error + 1;
     end
@@ -515,7 +511,7 @@ end
   endtask
 
   //--------------------------------------------------------------
-  // Seven Segment  Manager Tasks
+  // Seven Segment Manager Tasks
   //--------------------------------------------------------------
   task WheelSizeSwitchTest;
     $display("\n Wheel size switch test start.\n");
@@ -560,8 +556,8 @@ end
 
   task FastSpeedTest;
     $display("\n Change to fast speed.\n");
-    crank_cycle = 400; // ms
-    fork_cycle = 290;  // ms
+    crank_cycle = 190; // ms
+    fork_cycle = 300;  // ms
   endtask
 
   task LowSpeedTest;
@@ -649,10 +645,14 @@ initial begin
   SinglePressModeButton;
   SinglePressModeButton;
   SinglePressModeButton;
-  #5s;
-  CadenceVerification;
-  DisplaySegment;
-  
+
+
+  for (int i=0; i<10; i++) begin
+    #3s;
+    CadenceVerification;
+    DisplaySegment;
+  end
+
   // Odometer Verification Test
   /*
   FastSpeedTest;
