@@ -348,7 +348,7 @@ end
         + COMPUTER.COMP_core.seven_segment_1.Store_Frac[ 7:4] * 100
         + COMPUTER.COMP_core.seven_segment_1.Store_Int [ 3:0] * 1000
         + COMPUTER.COMP_core.seven_segment_1.Store_Int [ 7:4] * 10000
-        + COMPUTER.COMP_core.seven_segment_1.Store_Int [11:8] * 100000
+        + COMPUTER.COMP_core.seven_segment_1.Store_Int [11:8] * 100000;
     $display("\n Real Odometer is %dm. Segment display is %dm. (%t)\n", odometer, segment_odometer, $time);
     //assert (segment_odometer - odometer < 20 && odometer - segment_odometer < 20) else begin
       //$display(" *** WARNING ***: Odometer result error more than 20m.");
@@ -367,12 +367,11 @@ end
     while (!(sel_segment && (ahb_addr[2] == 1))) // AHB write
       @(posedge Clock);
     #(`clock_period + `clock_period/2); // AHB write complete
-    if (COMPUTER.COMP_core.seven_segment_1.Store_Int < 10)
-      segment_speed = COMPUTER.COMP_core.seven_segment_1.Store_Frac * 10
-        + COMPUTER.COMP_core.seven_segment_1.Store_Int * 1000;
-    else
-      segment_speed = COMPUTER.COMP_core.seven_segment_1.Store_Frac * 100
-        + COMPUTER.COMP_core.seven_segment_1.Store_Int * 1000;
+      segment_odometer = COMPUTER.COMP_core.seven_segment_1.Store_Frac[ 3:0] * 10
+        + COMPUTER.COMP_core.seven_segment_1.Store_Frac[ 7:4] * 100
+        + COMPUTER.COMP_core.seven_segment_1.Store_Int [ 3:0] * 1000
+        + COMPUTER.COMP_core.seven_segment_1.Store_Int [ 7:4] * 10000
+        + COMPUTER.COMP_core.seven_segment_1.Store_Int [11:8] * 100000;
     $display("\n Real Speed is %d km/h. Segment display is %d km/h. (%t)\n", (speed * 3.6), segment_speed, $time);
     assert (segment_speed - (speed * 3.6) < 2 && (speed * 3.6) - segment_speed < 2) else begin
       $display(" *** WARNING ***: Speed result error more than 1km/h.");
@@ -626,61 +625,81 @@ initial begin
 
   StartUp;
 
-  // Trip Time Stop Test
-  /*
-  FastSpeedTest;
-  #70s;
-
-  PressModeButtonTest;
-  DisplaySegment;
-
-  ZeroSpeedTest;
-  #70s;
-  
-  DisplaySegment;
-  */
-
-  // Cadence Verification Test
-  FastSpeedTest;
-  SinglePressModeButton;
-  SinglePressModeButton;
-  SinglePressModeButton;
-
-
-  for (int i=0; i<10; i++) begin
-    #3s;
-    CadenceVerification;
+  //--------------------------------------------------------------
+  // Trip Time Clear Test
+  //--------------------------------------------------------------
+    FastSpeedTest;
+    #70s;
+    PressModeButtonTest;
+    #0.5s;
     DisplaySegment;
-  end
+    PressTripButtonTest;
+    #0.5s;
+    DisplaySegment;
 
+  //--------------------------------------------------------------
+  // Trip Time Stop Test
+  //--------------------------------------------------------------
+    /*
+    FastSpeedTest;
+    #70s;
+
+    PressModeButtonTest;
+    DisplaySegment;
+
+    ZeroSpeedTest;
+    #70s;
+    
+    DisplaySegment;
+    */
+  
+  //--------------------------------------------------------------
+  // Cadence Verification Test
+  //--------------------------------------------------------------
+    /*
+    FastSpeedTest;
+    SinglePressModeButton;
+    SinglePressModeButton;
+    SinglePressModeButton;
+
+
+    for (int i=0; i<10; i++) begin
+      #3s;
+      CadenceVerification;
+      DisplaySegment;
+    end
+    */
+
+  //--------------------------------------------------------------
   // Odometer Verification Test
-  /*
-  FastSpeedTest;
+  //--------------------------------------------------------------
+    /*
+    FastSpeedTest;
 
-  #5s;
-  OdometerVerification;
-  DisplaySegment;
+    #5s;
+    OdometerVerification;
+    DisplaySegment;
 
-  PressModeButtonTest;
-  #5s;
-  $display("\n This is trip time. And real trip time is %ds:\n ", trip_time);
-  DisplaySegment;
+    PressModeButtonTest;
+    #5s;
+    $display("\n This is trip time. And real trip time is %ds:\n ", trip_time);
+    DisplaySegment;
 
-  PressModeButtonTest;
-  #5s;
-  $display("\n This is speed:");
-  DisplaySegment;
+    PressModeButtonTest;
+    #5s;
+    $display("\n This is speed:");
+    DisplaySegment;
 
-  PressModeButtonTest;
-  #5s;
-  $display("\n This is cadence:");
-  DisplaySegment;
+    PressModeButtonTest;
+    #5s;
+    $display("\n This is cadence:");
+    DisplaySegment;
 
-  #5s;
-  PressTripButtonTest;
-  OdometerVerification;
-  DisplaySegment;
-  */
+    #5s;
+    PressTripButtonTest;
+    OdometerVerification;
+    DisplaySegment;
+    */
 
 
   #5s;
