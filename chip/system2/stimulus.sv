@@ -298,8 +298,8 @@ initial begin // Speed will keep measuring
   forever begin
     last_trip_time = trip_time;
     last_fork_times = fork_times;
-    #1s;
-    speed = (wheel_size * (fork_times - last_fork_times))/(trip_time - last_trip_time);
+    #3s;
+    speed = (wheel_size * (fork_times - last_fork_times))/(trip_time - last_trip_time); // m/s
   end
 end
 
@@ -337,18 +337,20 @@ end
   //--------------------------------------------------------------
   // Odometer Task(s)
   //--------------------------------------------------------------
+
   task OdometerVerification; // This will test if the recoreded odometer matchs the real odometer
     $display("\n Odometer verification start.\n");
     $display("------------------------------------------------------------------------------");
     while (!(sel_segment && (ahb_addr[2] == 1))) // AHB write
       @(posedge Clock);
     #(`clock_period + `clock_period/2); // AHB write complete
-    odometer = wheel_size * fork_times; // meter
+    $display("fork_times = %d", fork_times);
+    odometer = 2.136 * fork_times; // meter
       segment_odometer = COMPUTER.COMP_core.seven_segment_1.Store_Frac[ 3:0] * 10
         + COMPUTER.COMP_core.seven_segment_1.Store_Frac[ 7:4] * 100
         + COMPUTER.COMP_core.seven_segment_1.Store_Int [ 3:0] * 1000
         + COMPUTER.COMP_core.seven_segment_1.Store_Int [ 7:4] * 10000
-        + COMPUTER.COMP_core.seven_segment_1.Store_Int [11:8] * 100000
+        + COMPUTER.COMP_core.seven_segment_1.Store_Int [11:8] * 100000;
     $display("\n Real Odometer is %dm. Segment display is %dm. (%t)\n", odometer, segment_odometer, $time);
     //assert (segment_odometer - odometer < 20 && odometer - segment_odometer < 20) else begin
       //$display(" *** WARNING ***: Odometer result error more than 20m.");
@@ -361,6 +363,7 @@ end
   //--------------------------------------------------------------
   // Speedometer Task(s)
   //--------------------------------------------------------------
+
   task SpeedVerification; // This will test if the recoreded speed matchs the real speed
     $display("\n Speed verification start.\n");
     $display("------------------------------------------------------------------------------");
@@ -575,6 +578,7 @@ end
   //--------------------------------------------------------------
   // Customization Intended Task
   //--------------------------------------------------------------
+
   task CustomWheelSizeSwitch(int digit2, int digit1, int digit0);
     $display("\n Custom wheel size switch start.\n");
     $display("------------------------------------------------------------------------------");
@@ -640,24 +644,59 @@ initial begin
   DisplaySegment;
   */
 
-  // Cadence Verification Test
+  // // Cadence Verification Test
+  // FastSpeedTest;
+  // SinglePressModeButton;
+  // SinglePressModeButton;
+  // SinglePressModeButton;
+
+
+  // for (int i=0; i<10; i++) begin
+  //   #3s;
+  //   CadenceVerification;
+  //   DisplaySegment;
+  // end
+
+  // 4 Modes Verification Test
+
   FastSpeedTest;
-  SinglePressModeButton;
-  SinglePressModeButton;
-  SinglePressModeButton;
 
+  #10s;
+  OdometerVerification;
+  DisplaySegment;
 
-  for (int i=0; i<10; i++) begin
-    #3s;
-    CadenceVerification;
-    DisplaySegment;
-  end
+  #20s;
+  OdometerVerification;
+  DisplaySegment;
 
-  // Odometer Verification Test
-  /*
-  FastSpeedTest;
+  #20s;
+  OdometerVerification;
+  DisplaySegment;
+
+  PressModeButtonTest; // -> time
+  #20s;
+  $display("\n This is trip time. And real trip time is %ds:\n ", trip_time);
+  DisplaySegment;
+
+  PressModeButtonTest; // -> speed
+  #5s;
+  SpeedVerification;
+  DisplaySegment;
+
+  PressModeButtonTest; // -> cadence
+  #5s;
+  CadenceVerification;
+  DisplaySegment;
+
+  #20s;
+  PressModeButtonTest; // -> odometer
+  #5s;
+  OdometerVerification;
+  DisplaySegment;
 
   #5s;
+  PressTripButtonTest;
+  #1s;
   OdometerVerification;
   DisplaySegment;
 
@@ -665,23 +704,6 @@ initial begin
   #5s;
   $display("\n This is trip time. And real trip time is %ds:\n ", trip_time);
   DisplaySegment;
-
-  PressModeButtonTest;
-  #5s;
-  $display("\n This is speed:");
-  DisplaySegment;
-
-  PressModeButtonTest;
-  #5s;
-  $display("\n This is cadence:");
-  DisplaySegment;
-
-  #5s;
-  PressTripButtonTest;
-  OdometerVerification;
-  DisplaySegment;
-  */
-
 
   #5s;
   $stop;
