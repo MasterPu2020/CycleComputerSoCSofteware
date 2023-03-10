@@ -14,11 +14,11 @@
 // Macros for Enabling Test
 //------------------------------------------------------------------------------
 
-//`define triptimecleartest;
-//`define triptimestoptest
-`define triptimecleartest
-//`define cadencemetertest
-//`define odometertest
+//`define TripTimeClearTest
+//`define TripTimeStopTest
+`define TripTimeClearTest
+//`define CadenceMeterTest
+//`define OdometerTest
 
 //------------------------------------------------------------------------------
 // Variables
@@ -863,11 +863,10 @@ end
 // Custom Stimulus & Verification
 //------------------------------------------------------------------------------
 
-
   //--------------------------------------------------------------
   // Trip Time Clear Test
   //--------------------------------------------------------------
-  `ifdef triptimecleartest
+  `ifdef TripTimeClearTest
     initial begin
       StartUp;
 
@@ -879,13 +878,15 @@ end
 
       #0.5s;
       DisplaySegment;
+
+      $stop;
+      $finish;
     end
-  `endif
 
   //--------------------------------------------------------------
   // Trip Time Stop Test
   //--------------------------------------------------------------
-  `ifdef triptimestoptest
+  `elsif TripTimeStopTest
     initial begin
       StartUp;
 
@@ -899,13 +900,15 @@ end
       #70s;
       
       DisplaySegment;
+
+      $stop;
+      $finish;
     end
-  `endif
   
   //--------------------------------------------------------------
   // Cadence Meter Test
   //--------------------------------------------------------------
-  `ifdef cadencemetertest
+  `elsif CadenceMeterTest
     initial begin
       StartUp;
 
@@ -921,15 +924,14 @@ end
         DisplaySegment;
       end
 
-      #5s;
       $stop;
       $finish;
     end
-  `endif
+
   //--------------------------------------------------------------
   // Odometer Verification Test
   //--------------------------------------------------------------
-  `ifdef odometertest
+  `elsif OdometerTest
     initial begin
       StartUp;
 
@@ -959,7 +961,6 @@ end
       OdometerVerification;
       DisplaySegment;
 
-      #5s;
       $stop;
       $finish;
     end
