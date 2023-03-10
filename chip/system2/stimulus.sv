@@ -14,11 +14,12 @@
 // Macros for Enabling Test
 //------------------------------------------------------------------------------
 
-//`define TripTimeClearTest
-//`define TripTimeStopTest
-`define TripTimeClearTest
-//`define CadenceMeterTest
-//`define OdometerTest
+// `define TripTimeClearTest
+// `define TripTimeStopTest
+// `define TripTimeClearTest
+// `define CadenceMeterTest
+// `define OdometerTest
+`define SimpleBasicTest
 
 //------------------------------------------------------------------------------
 // Variables
@@ -951,7 +952,7 @@ end
 
       PressModeButtonTest;
       #5s;
-      $display("\n This is speed:");
+      $display("\n This is speed: And the real speed is %dkm/s", (speed));
       DisplaySegment;
 
       PressModeButtonTest;
@@ -967,4 +968,47 @@ end
       $stop;
       $finish;
     end
+
+  //--------------------------------------------------------------
+  // Software Self Submmit Verification Test
+  //--------------------------------------------------------------
+
+  `elsif SimpleBasicTest
+    initial begin
+      StartUp;
+
+      FastSpeedTest;
+
+      #20s;
+      OdometerVerification;
+      DisplaySegment;
+
+      #20s;
+      OdometerVerification;
+      DisplaySegment;
+
+      PressModeButtonTest;
+      #25s;
+      $display("\n This is trip time. And real trip time is %ds. (%t)\n ", trip_time, $time);
+      DisplaySegment;
+
+      PressModeButtonTest;
+      #5s;
+      $display("\n This is speed. And the real speed is %dkm/s ( %dm/s ). (%t)\n", (speed * 3.6), speed, $time);
+      DisplaySegment;
+
+      PressModeButtonTest;
+      #5s;
+      $display("\n This is cadence. And the real speed is %drps. (%t)\n", cadence, $time);
+      DisplaySegment;
+
+      PressModeButtonTest
+      #5s;
+      OdometerVerification;
+      DisplaySegment;
+
+      $stop;
+      $finish;
+    end
+    
   `endif
