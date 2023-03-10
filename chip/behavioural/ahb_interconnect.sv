@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-//  Titile: AHB Lite Interconnect
+//  Title:  AHB Lite Interconnect
 //  Source: Example ahb_interconnect.sv
 //    Team: C4 Chip Modified
 // Version: 1.0

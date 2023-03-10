@@ -1,6 +1,6 @@
 
 //------------------------------------------------------------------------------
-//  Titile: System module - 2022/2023 SubFile: Stimulus
+//  Title:  System module - 2022/2023 SubFile: Stimulus
 //  Author: Clark Pu, Paiyun Chen (Circle)
 //    Team: C4 Chip Designed
 // Version: 2.0 Initial Behavioural Simulation
@@ -398,9 +398,9 @@ end
     else
       segment_cadence = COMPUTER.COMP_core.seven_segment_1.Store_Frac * 100
         + COMPUTER.COMP_core.seven_segment_1.Store_Int * 1000;
-    $display("\n Real Cadence is %d rp/m. Segment display is %d rp/m. (%t)\n", (cadence * 60), segment_cadence, $time);
+    $display("\n Real Cadence is %d rp/m. Segment display is %d rpm. (%t)\n", (cadence * 60), segment_cadence, $time);
     assert (segment_cadence - (cadence * 60) < 10 && (cadence * 60) - segment_cadence < 10) else begin
-      $display(" *** WARNING ***: Cadence result error more than 10 rp/m.");
+      $display(" *** WARNING ***: Cadence result error more than 10 rpm.");
       error = error + 1;
     end
     $display("\n Cadence verification end.\n");
@@ -630,6 +630,8 @@ initial begin
 
   StartUp;
 
+  // Trip Time Stop Test
+  /*
   FastSpeedTest;
   #70s;
 
@@ -640,7 +642,18 @@ initial begin
   #70s;
   
   DisplaySegment;
+  */
 
+  // Cadence Verification Test
+  FastSpeedTest;
+  SinglePressModeButton;
+  SinglePressModeButton;
+  SinglePressModeButton;
+  #5s;
+  CadenceVerification;
+  DisplaySegment;
+  
+  // Odometer Verification Test
   /*
   FastSpeedTest;
 
@@ -668,6 +681,7 @@ initial begin
   OdometerVerification;
   DisplaySegment;
   */
+
 
   #5s;
   $stop;
