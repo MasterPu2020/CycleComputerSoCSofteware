@@ -887,7 +887,7 @@ end
   //--------------------------------------------------------------
   // Trip Time Stop Test
   //--------------------------------------------------------------
-  `ifdef triptimestoptest
+  `elsif TripTimeStopTest
     initial begin
       StartUp;
 
@@ -932,7 +932,7 @@ end
     end
 
   //--------------------------------------------------------------
-  // Odometer Verification Test
+  // Odometer Test
   //--------------------------------------------------------------
   `elsif OdometerTest
     initial begin
