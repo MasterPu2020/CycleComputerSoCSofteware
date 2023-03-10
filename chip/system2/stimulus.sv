@@ -7,16 +7,16 @@
 // Stimulus Process
 //------------------------------------------------------------------------------
 
-`define use_ahb_monitor
-`define ingore_read_flag
+// `define use_ahb_monitor
+// `define ingore_read_flag
 
 //------------------------------------------------------------------------------
 // Macros for Enabling Test
 //------------------------------------------------------------------------------
 
-//`define triptimecleartest;
-//`define triptimestoptest
-`define triptimecleartest
+//`define TripTimeClearTest;
+//`define TripTimeStopTest
+`define TripTimeClearTest
 //`define cadencemetertest
 //`define odometertest
 
@@ -867,29 +867,37 @@ end
   //--------------------------------------------------------------
   // Trip Time Clear Test
   //--------------------------------------------------------------
-  `ifdef triptimecleartest
+  `ifdef TripTimeClearTest
     initial begin
       StartUp;
 
       FastSpeedTest;
+      $display("Wait for 70s...");
+      $display("------------------------------------------------------------------------------");
       #70s;
 
+      #0.5s;
+      DisplaySegment;
       PressTripButtonTest;
       PressModeButtonTest;
 
       #0.5s;
       DisplaySegment;
+
+      $stop;
     end
   `endif
 
   //--------------------------------------------------------------
   // Trip Time Stop Test
   //--------------------------------------------------------------
-  `ifdef triptimestoptest
+  `ifdef TripTimeStopTest
     initial begin
       StartUp;
 
       FastSpeedTest;
+      $display("Wait for 70s...");
+      $display("------------------------------------------------------------------------------");
       #70s;
 
       PressModeButtonTest;
