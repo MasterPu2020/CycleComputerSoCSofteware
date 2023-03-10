@@ -11,6 +11,16 @@
 `define ingore_read_flag
 
 //------------------------------------------------------------------------------
+// Macros for Enabling Test
+//------------------------------------------------------------------------------
+
+//`define triptimecleartest;
+//`define triptimestoptest
+`define triptimecleartest
+//`define cadencemetertest
+//`define odometertest
+
+//------------------------------------------------------------------------------
 // Variables
 //------------------------------------------------------------------------------
 
@@ -615,100 +625,6 @@ end
   endtask
 
 //------------------------------------------------------------------------------
-// Custom Stimulus & Verification
-//------------------------------------------------------------------------------
-
-// Basic Functional Test: Enable Moniter to Check
-
-// Initial behavioural test
-initial begin
-
-  StartUp;
-
-  //--------------------------------------------------------------
-  // Trip Time Clear Test
-  //--------------------------------------------------------------
-    FastSpeedTest;
-    #70s;
-    PressModeButtonTest;
-    #0.5s;
-    DisplaySegment;
-    PressTripButtonTest;
-    #0.5s;
-    DisplaySegment;
-
-  //--------------------------------------------------------------
-  // Trip Time Stop Test
-  //--------------------------------------------------------------
-    /*
-    FastSpeedTest;
-    #70s;
-
-    PressModeButtonTest;
-    DisplaySegment;
-
-    ZeroSpeedTest;
-    #70s;
-    
-    DisplaySegment;
-    */
-  
-  //--------------------------------------------------------------
-  // Cadence Verification Test
-  //--------------------------------------------------------------
-    /*
-    FastSpeedTest;
-    SinglePressModeButton;
-    SinglePressModeButton;
-    SinglePressModeButton;
-
-
-    for (int i=0; i<10; i++) begin
-      #3s;
-      CadenceVerification;
-      DisplaySegment;
-    end
-    */
-
-  //--------------------------------------------------------------
-  // Odometer Verification Test
-  //--------------------------------------------------------------
-    /*
-    FastSpeedTest;
-
-    #5s;
-    OdometerVerification;
-    DisplaySegment;
-
-    PressModeButtonTest;
-    #5s;
-    $display("\n This is trip time. And real trip time is %ds:\n ", trip_time);
-    DisplaySegment;
-
-    PressModeButtonTest;
-    #5s;
-    $display("\n This is speed:");
-    DisplaySegment;
-
-    PressModeButtonTest;
-    #5s;
-    $display("\n This is cadence:");
-    DisplaySegment;
-
-    #5s;
-    PressTripButtonTest;
-    OdometerVerification;
-    DisplaySegment;
-    */
-
-
-  #5s;
-  $stop;
-  $finish;
-
-end
-
-//------------------------------------------------------------------------------
 // Fake OLED Display: Get Area and Colour
 //------------------------------------------------------------------------------
 
@@ -938,3 +854,109 @@ initial begin
   
   end
 end
+
+//------------------------------------------------------------------------------
+// Custom Stimulus & Verification
+//------------------------------------------------------------------------------
+
+
+  //--------------------------------------------------------------
+  // Trip Time Clear Test
+  //--------------------------------------------------------------
+  `ifdef triptimecleartest
+    initial begin
+      StartUp;
+
+      FastSpeedTest;
+      #70s;
+
+      PressTripButtonTest;
+      PressModeButtonTest;
+
+      #0.5s;
+      DisplaySegment;
+    end
+  `endif
+
+  //--------------------------------------------------------------
+  // Trip Time Stop Test
+  //--------------------------------------------------------------
+  `ifdef triptimestoptest
+    initial begin
+      StartUp;
+
+      FastSpeedTest;
+      #70s;
+
+      PressModeButtonTest;
+      DisplaySegment;
+
+      ZeroSpeedTest;
+      #70s;
+      
+      DisplaySegment;
+    end
+  `endif
+  
+  //--------------------------------------------------------------
+  // Cadence Meter Test
+  //--------------------------------------------------------------
+  `ifdef cadencemetertest
+    initial begin
+      StartUp;
+
+      FastSpeedTest;
+      SinglePressModeButton;
+      SinglePressModeButton;
+      SinglePressModeButton;
+
+
+      for (int i=0; i<10; i++) begin
+        #3s;
+        CadenceVerification;
+        DisplaySegment;
+      end
+
+      #5s;
+      $stop;
+      $finish;
+    end
+  `endif
+  //--------------------------------------------------------------
+  // Odometer Verification Test
+  //--------------------------------------------------------------
+  `ifdef odometertest
+    initial begin
+      StartUp;
+
+      FastSpeedTest;
+
+      #5s;
+      OdometerVerification;
+      DisplaySegment;
+
+      PressModeButtonTest;
+      #5s;
+      $display("\n This is trip time. And real trip time is %ds:\n ", trip_time);
+      DisplaySegment;
+
+      PressModeButtonTest;
+      #5s;
+      $display("\n This is speed:");
+      DisplaySegment;
+
+      PressModeButtonTest;
+      #5s;
+      $display("\n This is cadence:");
+      DisplaySegment;
+
+      #5s;
+      PressTripButtonTest;
+      OdometerVerification;
+      DisplaySegment;
+
+      #5s;
+      $stop;
+      $finish;
+    end
+  `endif
