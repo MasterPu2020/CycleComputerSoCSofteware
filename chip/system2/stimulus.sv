@@ -1002,7 +1002,7 @@ end
       $display("\n This is cadence. And the real speed is %drps. (%t)\n", cadence, $time);
       DisplaySegment;
 
-      PressModeButtonTest
+      PressModeButtonTest;
       #5s;
       OdometerVerification;
       DisplaySegment;
