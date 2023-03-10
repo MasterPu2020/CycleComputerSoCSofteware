@@ -4,10 +4,10 @@
 // Author:        Paiyun Chen (Circle)
 // Team:          C4 Chip Designed
 // Version:       5.0
-// Verification:  Not Done
+// Verification:  Done with stimulus files and testbenches.
 // Comment:       Being able to display all four fundamental modes.
 //                Added an extra Mode E to display the setting mode.
-//                Whether the numbers should be blinking is still in consideration.
+//                Cancelled blinking because it will cause extra timer requirements.
 //------------------------------------------------------------------------------
 
 module seven_segment(
@@ -116,33 +116,33 @@ module seven_segment(
     Disp_Data = '0; DP = '0;
     if ((Store_Mode == 4'hd) || (Store_Mode == 4'he)) begin
       unique case (Display_Counter)
-        0:        begin Disp_Data = Store_Int[3:0];  DP = '1; end
-        1:        begin Disp_Data = Store_Int[7:4];  DP = '0; end
-        2:        begin Disp_Data = Store_Int[11:8]; DP = '0; end
-        3:        begin Disp_Data = Store_Mode;      DP = '0; end
+        0:  begin Disp_Data = Store_Int[3:0];  DP = '1; end
+        1:  begin Disp_Data = Store_Int[7:4];  DP = '0; end
+        2:  begin Disp_Data = Store_Int[11:8]; DP = '0; end
+        3:  begin Disp_Data = Store_Mode;      DP = '0; end
       endcase
     end
     else begin
       if (Store_Int[11:8] != '0)
         unique case (Display_Counter)
-          0:        begin Disp_Data = Store_Int[3:0];  DP = '1; end
-          1:        begin Disp_Data = Store_Int[7:4];  DP = '0; end
-          2:        begin Disp_Data = Store_Int[11:8]; DP = '0; end
-          3:        begin Disp_Data = Store_Mode;      DP = '0; end
+          0:  begin Disp_Data = Store_Int[3:0];   DP = '1; end
+          1:  begin Disp_Data = Store_Int[7:4];   DP = '0; end
+          2:  begin Disp_Data = Store_Int[11:8];  DP = '0; end
+          3:  begin Disp_Data = Store_Mode;       DP = '0; end
         endcase
       else if (Store_Int[7:4] != '0)
         unique case (Display_Counter)
-          0:        begin Disp_Data = Store_Frac[7:4];  DP = '0; end
-          1:        begin Disp_Data = Store_Int[3:0];   DP = '1; end
-          2:        begin Disp_Data = Store_Int[7:4];   DP = '0; end
-          3:        begin Disp_Data = Store_Mode;       DP = '0; end
+          0:  begin Disp_Data = Store_Frac[7:4];  DP = '0; end
+          1:  begin Disp_Data = Store_Int[3:0];   DP = '1; end
+          2:  begin Disp_Data = Store_Int[7:4];   DP = '0; end
+          3:  begin Disp_Data = Store_Mode;       DP = '0; end
         endcase
       else
         unique case (Display_Counter)
-          0:        begin Disp_Data = Store_Frac[3:0];  DP = '0; end
-          1:        begin Disp_Data = Store_Frac[7:4];  DP = '0; end
-          2:        begin Disp_Data = Store_Int[3:0];   DP = '1; end
-          3:        begin Disp_Data = Store_Mode;       DP = '0; end
+          0:  begin Disp_Data = Store_Frac[3:0];  DP = '0; end
+          1:  begin Disp_Data = Store_Frac[7:4];  DP = '0; end
+          2:  begin Disp_Data = Store_Int[3:0];   DP = '1; end
+          3:  begin Disp_Data = Store_Mode;       DP = '0; end
         endcase
     end
   end
