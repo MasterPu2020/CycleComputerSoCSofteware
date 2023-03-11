@@ -282,7 +282,9 @@ integer
   last_fork_times = 0,
   trip_time = 0,
   last_trip_time = 0,
-  speed = 0;
+  speed = 0,
+  ave_speed = 0,
+  ave_cadence = 0;
 
 initial begin  // Crank will keep rolling
   start_up_delay();
@@ -316,16 +318,17 @@ initial begin // Speed will keep measuring
     last_fork_times = fork_times;
     #3s;
     speed = (wheel_size * (fork_times - last_fork_times))/(trip_time - last_trip_time); // m/s
+    ave_speed = wheel_size * fork_times / trip_time;
   end
 end
 
 initial begin // Cadence will keep measuring
   start_up_delay();
   forever begin
-    last_trip_time = trip_time;
     last_crank_times = crank_times;
     #3s;
     cadence = (crank_times - last_crank_times) * 20;
+    ave_cadence = crank_times * 60 / trip_time;
   end
 end
 
@@ -1024,7 +1027,7 @@ end
     initial begin
       StartUp;
 
-      FastSpeedTest;
+      // FastSpeedTest;
 
       #20s;
       OdometerVerification;
@@ -1041,12 +1044,12 @@ end
 
       PressModeButtonTest;
       #5s;
-      $display("\n This is speed. And the real speed is %dkm/s ( %dm/s ). (%t)\n", (speed * 3.6), speed, $time);
+      $display("\n This is speed. And the real speed is %dkm/s ( %dm/s ) (ave speed = %dkm/h). (%t)\n", speed*3.6, speed, ave_speed*3.6, $time);
       DisplaySegment;
 
       PressModeButtonTest;
       #5s;
-      $display("\n This is cadence. And the real speed is %drps. (%t)\n", cadence, $time);
+      $display("\n This is cadence. And the real speed is %drps (ave cadence = %d). (%t)\n", cadence, ave_cadence, $time);
       DisplaySegment;
 
       PressModeButtonTest;

@@ -2,7 +2,7 @@
 // Titile:  Cortex M0 Software Main C File
 // Author:  ChangXin Shen & Clark Pu
 // Team:    C4 Chip Designed
-// Version: 5.2
+// Version: 5.3
 // Verification: Verified SoC.
 // Comment: This is a test of hardware functions
 //------------------------------------------------------------------------------
@@ -245,11 +245,13 @@ void check_speed(void){
 
 }
 
-float get_distance(uint32_t bike_fork, uint32_t wheel_size){
+float get_distance(uint32_t bike_fork, uint32_t wheel){
 
-  float f_distance;
+  float f_distance, f_distance_mm, f_distance_m;
 
-  f_distance = bike_fork * (wheel_size / 1000) / 1000 + 0.01;
+  f_distance_mm = bike_fork * wheel;
+  f_distance_m = f_distance_mm / 1000;
+  f_distance = f_distance_m / 1000 + 0.01;
 
   if (f_distance > 99.99) {
 
@@ -291,7 +293,7 @@ float get_speed(float distance, uint32_t time){
 
 uint32_t get_cadence(uint32_t crank, uint32_t time){
 
-  uint32_t cadence, cadence_5;
+  float cadence, cadence_5;
 
   if (time == 0) {
 
@@ -301,7 +303,7 @@ uint32_t get_cadence(uint32_t crank, uint32_t time){
 
     cadence = (crank * 60) / time;
     cadence_5 = cadence / 5;
-    cadence = 5 * cadence_5;
+    cadence = (uint32_t) (5 * cadence_5);
 
   }
 
