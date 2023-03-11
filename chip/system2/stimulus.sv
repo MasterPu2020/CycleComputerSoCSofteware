@@ -15,12 +15,12 @@
 //            It's just used to avoid conflicts between tests.
 //------------------------------------------------------------------------------
 
-// `define TripTimeClearTest
+`define TripTimeClearTest
 // `define TripTimeStopTest
 // `define TripTimeClearTest
 //  `define CadenceMeterTest
 // `define OdometerTest
-`define SimpleBasicTest
+// `define SimpleBasicTest
 
 `include "../system2/display.sv"
 // `include "../system2/monitor.sv"
@@ -160,6 +160,18 @@ end
     start_up_delay();
     $display("\n Simulation Start.\n");
     $display("------------------------------------------------------------------------------");
+  endtask
+
+  task EndSimulation;
+    #1s;
+    if (error == 0) begin
+      $display("\n ************************** Simulation Passed ******************************");
+    end
+    else begin
+      $display("\n XXXXXXXXXXXXXXXXXXXXXXXXXX Simulation Failed XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX ");
+      $display("                       Found warning message: %d.\n", error);
+    end
+    $finish;
   endtask
 
   //--------------------------------------------------------------
@@ -463,9 +475,7 @@ end
       #0.5s;
       TripTimeVerification;
 
-      #0.5s;
-      $finish;
-      
+      EndSimulation;
     end
 
   //--------------------------------------------------------------
@@ -489,8 +499,7 @@ end
       
       TripTimeVerification;
 
-      $stop;
-      $finish;
+      EndSimulation;
     end
   
   //--------------------------------------------------------------
@@ -511,8 +520,7 @@ end
         CadenceVerification;
       end
 
-      $stop;
-      $finish;
+      EndSimulation;
     end
 
   //--------------------------------------------------------------
@@ -529,8 +537,7 @@ end
         OdometerVerification;
       end    
 
-      $stop;
-      $finish;
+      EndSimulation;
     end
 
   //--------------------------------------------------------------
@@ -565,7 +572,7 @@ end
       #5s;
       OdometerVerification;
 
-      $finish;
+      EndSimulation;
     end
     
   `endif
