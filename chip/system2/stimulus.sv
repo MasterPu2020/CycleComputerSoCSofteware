@@ -23,6 +23,7 @@
 // `define SimpleBasicTest
 
 `include "../system2/display.sv"
+// `include "../system2/monitor.sv"
 
 //------------------------------------------------------------------------------
 // Initiate, Clock Ticks and Reset

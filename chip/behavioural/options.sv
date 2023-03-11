@@ -10,7 +10,7 @@
 // The following lines indicates that a file "stimulus.sv" exists and contains
 // custom stimulus information
 //
- `define stimulus ../system2/stimulus.sv
+`define stimulus ../system2/stimulus.sv
 
 // The following lines indicates that a stimulus time exists and contains
 // custom simulation time information
@@ -79,5 +79,5 @@
 //
 `define Mode0 Distance
 `define Mode1 Duration
-`define Mode2 Cadence
-`define Mode3 Speed
+`define Mode2 Speed
+`define Mode3 Cadence
