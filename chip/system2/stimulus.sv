@@ -402,13 +402,8 @@ end
   endtask
 
   task DisplaySegment;
-    @(posedge Clock);
-    @(posedge Clock);
-    @(posedge Clock);
-    @(posedge Clock);
-    @(posedge Clock);
-    @(posedge Clock);
-    @(posedge Clock);
+    for (int i=0;i<7;i++)
+      @(posedge Clock);
     DisplayRefresh_Seg = 0;
     @(posedge Clock);
     DisplayRefresh_Seg = 1;
