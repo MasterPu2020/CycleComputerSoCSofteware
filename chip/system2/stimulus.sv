@@ -3,66 +3,28 @@
 //   Title: System module - 2022/2023 SubFile: Stimulus
 //  Author: Clark Pu, Paiyun Chen (Circle)
 //    Team: C4 Chip Designed
-// Version: 2.0 Initial Behavioural Simulation
-// Stimulus Process
+// Version: 3.0 Behavioural Simulation
 //------------------------------------------------------------------------------
 
+//------------------------------------------------------------------------------
+// Macros
+//------------------------------------------------------------------------------
+
+// 1. Test Mission: Enable only one mission each time!
+//    Mission Status: ----- Passed, Failed, Not Verified.
+//    Verified with software version 5.3
+// `define TripTimeClearTest // ----- Passed, 1 sample
+// `define TripTimeStopTest  // ----- Failed, 1 sample, 1 failed
+// `define CadenceMeterTest  // ----- Passed, 9 samples
+// `define OdometerTest      // ----- Passed, 5 samples
+// `define SimpleBasicTest   // ----- Failed, 5 samples, 2 failed
+
+// 2. AHB Monitor options:
  `define ingore_read_flag
 
-//------------------------------------------------------------------------------
-// Macros for Enabling Test
-// Comments:  The priority of macros is as follows: from top to the bottom.
-//            Priority of macros doesn't stand for the importance of tests;
-//            It's just used to avoid conflicts between tests.
-//------------------------------------------------------------------------------
-
-// `define TripTimeClearTest
-// `define TripTimeStopTest
-// `define TripTimeClearTest
- `define CadenceMeterTest
-// `define OdometerTest
-// `define SimpleBasicTest
-
-//------------------------------------------------------------------------------
-// Variables
-//------------------------------------------------------------------------------
-
-wire ingore_read;
-`ifdef ingore_read_flag
-  assign ingore_read = 1;
-`else
-  assign ingore_read = 0;
-`endif
-
-// Fake OLED Display: Initial Definition
-logic [127:0] oled_ram [127:0];
-logic [  7:0] oled_command;
-logic [ 15:0] oled_X, oled_Y, oled_real_colour;
-logic [  7:0] oled_x, oled_y;
-integer oled_counter;
-string oled_row;
-logic DisplayRefresh = 0;
-
-// Fake Seven Segment Display: Initial Definition
-string seg_row;
-logic [7:0] seg_data [3:0];
-real seg_digit_value3, seg_digit_value2, seg_digit_value1, seg_digit_value0;
-real seg_value;
-logic DisplayRefresh_Seg = 0;
-
-integer 
-  error = 0, 
-  second = 0, 
-  millisecond = 0, 
-  real_forks = 0, 
-  real_cranks = 0;
-localparam 
-  oneSecond  = 1_000_000_000,   // 1s
-  oneMS      = 1_000_000,       // 1ms
-  forkCycle  = 800_000_000,     // 0.8s 
-  crankCycle = 1_200_000_000,   // 1.2s
-  triggerDu  = 1_000_000,       // 0.01s
-  oneUS      = 1_000;           // 1us
+// 3. Monitor enable:
+`include "../system2/display.sv"
+// `include "../system2/monitor.sv"
 
 //------------------------------------------------------------------------------
 // Initiate, Clock Ticks and Reset
@@ -79,30 +41,30 @@ initial begin
 end
 
 //------------------------------------------------------------------------------
-// AHB Monitors
+// AHB Signals
 //------------------------------------------------------------------------------
 
-wire [31:0] ahb_addr;
-wire [31:0] write_data;
-wire write;
-wire sel_timer, sel_segment, sel_sensor, sel_button, sel_oled;
-wire [31:0] data_timer, data_segment, data_sensor, data_button, data_oled;
+  wire [31:0] ahb_addr;
+  wire [31:0] write_data;
+  wire write;
+  wire sel_timer, sel_segment, sel_sensor, sel_button, sel_oled;
+  wire [31:0] data_timer, data_segment, data_sensor, data_button, data_oled;
 
-assign ahb_addr = COMPUTER.COMP_core.HADDR;
-assign sel_timer   = COMPUTER.COMP_core.HSEL_TIMER;
-assign sel_segment = COMPUTER.COMP_core.HSEL_SEG;
-assign sel_sensor  = COMPUTER.COMP_core.HSEL_SENM;
-assign sel_button  = COMPUTER.COMP_core.HSEL_BM;
-assign sel_oled    = COMPUTER.COMP_core.HSEL_OLEDM;
-assign data_timer   = COMPUTER.COMP_core.HRDATA_TIMER;
-assign data_segment = COMPUTER.COMP_core.HRDATA_SEG;
-assign data_sensor  = COMPUTER.COMP_core.HRDATA_SENM;
-assign data_button  = COMPUTER.COMP_core.HRDATA_BM;
-assign data_oled    = COMPUTER.COMP_core.HRDATA_OLEDM;
-assign write = COMPUTER.COMP_core.HWRITE;
-assign write_data = COMPUTER.COMP_core.HWDATA;
+  assign ahb_addr     = COMPUTER.COMP_core.HADDR;
+  assign sel_timer    = COMPUTER.COMP_core.HSEL_TIMER;
+  assign sel_segment  = COMPUTER.COMP_core.HSEL_SEG;
+  assign sel_sensor   = COMPUTER.COMP_core.HSEL_SENM;
+  assign sel_button   = COMPUTER.COMP_core.HSEL_BM;
+  assign sel_oled     = COMPUTER.COMP_core.HSEL_OLEDM;
+  assign data_timer   = COMPUTER.COMP_core.HRDATA_TIMER;
+  assign data_segment = COMPUTER.COMP_core.HRDATA_SEG;
+  assign data_sensor  = COMPUTER.COMP_core.HRDATA_SENM;
+  assign data_button  = COMPUTER.COMP_core.HRDATA_BM;
+  assign data_oled    = COMPUTER.COMP_core.HRDATA_OLEDM;
+  assign write        = COMPUTER.COMP_core.HWRITE;
+  assign write_data   = COMPUTER.COMP_core.HWDATA;
 
-initial $timeformat(0, 2, "s", 10);
+  initial $timeformat(0, 2, "s", 10);
 
 //------------------------------------------------------------------------------
 // Real Environment Simulation
@@ -110,6 +72,7 @@ initial $timeformat(0, 2, "s", 10);
 
 // Tested real variable
 integer
+  error = 0,
   wheel_size = 2.136,
   crank_cycle = 1200, // ms
   fork_cycle = 800,  // ms
@@ -200,83 +163,101 @@ end
     $display("------------------------------------------------------------------------------");
   endtask
 
+  task EndSimulation;
+    #1s;
+    if (error == 0) begin
+      $display("\n ************************** Simulation Passed ******************************");
+    end
+    else begin
+      $display("\n XXXXXXXXXXXXXXXXXXXXXXXXXX Simulation Failed XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX ");
+      $display("                       Found warning message: %d.\n", error);
+    end
+    $finish;
+  endtask
+
   //--------------------------------------------------------------
-  // Odometer Task(s)
+  // Odometer Verification
   //--------------------------------------------------------------
 
   task OdometerVerification; // This will test if the recoreded odometer matchs the real odometer
-    $display("\n Odometer verification start.\n");
-    $display("------------------------------------------------------------------------------");
+    $display("\n Odometer verification start.");
     while (!(sel_segment && (ahb_addr[2] == 1))) // AHB write
       @(posedge Clock);
     #(`clock_period + `clock_period/2); // AHB write complete
-    $display("\n fork_times = %d \n", fork_times);
-    odometer = 2.136 * fork_times; // meter
-      segment_odometer = COMPUTER.COMP_core.seven_segment_1.Store_Frac[ 3:0] * 10
-        + COMPUTER.COMP_core.seven_segment_1.Store_Frac[ 7:4] * 100
-        + COMPUTER.COMP_core.seven_segment_1.Store_Int [ 3:0] * 1000
-        + COMPUTER.COMP_core.seven_segment_1.Store_Int [ 7:4] * 10000
-        + COMPUTER.COMP_core.seven_segment_1.Store_Int [11:8] * 100000;
-    $display("\n Real Odometer is %dm. Segment display is %dm. (%t)\n", odometer, segment_odometer, $time);
-    //assert (segment_odometer - odometer < 20 && odometer - segment_odometer < 20) else begin
-      //$display(" *** WARNING ***: Odometer result error more than 20m.");
-      //error = error + 1;
-    //end
-    $display("\n Odometer verification end.\n");
+    odometer = (2.136 * fork_times);
+    DisplaySegment;
+    $display("\n Real Odometer is %fkm. Segment display is %fkm (fork_times = %d). (%t)", odometer/1000.0, seg_value, fork_times, $time);
+    assert (seg_value*1000 - odometer <= 100 && odometer - seg_value*1000 <= 100) else begin
+      $display(" *** WARNING ***: Odometer result error more than 100m.");
+      error = error + 1;
+    end
+    $display("\n Odometer verification end.");
     $display("------------------------------------------------------------------------------");
   endtask
 
   //--------------------------------------------------------------
-  // Speedometer Task(s)
+  // Speed Verification
   //--------------------------------------------------------------
 
   task SpeedVerification; // This will test if the recoreded speed matchs the real speed
-    $display("\n Speed verification start.\n");
-    $display("------------------------------------------------------------------------------");
+    $display("\n Speed verification start.");
     while (!(sel_segment && (ahb_addr[2] == 1))) // AHB write
       @(posedge Clock);
     #(`clock_period + `clock_period/2); // AHB write complete
-      segment_odometer = COMPUTER.COMP_core.seven_segment_1.Store_Frac[ 3:0] * 10
-        + COMPUTER.COMP_core.seven_segment_1.Store_Frac[ 7:4] * 100
-        + COMPUTER.COMP_core.seven_segment_1.Store_Int [ 3:0] * 1000
-        + COMPUTER.COMP_core.seven_segment_1.Store_Int [ 7:4] * 10000
-        + COMPUTER.COMP_core.seven_segment_1.Store_Int [11:8] * 100000;
-    $display("\n Real Speed is %0f km/h. Segment display is %0f km/h. (%t)\n", (speed * 3.6), segment_speed, $time);
-    assert (segment_speed - (speed * 3.6) < 2 && (speed * 3.6) - segment_speed < 2) else begin
+    DisplaySegment;
+    $display("\n Real Speed is %f km/h. Segment display is %f km/h (ave speed = %dkm/h). (%t)", (speed * 3.6), seg_value, ave_speed*3.6, $time);
+    assert (seg_value - (speed * 3.6) < 2 && (speed * 3.6) - seg_value < 2) else begin
       $display(" *** WARNING ***: Speed result error more than 1km/h.");
       error = error + 1;
     end
-    $display("\n Speed verification end.\n");
+    $display("\n Speed verification end.");
     $display("------------------------------------------------------------------------------");
   endtask
 
   //--------------------------------------------------------------
-  // Cadence Meter Task(s)
+  // Cadence Verification
   //--------------------------------------------------------------
+
   task CadenceVerification; // This will test if the recoreded speed matchs the real speed
-    $display("\n Cadence verification start.\n");
-    $display("------------------------------------------------------------------------------");
+    $display("\n Cadence verification start.");
     while (!(sel_segment && (ahb_addr[2] == 1))) // AHB write
       @(posedge Clock);
     #(`clock_period + `clock_period/2); // AHB write complete
-    segment_cadence = COMPUTER.COMP_core.seven_segment_1.Store_Int[3:0]
-      + COMPUTER.COMP_core.seven_segment_1.Store_Int[7:4] * 10
-      + COMPUTER.COMP_core.seven_segment_1.Store_Int[11:8] * 100;
-    $display("\n Real Cadence is %d rpm. Segment display is %d rpm. (%t)\n", cadence, segment_cadence, $time);
-    assert (segment_cadence - cadence < 10 && cadence - segment_cadence < 10) else begin
-      $display(" *** WARNING ***: Cadence result error more than 10 rpm.");
+    DisplaySegment;
+    $display("\n Real Cadence is %d rpm. Segment display is %d rpm (ave cadence = %d). (%t)", cadence, seg_value, ave_cadence, $time);
+    assert (seg_value - cadence < 5 && cadence - seg_value < 5) else begin
+      $display(" *** WARNING ***: Cadence result error more than 5 rpm.");
       error = error + 1;
     end
-    $display("\n Cadence verification end.\n");
+    $display("\n Cadence verification end.");
+    $display("------------------------------------------------------------------------------");
+  endtask
+
+  //--------------------------------------------------------------
+  // Trip Time Verification
+  //--------------------------------------------------------------
+
+  task TripTimeVerification; // This will test if the recoreded speed matchs the real speed
+    $display("\n Trip time verification start.");
+    while (!(sel_segment && (ahb_addr[2] == 1))) // AHB write
+      @(posedge Clock);
+    #(`clock_period + `clock_period/2); // AHB write complete
+    DisplaySegment;
+    $display("\n Real trip time is %fs. Segment display is %fs. (%t)", trip_time, seg_value*6000, $time);
+    assert (seg_value*6000 - trip_time < 60 && trip_time - seg_value*6000 < 60) else begin
+      $display(" *** WARNING ***: Trip time result error more than 1 min.");
+      error = error + 1;
+    end
+    $display("\n Trip time verification end.");
     $display("------------------------------------------------------------------------------");
   endtask
 
   //--------------------------------------------------------------
   // Button Manager Tasks
   //--------------------------------------------------------------
+
   task ButtonNoiseTest; // This will test if the button will debaunce 
-    $display("\n Noise test start.\n");
-    $display("------------------------------------------------------------------------------");
+    $display("\n Noise test start.");
     Trip = 1;
     Mode = 1;
     for (int i = 0; i < 10 ; i ++) begin
@@ -303,46 +284,44 @@ end
       end
       #(noise * 1000_000); // 24ms
     end
-    $display("\n Noise test end.\n");
+    $display("\n Noise test end.");
     $display("------------------------------------------------------------------------------");
   endtask
 
   task PressModeButtonTest; // This will test if the press of the mode button will be detected
-    $display("\n Press Mode 1 times test start.\n");
-    $display("------------------------------------------------------------------------------");
+    $display("\n Press Mode 1 times test start.");
     #1s -> press_mode_button;
-    $display("\n Wait for the software to check to the button.\n");
+    $display("\n Wait for the software to check to the button.");
     while (!(sel_button && (ahb_addr[4:2] == 1))) // AHB read mode command
       @(posedge Clock);
     #(`clock_period/2); // AHB read mode data
     if (data_button == 1)
-      $display("\n Button mode is pressed. (%t)\n", $time);
+      $display(" Button mode is pressed. (%t)", $time);
     assert (data_button == 1) else begin
-      $display("\n *** WARNING ***: Button mode is NOT pressed. (%t)\n", $time);
+      $display(" *** WARNING ***: Button mode is NOT pressed. (%t)", $time);
       error = error + 1;
     end
-    $display("\n Press Mode 1 times test end.\n");
+    $display("\n Press Mode 1 times test end.");
     $display("------------------------------------------------------------------------------");
   endtask
 
   task PressTripButtonTest; // This will test if the press of the trip button will be detected
-    $display("\n Press Trip 1 time test start.\n");
-    $display("------------------------------------------------------------------------------");
+    $display("\n Press Trip 1 time test start.");
     #1s -> press_trip_button;
-    $display("\n Wait for the software to check to the button.\n");
+    $display("\n Wait for the software to check to the button.");
     while (!(sel_button && (ahb_addr[4:2] == 2))) // AHB read mode command
       @(posedge Clock);
     #(`clock_period/2); // AHB read mode data
     if (data_button == 1) begin
-      $display("\n Button trip is pressed. (%t)\n", $time);
+      $display(" Button trip is pressed. (%t)", $time);
       odometer = 0;
       trip_time = 0;
     end
     assert (data_button == 1) else begin
-      $display("\n *** WARNING ***: Button trip is NOT pressed. (%t)\n", $time);
+      $display(" *** WARNING ***: Button trip is NOT pressed. (%t)", $time);
       error = error + 1;
     end
-      $display("\n Press Trip 1 time test end.\n");
+      $display("\n Press Trip 1 time test end.");
     $display("------------------------------------------------------------------------------");
   endtask
 
@@ -401,23 +380,14 @@ end
     end
   endtask
 
-  task DisplaySegment;
-    for (int i=0;i<7;i++)
-      @(posedge Clock);
-    DisplayRefresh_Seg = 0;
-    @(posedge Clock);
-    DisplayRefresh_Seg = 1;
-    @(posedge Clock);
-    DisplayRefresh_Seg = 0;
-  endtask
+  //--------------------------------------------------------------
+  // Speed Options
+  //--------------------------------------------------------------
 
-  //--------------------------------------------------------------
-  // Accuracy Verification Tasks
-  //--------------------------------------------------------------
-  task SuperManSpeed;
+  task SuperFastSpeed;
     $display("\n Watch out! Super Man is riding the bicycle!\n");
-    crank_cycle = 4; // ms
-    fork_cycle = 3;  // ms
+    crank_cycle = 40; // ms
+    fork_cycle = 30;  // ms
   endtask
 
   task FastSpeedTest;
@@ -434,8 +404,8 @@ end
 
   task ZeroSpeedTest;
     $display("\n Bicycle stopped.\n");
-    crank_cycle = 10000; // ms
-    fork_cycle = 10000;  // ms
+    crank_cycle = 100_000; // ms
+    fork_cycle = 100_000;  // ms
   endtask
 
   //--------------------------------------------------------------
@@ -483,295 +453,8 @@ end
   endtask
 
 //------------------------------------------------------------------------------
-// Fake OLED Display: Get Area and Colour
-//------------------------------------------------------------------------------
-
-initial begin
-  oled_counter = 0;
-  oled_command = 0;
-  oled_X = 0;
-  oled_Y = 0;
-  oled_x = 0; 
-  oled_y = 0;
-  oled_real_colour = 0;
-  forever begin
-    @(posedge SCLK);
-    if (DnC) begin
-      if (oled_command == 8'b0001_0101) begin // oled_X location
-        // $display("Writing oled_X... NO.%d bit", oled_counter);
-        oled_X[0] = SDIN;
-        if (oled_counter >= 15)
-          oled_counter = 0;
-        else begin
-          oled_counter ++;
-          oled_X = oled_X << 1;
-          oled_x = oled_X[15:8];
-        end
-      end
-      else if (oled_command == 8'b0111_0101) begin // oled_Y location
-        // $display("Writing oled_Y... NO.%d bit", oled_counter);
-        oled_Y[0] = SDIN;
-        if (oled_counter >= 15)
-          oled_counter = 0;
-        else begin
-          oled_counter ++;
-          oled_Y = oled_Y << 1;
-          oled_y = oled_Y[15:8];
-        end
-      end
-      else if (oled_command == 8'b0101_1100) begin // Real Colour
-        // $display("Writing Colour... NO.%d bit", oled_counter);
-        oled_real_colour[0] = SDIN;
-        if (oled_counter >= 15) begin
-          oled_counter = 0;
-          if (oled_real_colour == 0) begin
-            oled_ram[oled_x][oled_y] = 0;
-            $display(" Pixel(%d, %d) 0 is written into OLED RAM (%t)", oled_x, oled_y, $time);
-          end
-          else begin
-            oled_ram[oled_x][oled_y] = 1;
-            $display(" Pixel(%d, %d) 1 is written into OLED RAM (%t)", oled_x, oled_y, $time);
-          end
-          if (oled_x == oled_X[7:0]) begin
-            oled_x = oled_X[15:8];
-            if (oled_y == oled_Y[7:0])
-              oled_y = oled_Y[15:8];
-            else
-              oled_y = oled_y + 1;
-          end
-          else
-            oled_x = oled_x + 1;
-        end
-        else begin
-          oled_counter ++;
-          oled_real_colour = oled_real_colour << 1;
-        end
-      end
-    end
-    else begin
-      // $display("Writing Command... NO.%d bit", oled_counter);
-      oled_command[0] = SDIN;
-      if (oled_counter >= 7) begin
-        oled_counter = 0;
-        // // Debug
-        // if (oled_command == 8'b0001_0101)
-        //   $display("CMD: oled_X location. Accepted.");
-        // else if (oled_command == 8'b0111_0101)
-        //   $display("CMD: oled_Y location. Accepted.");
-        // else if (oled_command == 8'b0101_1100)
-        //   $display("CMD: Colour. Accepted.");
-        if (oled_command != 8'b0001_0101 && oled_command != 8'b0111_0101 && oled_command != 8'b0101_1100)
-          $display("CMD: Unknown: %b.", oled_command, " Rejected.");
-      end
-      else begin
-        oled_counter ++;
-        oled_command = oled_command << 1;
-      end
-    end
-  end
-end
-
-//------------------------------------------------------------------------------
-// Fake OLED Display: Post Text Picture
-//------------------------------------------------------------------------------
-
-initial begin
-  forever begin
-    @(DisplayRefresh);
-    oled_row = "  ";
-    $display("Refresh Screen: ");
-    for (integer j = 0; j < 96; j++) begin
-      for (integer i = 0; i < 128; i++) begin
-        if(oled_ram[i][j])
-          oled_row = {oled_row, "#"};
-        else
-          oled_row = {oled_row, "_"};
-      end
-      $display("%s", oled_row);
-      oled_row = "  ";
-    end
-  end
-end
-
-//------------------------------------------------------------------------------
-// Fake Seven Segment Display
-//------------------------------------------------------------------------------
-
-initial begin
-  forever begin
-    @ (posedge Clock);
-    case (nDigit)
-      4'b1110: begin seg_data[3] = {SegA, SegB, SegC, SegD, SegE, SegF, SegG, DP}; end
-      4'b1101: begin seg_data[2] = {SegA, SegB, SegC, SegD, SegE, SegF, SegG, DP}; end
-      4'b1011: begin seg_data[1] = {SegA, SegB, SegC, SegD, SegE, SegF, SegG, DP}; end
-      4'b0111: begin seg_data[0] = {SegA, SegB, SegC, SegD, SegE, SegF, SegG, DP}; end
-    endcase
-  end
-end
-
-initial begin
-  forever begin
-    @(posedge Clock);
-    unique case (seg_data[3][7:1])
-      7'b1111110: seg_digit_value0 = 0;
-      7'b0110000: seg_digit_value0 = 1;
-      7'b1101101: seg_digit_value0 = 2;
-      7'b1111001: seg_digit_value0 = 3;
-      7'b0110011: seg_digit_value0 = 4;
-      7'b1011011: seg_digit_value0 = 5;
-      7'b1011111: seg_digit_value0 = 6;
-      7'b1110000: seg_digit_value0 = 7;
-      7'b1111111: seg_digit_value0 = 8;
-      7'b1111011: seg_digit_value0 = 9;
-      default   : seg_digit_value0 = 0;
-    endcase
-
-    unique case (seg_data[2][7:1])
-      7'b1111110: seg_digit_value1 = 0;
-      7'b0110000: seg_digit_value1 = 1;
-      7'b1101101: seg_digit_value1 = 2;
-      7'b1111001: seg_digit_value1 = 3;
-      7'b0110011: seg_digit_value1 = 4;
-      7'b1011011: seg_digit_value1 = 5;
-      7'b1011111: seg_digit_value1 = 6;
-      7'b1110000: seg_digit_value1 = 7;
-      7'b1111111: seg_digit_value1 = 8;
-      7'b1111011: seg_digit_value1 = 9;
-      default   : seg_digit_value1 = 0;
-    endcase
-
-    unique case (seg_data[1][7:1])
-      7'b1111110: seg_digit_value2 = 0;
-      7'b0110000: seg_digit_value2 = 1;
-      7'b1101101: seg_digit_value2 = 2;
-      7'b1111001: seg_digit_value2 = 3;
-      7'b0110011: seg_digit_value2 = 4;
-      7'b1011011: seg_digit_value2 = 5;
-      7'b1011111: seg_digit_value2 = 6;
-      7'b1110000: seg_digit_value2 = 7;
-      7'b1111111: seg_digit_value2 = 8;
-      7'b1111011: seg_digit_value2 = 9;
-      default   : seg_digit_value2 = 0;
-    endcase
-  end
-end
-
-initial begin
-  forever begin
-    @(posedge Clock);
-    for (int m=0;m<4;m++) begin
-      if (seg_data[m][0])
-        seg_value = (seg_digit_value2 * 100 + seg_digit_value1 * 10 + seg_digit_value0) / (10 ** (3-m));
-    end
-  end
-end
-
-initial begin
-  forever begin
-    @(posedge DisplayRefresh_Seg);
-
-    $display("\n Refresh Seven Segment LED: \n");
-    seg_row = "   ";
-
-    // SegA
-    for (integer m = 0; m < 4; m++) begin
-      if (seg_data[m][7])
-        seg_row = {seg_row, "---######---"};
-      else if ((seg_data[m][2]) && (seg_data[m][6]))
-        seg_row = {seg_row, "---#----#---"};
-      else if ((seg_data[m][2]) && (!seg_data[m][6]))
-        seg_row = {seg_row, "---#--------"};
-      else if ((!seg_data[m][2]) && (seg_data[m][6]))
-        seg_row = {seg_row, "--------#---"};
-      else
-        seg_row = {seg_row, "------------"};
-    end
-    $display("%s", seg_row);
-    seg_row = "   ";
-
-    // SegF & SegB
-    for (integer n = 0; n < 3; n++) begin
-      for (integer m = 0; m < 4; m++) begin
-        if ((seg_data[m][2]) && (seg_data[m][6]))
-          seg_row = {seg_row, "---#----#---"};
-        else if ((seg_data[m][2]) && (!seg_data[m][6]))
-          seg_row = {seg_row, "---#--------"};
-        else if ((!seg_data[m][2]) && (seg_data[m][6]))
-          seg_row = {seg_row, "--------#---"};
-        else
-          seg_row = {seg_row, "------------"};
-      end
-      $display("%s", seg_row);
-      seg_row = "   ";
-    end
-
-    // SegG
-    for (integer m = 0; m < 4; m++) begin
-      if (seg_data[m][1])
-        seg_row = {seg_row, "---######---"};
-      else if (((seg_data[m][3]) || (seg_data[m][2])) && ((seg_data[m][5]) || (seg_data[m][6])))
-        seg_row = {seg_row, "---#----#---"};
-      else if (((seg_data[m][3]) || (seg_data[m][2])) && ((!seg_data[m][5]) && (!seg_data[m][6])))
-        seg_row = {seg_row, "---#--------"};
-      else if (((!seg_data[m][3]) && (!seg_data[m][2])) && ((seg_data[m][5]) || (seg_data[m][6])))
-        seg_row = {seg_row, "--------#---"};
-      else
-        seg_row = {seg_row, "------------"};
-    end
-    $display("%s", seg_row);
-    seg_row = "   ";
-
-    // SegE & SegC
-    for (integer n = 0; n < 3; n++) begin
-      for (integer m = 0; m < 4; m++) begin
-        if ((seg_data[m][3]) && (seg_data[m][5]))
-          seg_row = {seg_row, "---#----#---"};
-        else if ((seg_data[m][3]) && (!seg_data[m][5]))
-          seg_row = {seg_row, "---#--------"};
-        else if ((!seg_data[m][3]) && (seg_data[m][5]))
-          seg_row = {seg_row, "--------#---"};
-        else
-          seg_row = {seg_row, "------------"};
-      end
-      $display("%s", seg_row);
-      seg_row = "   ";
-    end
-
-    // SegD
-    for (integer m = 0; m < 4; m++) begin
-      if (seg_data[m][4])
-        seg_row = {seg_row, "---######---"};
-      else if ((seg_data[m][3]) && (seg_data[m][5]))
-        seg_row = {seg_row, "---#----#---"};
-      else if ((seg_data[m][3]) && (!seg_data[m][5]))
-        seg_row = {seg_row, "---#--------"};
-      else if ((!seg_data[m][3]) && (seg_data[m][5]))
-        seg_row = {seg_row, "--------#---"};
-      else
-        seg_row = {seg_row, "------------"};
-    end
-    $display("%s", seg_row);
-    seg_row = "   ";
-
-    // DP
-    for (integer m = 0; m < 4; m++) begin
-      if (seg_data[m][0])
-        seg_row = {seg_row, "----------##"};
-      else
-        seg_row = {seg_row, "------------"};
-    end
-    $display("%s\n", seg_row);
-    seg_row = "   ";
-
-    $display("\n Seven Segment Number = %0f \n", seg_value);
-
-    $display("------------------------------------------------------------------------------");
-  
-  end
-end
-
-//------------------------------------------------------------------------------
 // Custom Stimulus & Verification
+// Comment: Use marco to enable
 //------------------------------------------------------------------------------
 
   //--------------------------------------------------------------
@@ -783,16 +466,17 @@ end
 
       FastSpeedTest;
       $display("\n Wait for 70s...");
-      $display("------------------------------------------------------------------------------");
+      PressModeButtonTest;
       #70s;
 
+      TripTimeVerification;
       #0.5s;
-      DisplaySegment;
       PressTripButtonTest;
-      PressModeButtonTest;
 
       #0.5s;
-      DisplaySegment;
+      TripTimeVerification;
+
+      EndSimulation;
     end
 
   //--------------------------------------------------------------
@@ -804,19 +488,19 @@ end
 
       FastSpeedTest;
       $display("\n Wait for 70s...");
-      $display("------------------------------------------------------------------------------");
-      #70s;
-
       PressModeButtonTest;
-      DisplaySegment;
+      #60s;
+
+      TripTimeVerification;
 
       ZeroSpeedTest;
       #70s;
-      
-      DisplaySegment;
 
-      $stop;
-      $finish;
+      trip_time = 60;
+      
+      TripTimeVerification;
+
+      EndSimulation;
     end
   
   //--------------------------------------------------------------
@@ -826,20 +510,32 @@ end
     initial begin
       StartUp;
 
-      FastSpeedTest;
       SinglePressModeButton;
       SinglePressModeButton;
       SinglePressModeButton;
 
-
-      for (int i=0; i<5; i++) begin
+      for (int i=0; i<3; i++) begin
         #3s;
         CadenceVerification;
-        DisplaySegment;
       end
 
-      $stop;
-      $finish;
+      // PressTripButtonTest;
+      FastSpeedTest;
+
+      for (int i=0; i<3; i++) begin
+        #3s;
+        CadenceVerification;
+      end
+
+      // PressTripButtonTest;
+      LowSpeedTest;
+
+      for (int i=0; i<3; i++) begin
+        #3s;
+        CadenceVerification;
+      end
+
+      EndSimulation;
     end
 
   //--------------------------------------------------------------
@@ -854,11 +550,9 @@ end
       for (int i=0;i<10;i++) begin
         #5s;
         OdometerVerification;
-        DisplaySegment;
       end    
 
-      $stop;
-      $finish;
+      EndSimulation;
     end
 
   //--------------------------------------------------------------
@@ -873,34 +567,27 @@ end
 
       #20s;
       OdometerVerification;
-      DisplaySegment;
 
       #20s;
       OdometerVerification;
-      DisplaySegment;
 
       PressModeButtonTest;
       #25s;
-      $display("\n This is trip time. And real trip time is %ds. (%t)\n ", trip_time, $time);
-      DisplaySegment;
+      TripTimeVerification;
 
       PressModeButtonTest;
       #5s;
-      $display("\n This is speed. And the real speed is %dkm/s ( %dm/s ) (ave speed = %dkm/h). (%t)\n", speed*3.6, speed, ave_speed*3.6, $time);
-      DisplaySegment;
+      SpeedVerification;
 
       PressModeButtonTest;
       #5s;
-      $display("\n This is cadence. And the real speed is %drps (ave cadence = %d). (%t)\n", cadence, ave_cadence, $time);
-      DisplaySegment;
+      CadenceVerification;
 
       PressModeButtonTest;
       #5s;
       OdometerVerification;
-      DisplaySegment;
 
-      $stop;
-      $finish;
+      EndSimulation;
     end
     
   `endif

@@ -7,6 +7,13 @@
 // Monitor Process
 //------------------------------------------------------------------------------
 
+wire ingore_read;
+`ifdef ingore_read_flag
+  assign ingore_read = 1;
+`else
+  assign ingore_read = 0;
+`endif
+
 // Timer Moniter
 always @(posedge Clock) begin
   if (sel_timer) begin
