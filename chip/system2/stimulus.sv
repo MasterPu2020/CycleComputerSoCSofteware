@@ -540,9 +540,23 @@ end
     end
 
   //--------------------------------------------------------------
+  // Wheel Size Switch Test
+  //--------------------------------------------------------------
+  `elsif WheelSizeSwitchTest
+    initial begin
+      StartUp;
+
+      FastSpeedTest;
+
+      WheelSizeSwitchVerification;
+
+      $stop;
+      $finish;
+    end
+
+  //--------------------------------------------------------------
   // Software Self Submmit Verification Test
   //--------------------------------------------------------------
-
   `elsif SimpleBasicTest
     initial begin
       StartUp;
