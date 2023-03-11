@@ -12,6 +12,11 @@
 //
 `define stimulus ../system2/stimulus.sv
 
+// The following line indicates that a file "monitor.sv" exists and contains
+// custom monitoring information
+//
+//`define monitor ../system2/monitor.sv
+
 // The following lines indicates that a stimulus time exists and contains
 // custom stimulus time information
 //

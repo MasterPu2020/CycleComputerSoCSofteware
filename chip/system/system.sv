@@ -353,9 +353,9 @@ always @(press_third_button)
   
 `endif
 
-`ifdef special_monitor
+`ifdef monitor
 
-  `include "monitor.sv"
+  `include `STRINGIFY(`monitor)
 
 `endif
 
