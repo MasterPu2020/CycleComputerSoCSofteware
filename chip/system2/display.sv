@@ -321,7 +321,5 @@ initial begin
 
     $display("\n Seven Segment Number = %0f \n", seg_value);
 
-    $display("------------------------------------------------------------------------------");
-  
   end
 end

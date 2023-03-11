@@ -18,9 +18,9 @@
 // `define TripTimeClearTest
 // `define TripTimeStopTest
 // `define TripTimeClearTest
- `define CadenceMeterTest
+//  `define CadenceMeterTest
 // `define OdometerTest
-// `define SimpleBasicTest
+`define SimpleBasicTest
 
 `include "../system2/display.sv"
 // `include "../system2/monitor.sv"
@@ -163,74 +163,79 @@ end
   endtask
 
   //--------------------------------------------------------------
-  // Odometer Task(s)
+  // Odometer Verification
   //--------------------------------------------------------------
 
   task OdometerVerification; // This will test if the recoreded odometer matchs the real odometer
-    $display("\n Odometer verification start.\n");
-    $display("------------------------------------------------------------------------------");
+    $display("\n Odometer verification start.");
     while (!(sel_segment && (ahb_addr[2] == 1))) // AHB write
       @(posedge Clock);
     #(`clock_period + `clock_period/2); // AHB write complete
-    $display("\n fork_times = %d \n", fork_times);
-    odometer = 2.136 * fork_times; // meter
-      segment_odometer = COMPUTER.COMP_core.seven_segment_1.Store_Frac[ 3:0] * 10
-        + COMPUTER.COMP_core.seven_segment_1.Store_Frac[ 7:4] * 100
-        + COMPUTER.COMP_core.seven_segment_1.Store_Int [ 3:0] * 1000
-        + COMPUTER.COMP_core.seven_segment_1.Store_Int [ 7:4] * 10000
-        + COMPUTER.COMP_core.seven_segment_1.Store_Int [11:8] * 100000;
-    $display("\n Real Odometer is %dm. Segment display is %dm. (%t)\n", odometer, segment_odometer, $time);
-    assert (segment_odometer - odometer < 20 && odometer - segment_odometer < 20) else begin
-      $display(" *** WARNING ***: Odometer result error more than 20m.");
+    odometer = (2.136 * fork_times);
+    DisplaySegment;
+    $display("\n Real Odometer is %fkm. Segment display is %fkm (fork_times = %d). (%t)", odometer/1000.0, seg_value, fork_times, $time);
+    assert (seg_value*1000 - odometer <= 100 && odometer - seg_value*1000 <= 100) else begin
+      $display(" *** WARNING ***: Odometer result error more than 100m.");
       error = error + 1;
     end
-    $display("\n Odometer verification end.\n");
+    $display("\n Odometer verification end.");
     $display("------------------------------------------------------------------------------");
   endtask
 
   //--------------------------------------------------------------
-  // Speedometer Task(s)
+  // Speed Verification
   //--------------------------------------------------------------
 
   task SpeedVerification; // This will test if the recoreded speed matchs the real speed
-    $display("\n Speed verification start.\n");
-    $display("------------------------------------------------------------------------------");
+    $display("\n Speed verification start.");
     while (!(sel_segment && (ahb_addr[2] == 1))) // AHB write
       @(posedge Clock);
     #(`clock_period + `clock_period/2); // AHB write complete
-      segment_odometer = COMPUTER.COMP_core.seven_segment_1.Store_Frac[ 3:0] * 10
-        + COMPUTER.COMP_core.seven_segment_1.Store_Frac[ 7:4] * 100
-        + COMPUTER.COMP_core.seven_segment_1.Store_Int [ 3:0] * 1000
-        + COMPUTER.COMP_core.seven_segment_1.Store_Int [ 7:4] * 10000
-        + COMPUTER.COMP_core.seven_segment_1.Store_Int [11:8] * 100000;
-    $display("\n Real Speed is %0f km/h. Segment display is %0f km/h. (%t)\n", (speed * 3.6), segment_speed, $time);
-    assert (segment_speed - (speed * 3.6) < 2 && (speed * 3.6) - segment_speed < 2) else begin
+    DisplaySegment;
+    $display("\n Real Speed is %f km/h. Segment display is %f km/h (ave speed = %dkm/h). (%t)", (speed * 3.6), seg_value, ave_speed*3.6, $time);
+    assert (seg_value - (speed * 3.6) < 2 && (speed * 3.6) - seg_value < 2) else begin
       $display(" *** WARNING ***: Speed result error more than 1km/h.");
       error = error + 1;
     end
-    $display("\n Speed verification end.\n");
+    $display("\n Speed verification end.");
     $display("------------------------------------------------------------------------------");
   endtask
 
   //--------------------------------------------------------------
-  // Cadence Meter Task(s)
+  // Cadence Verification
   //--------------------------------------------------------------
 
   task CadenceVerification; // This will test if the recoreded speed matchs the real speed
-    $display("\n Cadence verification start.\n");
-    $display("------------------------------------------------------------------------------");
+    $display("\n Cadence verification start.");
     while (!(sel_segment && (ahb_addr[2] == 1))) // AHB write
       @(posedge Clock);
     #(`clock_period + `clock_period/2); // AHB write complete
-    segment_cadence = COMPUTER.COMP_core.seven_segment_1.Store_Int[3:0]
-      + COMPUTER.COMP_core.seven_segment_1.Store_Int[7:4] * 10
-      + COMPUTER.COMP_core.seven_segment_1.Store_Int[11:8] * 100;
-    $display("\n Real Cadence is %d rpm. Segment display is %d rpm. (%t)\n", cadence, segment_cadence, $time);
-    assert (segment_cadence - cadence < 5 && cadence - segment_cadence < 5) else begin
+    DisplaySegment;
+    $display("\n Real Cadence is %d rpm. Segment display is %d rpm (ave cadence = %d). (%t)", cadence, seg_value, ave_cadence, $time);
+    assert (seg_value - cadence < 5 && cadence - seg_value < 5) else begin
       $display(" *** WARNING ***: Cadence result error more than 5 rpm.");
       error = error + 1;
     end
-    $display("\n Cadence verification end.\n");
+    $display("\n Cadence verification end.");
+    $display("------------------------------------------------------------------------------");
+  endtask
+
+  //--------------------------------------------------------------
+  // Trip Time Verification
+  //--------------------------------------------------------------
+
+  task TripTimeVerification; // This will test if the recoreded speed matchs the real speed
+    $display("\n Trip time verification start.");
+    while (!(sel_segment && (ahb_addr[2] == 1))) // AHB write
+      @(posedge Clock);
+    #(`clock_period + `clock_period/2); // AHB write complete
+    DisplaySegment;
+    $display("\n Real trip time is %fs. Segment display is %fs. (%t)", trip_time, seg_value*6000, $time);
+    assert (seg_value*6000 - trip_time < 60 && trip_time - seg_value*6000 < 60) else begin
+      $display(" *** WARNING ***: Trip time result error more than 1 min.");
+      error = error + 1;
+    end
+    $display("\n Trip time verification end.");
     $display("------------------------------------------------------------------------------");
   endtask
 
@@ -239,8 +244,7 @@ end
   //--------------------------------------------------------------
 
   task ButtonNoiseTest; // This will test if the button will debaunce 
-    $display("\n Noise test start.\n");
-    $display("------------------------------------------------------------------------------");
+    $display("\n Noise test start.");
     Trip = 1;
     Mode = 1;
     for (int i = 0; i < 10 ; i ++) begin
@@ -267,46 +271,44 @@ end
       end
       #(noise * 1000_000); // 24ms
     end
-    $display("\n Noise test end.\n");
+    $display("\n Noise test end.");
     $display("------------------------------------------------------------------------------");
   endtask
 
   task PressModeButtonTest; // This will test if the press of the mode button will be detected
-    $display("\n Press Mode 1 times test start.\n");
-    $display("------------------------------------------------------------------------------");
+    $display("\n Press Mode 1 times test start.");
     #1s -> press_mode_button;
-    $display("\n Wait for the software to check to the button.\n");
+    $display("\n Wait for the software to check to the button.");
     while (!(sel_button && (ahb_addr[4:2] == 1))) // AHB read mode command
       @(posedge Clock);
     #(`clock_period/2); // AHB read mode data
     if (data_button == 1)
-      $display("\n Button mode is pressed. (%t)\n", $time);
+      $display(" Button mode is pressed. (%t)", $time);
     assert (data_button == 1) else begin
-      $display("\n *** WARNING ***: Button mode is NOT pressed. (%t)\n", $time);
+      $display(" *** WARNING ***: Button mode is NOT pressed. (%t)", $time);
       error = error + 1;
     end
-    $display("\n Press Mode 1 times test end.\n");
+    $display("\n Press Mode 1 times test end.");
     $display("------------------------------------------------------------------------------");
   endtask
 
   task PressTripButtonTest; // This will test if the press of the trip button will be detected
-    $display("\n Press Trip 1 time test start.\n");
-    $display("------------------------------------------------------------------------------");
+    $display("\n Press Trip 1 time test start.");
     #1s -> press_trip_button;
-    $display("\n Wait for the software to check to the button.\n");
+    $display("\n Wait for the software to check to the button.");
     while (!(sel_button && (ahb_addr[4:2] == 2))) // AHB read mode command
       @(posedge Clock);
     #(`clock_period/2); // AHB read mode data
     if (data_button == 1) begin
-      $display("\n Button trip is pressed. (%t)\n", $time);
+      $display(" Button trip is pressed. (%t)", $time);
       odometer = 0;
       trip_time = 0;
     end
     assert (data_button == 1) else begin
-      $display("\n *** WARNING ***: Button trip is NOT pressed. (%t)\n", $time);
+      $display(" *** WARNING ***: Button trip is NOT pressed. (%t)", $time);
       error = error + 1;
     end
-      $display("\n Press Trip 1 time test end.\n");
+      $display("\n Press Trip 1 time test end.");
     $display("------------------------------------------------------------------------------");
   endtask
 
@@ -451,16 +453,19 @@ end
 
       FastSpeedTest;
       $display("\n Wait for 70s...");
-      $display("------------------------------------------------------------------------------");
+      PressModeButtonTest;
       #70s;
 
+      TripTimeVerification;
       #0.5s;
-      DisplaySegment;
       PressTripButtonTest;
-      PressModeButtonTest;
 
       #0.5s;
-      DisplaySegment;
+      TripTimeVerification;
+
+      #0.5s;
+      $finish;
+      
     end
 
   //--------------------------------------------------------------
@@ -472,16 +477,17 @@ end
 
       FastSpeedTest;
       $display("\n Wait for 70s...");
-      $display("------------------------------------------------------------------------------");
+      PressModeButtonTest;
       #70s;
 
-      PressModeButtonTest;
-      DisplaySegment;
+      TripTimeVerification;
 
       ZeroSpeedTest;
       #70s;
+
+      trip_time = 76;
       
-      DisplaySegment;
+      TripTimeVerification;
 
       $stop;
       $finish;
@@ -503,7 +509,6 @@ end
       for (int i=0; i<5; i++) begin
         #3s;
         CadenceVerification;
-        DisplaySegment;
       end
 
       $stop;
@@ -522,7 +527,6 @@ end
       for (int i=0;i<10;i++) begin
         #5s;
         OdometerVerification;
-        DisplaySegment;
       end    
 
       $stop;
@@ -541,33 +545,26 @@ end
 
       #20s;
       OdometerVerification;
-      DisplaySegment;
 
       #20s;
       OdometerVerification;
-      DisplaySegment;
 
       PressModeButtonTest;
       #25s;
-      $display("\n This is trip time. And real trip time is %ds. (%t)\n ", trip_time, $time);
-      DisplaySegment;
+      TripTimeVerification;
 
       PressModeButtonTest;
       #5s;
-      $display("\n This is speed. And the real speed is %dkm/s ( %dm/s ) (ave speed = %dkm/h). (%t)\n", speed*3.6, speed, ave_speed*3.6, $time);
-      DisplaySegment;
+      SpeedVerification;
 
       PressModeButtonTest;
       #5s;
-      $display("\n This is cadence. And the real speed is %drps (ave cadence = %d). (%t)\n", cadence, ave_cadence, $time);
-      DisplaySegment;
+      CadenceVerification;
 
       PressModeButtonTest;
       #5s;
       OdometerVerification;
-      DisplaySegment;
 
-      $stop;
       $finish;
     end
     
