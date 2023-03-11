@@ -6,22 +6,23 @@
 // Version: 3.0 Behavioural Simulation
 //------------------------------------------------------------------------------
 
+//------------------------------------------------------------------------------
+// Macros
+//------------------------------------------------------------------------------
+
+// 1. Test Mission: Enable only one mission each time!
+//    Mission Status: ----- Passed, Failed, Not Verified.
+//    Verified with software version 5.3
+// `define TripTimeClearTest // ----- Passed, 1 sample
+// `define TripTimeStopTest  // ----- Failed, 1 sample, 1 failed
+// `define CadenceMeterTest  // ----- Passed, 9 samples
+// `define OdometerTest      // ----- Passed, 5 samples
+// `define SimpleBasicTest   // ----- Failed, 5 samples, 2 failed
+
+// 2. AHB Monitor options:
  `define ingore_read_flag
 
-//------------------------------------------------------------------------------
-// Macros for Enabling Test
-// Comments:  The priority of macros is as follows: from top to the bottom.
-//            Priority of macros doesn't stand for the importance of tests;
-//            It's just used to avoid conflicts between tests.
-//------------------------------------------------------------------------------
-
-`define TripTimeClearTest
-// `define TripTimeStopTest
-// `define TripTimeClearTest
-//  `define CadenceMeterTest
-// `define OdometerTest
-// `define SimpleBasicTest
-
+// 3. Monitor enable:
 `include "../system2/display.sv"
 // `include "../system2/monitor.sv"
 
@@ -383,10 +384,10 @@ end
   // Speed Options
   //--------------------------------------------------------------
 
-  task SuperManSpeed;
+  task SuperFastSpeed;
     $display("\n Watch out! Super Man is riding the bicycle!\n");
-    crank_cycle = 4; // ms
-    fork_cycle = 3;  // ms
+    crank_cycle = 40; // ms
+    fork_cycle = 30;  // ms
   endtask
 
   task FastSpeedTest;
@@ -403,8 +404,8 @@ end
 
   task ZeroSpeedTest;
     $display("\n Bicycle stopped.\n");
-    crank_cycle = 10000; // ms
-    fork_cycle = 10000;  // ms
+    crank_cycle = 100_000; // ms
+    fork_cycle = 100_000;  // ms
   endtask
 
   //--------------------------------------------------------------
@@ -488,14 +489,14 @@ end
       FastSpeedTest;
       $display("\n Wait for 70s...");
       PressModeButtonTest;
-      #70s;
+      #60s;
 
       TripTimeVerification;
 
       ZeroSpeedTest;
       #70s;
 
-      trip_time = 76;
+      trip_time = 60;
       
       TripTimeVerification;
 
@@ -509,13 +510,27 @@ end
     initial begin
       StartUp;
 
+      SinglePressModeButton;
+      SinglePressModeButton;
+      SinglePressModeButton;
+
+      for (int i=0; i<3; i++) begin
+        #3s;
+        CadenceVerification;
+      end
+
+      // PressTripButtonTest;
       FastSpeedTest;
-      SinglePressModeButton;
-      SinglePressModeButton;
-      SinglePressModeButton;
 
+      for (int i=0; i<3; i++) begin
+        #3s;
+        CadenceVerification;
+      end
 
-      for (int i=0; i<5; i++) begin
+      // PressTripButtonTest;
+      LowSpeedTest;
+
+      for (int i=0; i<3; i++) begin
         #3s;
         CadenceVerification;
       end
