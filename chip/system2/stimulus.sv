@@ -3,8 +3,7 @@
 //   Title: System module - 2022/2023 SubFile: Stimulus
 //  Author: Clark Pu, Paiyun Chen (Circle)
 //    Team: C4 Chip Designed
-// Version: 2.0 Initial Behavioural Simulation
-// Stimulus Process
+// Version: 3.0 Behavioural Simulation
 //------------------------------------------------------------------------------
 
  `define ingore_read_flag
@@ -23,46 +22,7 @@
 // `define OdometerTest
 // `define SimpleBasicTest
 
-//------------------------------------------------------------------------------
-// Variables
-//------------------------------------------------------------------------------
-
-wire ingore_read;
-`ifdef ingore_read_flag
-  assign ingore_read = 1;
-`else
-  assign ingore_read = 0;
-`endif
-
-// Fake OLED Display: Initial Definition
-logic [127:0] oled_ram [127:0];
-logic [  7:0] oled_command;
-logic [ 15:0] oled_X, oled_Y, oled_real_colour;
-logic [  7:0] oled_x, oled_y;
-integer oled_counter;
-string oled_row;
-logic DisplayRefresh = 0;
-
-// Fake Seven Segment Display: Initial Definition
-string seg_row;
-logic [7:0] seg_data [3:0];
-real seg_digit_value3, seg_digit_value2, seg_digit_value1, seg_digit_value0;
-real seg_value;
-logic DisplayRefresh_Seg = 0;
-
-integer 
-  error = 0, 
-  second = 0, 
-  millisecond = 0, 
-  real_forks = 0, 
-  real_cranks = 0;
-localparam 
-  oneSecond  = 1_000_000_000,   // 1s
-  oneMS      = 1_000_000,       // 1ms
-  forkCycle  = 800_000_000,     // 0.8s 
-  crankCycle = 1_200_000_000,   // 1.2s
-  triggerDu  = 1_000_000,       // 0.01s
-  oneUS      = 1_000;           // 1us
+`include "../system2/display.sv"
 
 //------------------------------------------------------------------------------
 // Initiate, Clock Ticks and Reset
@@ -79,30 +39,30 @@ initial begin
 end
 
 //------------------------------------------------------------------------------
-// AHB Monitors
+// AHB Signals
 //------------------------------------------------------------------------------
 
-wire [31:0] ahb_addr;
-wire [31:0] write_data;
-wire write;
-wire sel_timer, sel_segment, sel_sensor, sel_button, sel_oled;
-wire [31:0] data_timer, data_segment, data_sensor, data_button, data_oled;
+  wire [31:0] ahb_addr;
+  wire [31:0] write_data;
+  wire write;
+  wire sel_timer, sel_segment, sel_sensor, sel_button, sel_oled;
+  wire [31:0] data_timer, data_segment, data_sensor, data_button, data_oled;
 
-assign ahb_addr = COMPUTER.COMP_core.HADDR;
-assign sel_timer   = COMPUTER.COMP_core.HSEL_TIMER;
-assign sel_segment = COMPUTER.COMP_core.HSEL_SEG;
-assign sel_sensor  = COMPUTER.COMP_core.HSEL_SENM;
-assign sel_button  = COMPUTER.COMP_core.HSEL_BM;
-assign sel_oled    = COMPUTER.COMP_core.HSEL_OLEDM;
-assign data_timer   = COMPUTER.COMP_core.HRDATA_TIMER;
-assign data_segment = COMPUTER.COMP_core.HRDATA_SEG;
-assign data_sensor  = COMPUTER.COMP_core.HRDATA_SENM;
-assign data_button  = COMPUTER.COMP_core.HRDATA_BM;
-assign data_oled    = COMPUTER.COMP_core.HRDATA_OLEDM;
-assign write = COMPUTER.COMP_core.HWRITE;
-assign write_data = COMPUTER.COMP_core.HWDATA;
+  assign ahb_addr     = COMPUTER.COMP_core.HADDR;
+  assign sel_timer    = COMPUTER.COMP_core.HSEL_TIMER;
+  assign sel_segment  = COMPUTER.COMP_core.HSEL_SEG;
+  assign sel_sensor   = COMPUTER.COMP_core.HSEL_SENM;
+  assign sel_button   = COMPUTER.COMP_core.HSEL_BM;
+  assign sel_oled     = COMPUTER.COMP_core.HSEL_OLEDM;
+  assign data_timer   = COMPUTER.COMP_core.HRDATA_TIMER;
+  assign data_segment = COMPUTER.COMP_core.HRDATA_SEG;
+  assign data_sensor  = COMPUTER.COMP_core.HRDATA_SENM;
+  assign data_button  = COMPUTER.COMP_core.HRDATA_BM;
+  assign data_oled    = COMPUTER.COMP_core.HRDATA_OLEDM;
+  assign write        = COMPUTER.COMP_core.HWRITE;
+  assign write_data   = COMPUTER.COMP_core.HWDATA;
 
-initial $timeformat(0, 2, "s", 10);
+  initial $timeformat(0, 2, "s", 10);
 
 //------------------------------------------------------------------------------
 // Real Environment Simulation
@@ -110,6 +70,7 @@ initial $timeformat(0, 2, "s", 10);
 
 // Tested real variable
 integer
+  error = 0,
   wheel_size = 2.136,
   crank_cycle = 1200, // ms
   fork_cycle = 800,  // ms
@@ -218,10 +179,10 @@ end
         + COMPUTER.COMP_core.seven_segment_1.Store_Int [ 7:4] * 10000
         + COMPUTER.COMP_core.seven_segment_1.Store_Int [11:8] * 100000;
     $display("\n Real Odometer is %dm. Segment display is %dm. (%t)\n", odometer, segment_odometer, $time);
-    //assert (segment_odometer - odometer < 20 && odometer - segment_odometer < 20) else begin
-      //$display(" *** WARNING ***: Odometer result error more than 20m.");
-      //error = error + 1;
-    //end
+    assert (segment_odometer - odometer < 20 && odometer - segment_odometer < 20) else begin
+      $display(" *** WARNING ***: Odometer result error more than 20m.");
+      error = error + 1;
+    end
     $display("\n Odometer verification end.\n");
     $display("------------------------------------------------------------------------------");
   endtask
@@ -253,6 +214,7 @@ end
   //--------------------------------------------------------------
   // Cadence Meter Task(s)
   //--------------------------------------------------------------
+
   task CadenceVerification; // This will test if the recoreded speed matchs the real speed
     $display("\n Cadence verification start.\n");
     $display("------------------------------------------------------------------------------");
@@ -263,8 +225,8 @@ end
       + COMPUTER.COMP_core.seven_segment_1.Store_Int[7:4] * 10
       + COMPUTER.COMP_core.seven_segment_1.Store_Int[11:8] * 100;
     $display("\n Real Cadence is %d rpm. Segment display is %d rpm. (%t)\n", cadence, segment_cadence, $time);
-    assert (segment_cadence - cadence < 10 && cadence - segment_cadence < 10) else begin
-      $display(" *** WARNING ***: Cadence result error more than 10 rpm.");
+    assert (segment_cadence - cadence < 5 && cadence - segment_cadence < 5) else begin
+      $display(" *** WARNING ***: Cadence result error more than 5 rpm.");
       error = error + 1;
     end
     $display("\n Cadence verification end.\n");
@@ -274,6 +236,7 @@ end
   //--------------------------------------------------------------
   // Button Manager Tasks
   //--------------------------------------------------------------
+
   task ButtonNoiseTest; // This will test if the button will debaunce 
     $display("\n Noise test start.\n");
     $display("------------------------------------------------------------------------------");
@@ -401,24 +364,10 @@ end
     end
   endtask
 
-  task DisplaySegment;
-    @(posedge Clock);
-    @(posedge Clock);
-    @(posedge Clock);
-    @(posedge Clock);
-    @(posedge Clock);
-    @(posedge Clock);
-    @(posedge Clock);
-    DisplayRefresh_Seg = 0;
-    @(posedge Clock);
-    DisplayRefresh_Seg = 1;
-    @(posedge Clock);
-    DisplayRefresh_Seg = 0;
-  endtask
+  //--------------------------------------------------------------
+  // Speed Options
+  //--------------------------------------------------------------
 
-  //--------------------------------------------------------------
-  // Accuracy Verification Tasks
-  //--------------------------------------------------------------
   task SuperManSpeed;
     $display("\n Watch out! Super Man is riding the bicycle!\n");
     crank_cycle = 4; // ms
@@ -488,295 +437,8 @@ end
   endtask
 
 //------------------------------------------------------------------------------
-// Fake OLED Display: Get Area and Colour
-//------------------------------------------------------------------------------
-
-initial begin
-  oled_counter = 0;
-  oled_command = 0;
-  oled_X = 0;
-  oled_Y = 0;
-  oled_x = 0; 
-  oled_y = 0;
-  oled_real_colour = 0;
-  forever begin
-    @(posedge SCLK);
-    if (DnC) begin
-      if (oled_command == 8'b0001_0101) begin // oled_X location
-        // $display("Writing oled_X... NO.%d bit", oled_counter);
-        oled_X[0] = SDIN;
-        if (oled_counter >= 15)
-          oled_counter = 0;
-        else begin
-          oled_counter ++;
-          oled_X = oled_X << 1;
-          oled_x = oled_X[15:8];
-        end
-      end
-      else if (oled_command == 8'b0111_0101) begin // oled_Y location
-        // $display("Writing oled_Y... NO.%d bit", oled_counter);
-        oled_Y[0] = SDIN;
-        if (oled_counter >= 15)
-          oled_counter = 0;
-        else begin
-          oled_counter ++;
-          oled_Y = oled_Y << 1;
-          oled_y = oled_Y[15:8];
-        end
-      end
-      else if (oled_command == 8'b0101_1100) begin // Real Colour
-        // $display("Writing Colour... NO.%d bit", oled_counter);
-        oled_real_colour[0] = SDIN;
-        if (oled_counter >= 15) begin
-          oled_counter = 0;
-          if (oled_real_colour == 0) begin
-            oled_ram[oled_x][oled_y] = 0;
-            $display(" Pixel(%d, %d) 0 is written into OLED RAM (%t)", oled_x, oled_y, $time);
-          end
-          else begin
-            oled_ram[oled_x][oled_y] = 1;
-            $display(" Pixel(%d, %d) 1 is written into OLED RAM (%t)", oled_x, oled_y, $time);
-          end
-          if (oled_x == oled_X[7:0]) begin
-            oled_x = oled_X[15:8];
-            if (oled_y == oled_Y[7:0])
-              oled_y = oled_Y[15:8];
-            else
-              oled_y = oled_y + 1;
-          end
-          else
-            oled_x = oled_x + 1;
-        end
-        else begin
-          oled_counter ++;
-          oled_real_colour = oled_real_colour << 1;
-        end
-      end
-    end
-    else begin
-      // $display("Writing Command... NO.%d bit", oled_counter);
-      oled_command[0] = SDIN;
-      if (oled_counter >= 7) begin
-        oled_counter = 0;
-        // // Debug
-        // if (oled_command == 8'b0001_0101)
-        //   $display("CMD: oled_X location. Accepted.");
-        // else if (oled_command == 8'b0111_0101)
-        //   $display("CMD: oled_Y location. Accepted.");
-        // else if (oled_command == 8'b0101_1100)
-        //   $display("CMD: Colour. Accepted.");
-        if (oled_command != 8'b0001_0101 && oled_command != 8'b0111_0101 && oled_command != 8'b0101_1100)
-          $display("CMD: Unknown: %b.", oled_command, " Rejected.");
-      end
-      else begin
-        oled_counter ++;
-        oled_command = oled_command << 1;
-      end
-    end
-  end
-end
-
-//------------------------------------------------------------------------------
-// Fake OLED Display: Post Text Picture
-//------------------------------------------------------------------------------
-
-initial begin
-  forever begin
-    @(DisplayRefresh);
-    oled_row = "  ";
-    $display("Refresh Screen: ");
-    for (integer j = 0; j < 96; j++) begin
-      for (integer i = 0; i < 128; i++) begin
-        if(oled_ram[i][j])
-          oled_row = {oled_row, "#"};
-        else
-          oled_row = {oled_row, "_"};
-      end
-      $display("%s", oled_row);
-      oled_row = "  ";
-    end
-  end
-end
-
-//------------------------------------------------------------------------------
-// Fake Seven Segment Display
-//------------------------------------------------------------------------------
-
-initial begin
-  forever begin
-    @ (posedge Clock);
-    case (nDigit)
-      4'b1110: begin seg_data[3] = {SegA, SegB, SegC, SegD, SegE, SegF, SegG, DP}; end
-      4'b1101: begin seg_data[2] = {SegA, SegB, SegC, SegD, SegE, SegF, SegG, DP}; end
-      4'b1011: begin seg_data[1] = {SegA, SegB, SegC, SegD, SegE, SegF, SegG, DP}; end
-      4'b0111: begin seg_data[0] = {SegA, SegB, SegC, SegD, SegE, SegF, SegG, DP}; end
-    endcase
-  end
-end
-
-initial begin
-  forever begin
-    @(posedge Clock);
-    unique case (seg_data[3][7:1])
-      7'b1111110: seg_digit_value0 = 0;
-      7'b0110000: seg_digit_value0 = 1;
-      7'b1101101: seg_digit_value0 = 2;
-      7'b1111001: seg_digit_value0 = 3;
-      7'b0110011: seg_digit_value0 = 4;
-      7'b1011011: seg_digit_value0 = 5;
-      7'b1011111: seg_digit_value0 = 6;
-      7'b1110000: seg_digit_value0 = 7;
-      7'b1111111: seg_digit_value0 = 8;
-      7'b1111011: seg_digit_value0 = 9;
-      default   : seg_digit_value0 = 0;
-    endcase
-
-    unique case (seg_data[2][7:1])
-      7'b1111110: seg_digit_value1 = 0;
-      7'b0110000: seg_digit_value1 = 1;
-      7'b1101101: seg_digit_value1 = 2;
-      7'b1111001: seg_digit_value1 = 3;
-      7'b0110011: seg_digit_value1 = 4;
-      7'b1011011: seg_digit_value1 = 5;
-      7'b1011111: seg_digit_value1 = 6;
-      7'b1110000: seg_digit_value1 = 7;
-      7'b1111111: seg_digit_value1 = 8;
-      7'b1111011: seg_digit_value1 = 9;
-      default   : seg_digit_value1 = 0;
-    endcase
-
-    unique case (seg_data[1][7:1])
-      7'b1111110: seg_digit_value2 = 0;
-      7'b0110000: seg_digit_value2 = 1;
-      7'b1101101: seg_digit_value2 = 2;
-      7'b1111001: seg_digit_value2 = 3;
-      7'b0110011: seg_digit_value2 = 4;
-      7'b1011011: seg_digit_value2 = 5;
-      7'b1011111: seg_digit_value2 = 6;
-      7'b1110000: seg_digit_value2 = 7;
-      7'b1111111: seg_digit_value2 = 8;
-      7'b1111011: seg_digit_value2 = 9;
-      default   : seg_digit_value2 = 0;
-    endcase
-  end
-end
-
-initial begin
-  forever begin
-    @(posedge Clock);
-    for (int m=0;m<4;m++) begin
-      if (seg_data[m][0])
-        seg_value = (seg_digit_value2 * 100 + seg_digit_value1 * 10 + seg_digit_value0) / (10 ** (3-m));
-    end
-  end
-end
-
-initial begin
-  forever begin
-    @(posedge DisplayRefresh_Seg);
-
-    $display("\n Refresh Seven Segment LED: \n");
-    seg_row = "   ";
-
-    // SegA
-    for (integer m = 0; m < 4; m++) begin
-      if (seg_data[m][7])
-        seg_row = {seg_row, "---######---"};
-      else if ((seg_data[m][2]) && (seg_data[m][6]))
-        seg_row = {seg_row, "---#----#---"};
-      else if ((seg_data[m][2]) && (!seg_data[m][6]))
-        seg_row = {seg_row, "---#--------"};
-      else if ((!seg_data[m][2]) && (seg_data[m][6]))
-        seg_row = {seg_row, "--------#---"};
-      else
-        seg_row = {seg_row, "------------"};
-    end
-    $display("%s", seg_row);
-    seg_row = "   ";
-
-    // SegF & SegB
-    for (integer n = 0; n < 3; n++) begin
-      for (integer m = 0; m < 4; m++) begin
-        if ((seg_data[m][2]) && (seg_data[m][6]))
-          seg_row = {seg_row, "---#----#---"};
-        else if ((seg_data[m][2]) && (!seg_data[m][6]))
-          seg_row = {seg_row, "---#--------"};
-        else if ((!seg_data[m][2]) && (seg_data[m][6]))
-          seg_row = {seg_row, "--------#---"};
-        else
-          seg_row = {seg_row, "------------"};
-      end
-      $display("%s", seg_row);
-      seg_row = "   ";
-    end
-
-    // SegG
-    for (integer m = 0; m < 4; m++) begin
-      if (seg_data[m][1])
-        seg_row = {seg_row, "---######---"};
-      else if (((seg_data[m][3]) || (seg_data[m][2])) && ((seg_data[m][5]) || (seg_data[m][6])))
-        seg_row = {seg_row, "---#----#---"};
-      else if (((seg_data[m][3]) || (seg_data[m][2])) && ((!seg_data[m][5]) && (!seg_data[m][6])))
-        seg_row = {seg_row, "---#--------"};
-      else if (((!seg_data[m][3]) && (!seg_data[m][2])) && ((seg_data[m][5]) || (seg_data[m][6])))
-        seg_row = {seg_row, "--------#---"};
-      else
-        seg_row = {seg_row, "------------"};
-    end
-    $display("%s", seg_row);
-    seg_row = "   ";
-
-    // SegE & SegC
-    for (integer n = 0; n < 3; n++) begin
-      for (integer m = 0; m < 4; m++) begin
-        if ((seg_data[m][3]) && (seg_data[m][5]))
-          seg_row = {seg_row, "---#----#---"};
-        else if ((seg_data[m][3]) && (!seg_data[m][5]))
-          seg_row = {seg_row, "---#--------"};
-        else if ((!seg_data[m][3]) && (seg_data[m][5]))
-          seg_row = {seg_row, "--------#---"};
-        else
-          seg_row = {seg_row, "------------"};
-      end
-      $display("%s", seg_row);
-      seg_row = "   ";
-    end
-
-    // SegD
-    for (integer m = 0; m < 4; m++) begin
-      if (seg_data[m][4])
-        seg_row = {seg_row, "---######---"};
-      else if ((seg_data[m][3]) && (seg_data[m][5]))
-        seg_row = {seg_row, "---#----#---"};
-      else if ((seg_data[m][3]) && (!seg_data[m][5]))
-        seg_row = {seg_row, "---#--------"};
-      else if ((!seg_data[m][3]) && (seg_data[m][5]))
-        seg_row = {seg_row, "--------#---"};
-      else
-        seg_row = {seg_row, "------------"};
-    end
-    $display("%s", seg_row);
-    seg_row = "   ";
-
-    // DP
-    for (integer m = 0; m < 4; m++) begin
-      if (seg_data[m][0])
-        seg_row = {seg_row, "----------##"};
-      else
-        seg_row = {seg_row, "------------"};
-    end
-    $display("%s\n", seg_row);
-    seg_row = "   ";
-
-    $display("\n Seven Segment Number = %0f \n", seg_value);
-
-    $display("------------------------------------------------------------------------------");
-  
-  end
-end
-
-//------------------------------------------------------------------------------
 // Custom Stimulus & Verification
+// Comment: Use marco to enable
 //------------------------------------------------------------------------------
 
   //--------------------------------------------------------------
