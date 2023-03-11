@@ -108,12 +108,14 @@ initial $timeformat(0, 2, "s", 10);
 // Real Environment Simulation
 //------------------------------------------------------------------------------
 
+// Tested real variable
 integer
   wheel_size = 2.136,
   crank_cycle = 1200, // ms
   fork_cycle = 800,  // ms
   noise = 24; //ms
 
+// Tested real value
 integer
   odometer = 0,
   cadence = 0,
