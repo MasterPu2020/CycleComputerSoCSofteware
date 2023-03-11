@@ -13,11 +13,12 @@
 // 1. Test Mission: Enable only one mission each time!
 //    Mission Status: ----- Passed, Failed, Not Verified.
 //    Verified with software version 5.3
-// `define TripTimeClearTest // ----- Passed, 1 sample
-// `define TripTimeStopTest  // ----- Failed, 1 sample, 1 failed
-// `define CadenceMeterTest  // ----- Passed, 9 samples
-// `define OdometerTest      // ----- Passed, 5 samples
-// `define SimpleBasicTest   // ----- Failed, 5 samples, 2 failed
+// `define TripTimeClearTest    // ----- Passed, 1 sample
+// `define TripTimeStopTest     // ----- Failed, 1 sample, 1 failed
+// `define CadenceMeterTest     // ----- Passed, 9 samples
+// `define OdometerTest         // ----- Passed, 5 samples
+ `define WheelSizeSwitchTest    // Not Verified
+// `define SimpleBasicTest      // ----- Failed, 5 samples, 2 failed
 
 // 2. AHB Monitor options:
  `define ingore_read_flag
@@ -360,23 +361,23 @@ end
   //--------------------------------------------------------------
   // Seven Segment Manager Tasks
   //--------------------------------------------------------------
-  task WheelSizeSwitchTest;
+  task WheelSizeSwitchVerification;
     $display("\n Wheel size switch test start.\n");
     $display("------------------------------------------------------------------------------");
     #1s -> press_mode_button;
     #17ms -> press_trip_button;
     for (int j=0;j<3;j++) begin
-      for (int i=0;i<0;i++) begin
+      for (int i=0;i<12;i++) begin
         #1s -> press_trip_button;
       end
       #1s -> press_mode_button;
+      #0.5s;
       @(posedge Clock);
       DisplayRefresh_Seg = 0;
       @(posedge Clock);
       DisplayRefresh_Seg = 1;
       @(posedge Clock);
       DisplayRefresh_Seg = 0;
-      $stop;
     end
   endtask
 
@@ -556,9 +557,23 @@ end
     end
 
   //--------------------------------------------------------------
+  // Wheel Size Switch Test
+  //--------------------------------------------------------------
+  `elsif WheelSizeSwitchTest
+    initial begin
+      StartUp;
+
+      FastSpeedTest;
+
+      WheelSizeSwitchVerification;
+
+      $stop;
+      $finish;
+    end
+
+  //--------------------------------------------------------------
   // Software Self Submmit Verification Test
   //--------------------------------------------------------------
-
   `elsif SimpleBasicTest
     initial begin
       StartUp;

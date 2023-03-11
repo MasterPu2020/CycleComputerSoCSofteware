@@ -24,18 +24,13 @@ logic DisplayRefresh_Seg = 0;
 //------------------------------------------------------------------------------
 
 task DisplaySegment;
+  for (int i=0;i<7;i++)
     @(posedge Clock);
-    @(posedge Clock);
-    @(posedge Clock);
-    @(posedge Clock);
-    @(posedge Clock);
-    @(posedge Clock);
-    @(posedge Clock);
-    DisplayRefresh_Seg = 0;
-    @(posedge Clock);
-    DisplayRefresh_Seg = 1;
-    @(posedge Clock);
-    DisplayRefresh_Seg = 0;
+  DisplayRefresh_Seg = 0;
+  @(posedge Clock);
+  DisplayRefresh_Seg = 1;
+  @(posedge Clock);
+  DisplayRefresh_Seg = 0;
 endtask
 
 //------------------------------------------------------------------------------
