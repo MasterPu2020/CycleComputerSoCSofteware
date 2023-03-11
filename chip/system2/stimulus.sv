@@ -1,6 +1,6 @@
 
 //------------------------------------------------------------------------------
-//  Title:  System module - 2022/2023 SubFile: Stimulus
+//   Title: System module - 2022/2023 SubFile: Stimulus
 //  Author: Clark Pu, Paiyun Chen (Circle)
 //    Team: C4 Chip Designed
 // Version: 2.0 Initial Behavioural Simulation
@@ -12,14 +12,17 @@
 
 //------------------------------------------------------------------------------
 // Macros for Enabling Test
+// Comments:  The priority of macros is as follows: from top to the bottom.
+//            Priority of macros doesn't stand for the importance of tests;
+//            It's just used to avoid conflicts between tests.
 //------------------------------------------------------------------------------
 
 // `define TripTimeClearTest
 // `define TripTimeStopTest
 // `define TripTimeClearTest
-// `define CadenceMeterTest
+ `define CadenceMeterTest
 // `define OdometerTest
-`define SimpleBasicTest
+// `define SimpleBasicTest
 
 //------------------------------------------------------------------------------
 // Variables
@@ -34,9 +37,9 @@ wire ingore_read;
 
 // Fake OLED Display: Initial Definition
 logic [127:0] oled_ram [127:0];
-logic [7:0] oled_command;
-logic [15:0] oled_X, oled_Y, oled_real_colour;
-logic [ 7:0] oled_x, oled_y;
+logic [  7:0] oled_command;
+logic [ 15:0] oled_X, oled_Y, oled_real_colour;
+logic [  7:0] oled_x, oled_y;
 integer oled_counter;
 string oled_row;
 logic DisplayRefresh = 0;
@@ -44,6 +47,8 @@ logic DisplayRefresh = 0;
 // Fake Seven Segment Display: Initial Definition
 string seg_row;
 logic [7:0] seg_data [3:0];
+real seg_digit_value3, seg_digit_value2, seg_digit_value1, seg_digit_value0;
+real seg_value;
 logic DisplayRefresh_Seg = 0;
 
 integer 
@@ -355,7 +360,7 @@ end
     while (!(sel_segment && (ahb_addr[2] == 1))) // AHB write
       @(posedge Clock);
     #(`clock_period + `clock_period/2); // AHB write complete
-    $display("fork_times = %d", fork_times);
+    $display("\n fork_times = %d \n", fork_times);
     odometer = 2.136 * fork_times; // meter
       segment_odometer = COMPUTER.COMP_core.seven_segment_1.Store_Frac[ 3:0] * 10
         + COMPUTER.COMP_core.seven_segment_1.Store_Frac[ 7:4] * 100
@@ -386,7 +391,7 @@ end
         + COMPUTER.COMP_core.seven_segment_1.Store_Int [ 3:0] * 1000
         + COMPUTER.COMP_core.seven_segment_1.Store_Int [ 7:4] * 10000
         + COMPUTER.COMP_core.seven_segment_1.Store_Int [11:8] * 100000;
-    $display("\n Real Speed is %d km/h. Segment display is %d km/h. (%t)\n", (speed * 3.6), segment_speed, $time);
+    $display("\n Real Speed is %0f km/h. Segment display is %0f km/h. (%t)\n", (speed * 3.6), segment_speed, $time);
     assert (segment_speed - (speed * 3.6) < 2 && (speed * 3.6) - segment_speed < 2) else begin
       $display(" *** WARNING ***: Speed result error more than 1km/h.");
       error = error + 1;
@@ -547,6 +552,9 @@ end
   endtask
 
   task DisplaySegment;
+    @(posedge Clock);
+    @(posedge Clock);
+    @(posedge Clock);
     @(posedge Clock);
     @(posedge Clock);
     @(posedge Clock);
@@ -741,7 +749,7 @@ initial begin
 end
 
 //------------------------------------------------------------------------------
-// Fake Seven Segment Display: Screen Demonstration
+// Fake Seven Segment Display
 //------------------------------------------------------------------------------
 
 initial begin
@@ -757,9 +765,64 @@ initial begin
 end
 
 initial begin
-
   forever begin
+    @(posedge Clock);
+    unique case (seg_data[3][7:1])
+      7'b1111110: seg_digit_value0 = 0;
+      7'b0110000: seg_digit_value0 = 1;
+      7'b1101101: seg_digit_value0 = 2;
+      7'b1111001: seg_digit_value0 = 3;
+      7'b0110011: seg_digit_value0 = 4;
+      7'b1011011: seg_digit_value0 = 5;
+      7'b1011111: seg_digit_value0 = 6;
+      7'b1110000: seg_digit_value0 = 7;
+      7'b1111111: seg_digit_value0 = 8;
+      7'b1111011: seg_digit_value0 = 9;
+      default   : seg_digit_value0 = 0;
+    endcase
 
+    unique case (seg_data[2][7:1])
+      7'b1111110: seg_digit_value1 = 0;
+      7'b0110000: seg_digit_value1 = 1;
+      7'b1101101: seg_digit_value1 = 2;
+      7'b1111001: seg_digit_value1 = 3;
+      7'b0110011: seg_digit_value1 = 4;
+      7'b1011011: seg_digit_value1 = 5;
+      7'b1011111: seg_digit_value1 = 6;
+      7'b1110000: seg_digit_value1 = 7;
+      7'b1111111: seg_digit_value1 = 8;
+      7'b1111011: seg_digit_value1 = 9;
+      default   : seg_digit_value1 = 0;
+    endcase
+
+    unique case (seg_data[1][7:1])
+      7'b1111110: seg_digit_value2 = 0;
+      7'b0110000: seg_digit_value2 = 1;
+      7'b1101101: seg_digit_value2 = 2;
+      7'b1111001: seg_digit_value2 = 3;
+      7'b0110011: seg_digit_value2 = 4;
+      7'b1011011: seg_digit_value2 = 5;
+      7'b1011111: seg_digit_value2 = 6;
+      7'b1110000: seg_digit_value2 = 7;
+      7'b1111111: seg_digit_value2 = 8;
+      7'b1111011: seg_digit_value2 = 9;
+      default   : seg_digit_value2 = 0;
+    endcase
+  end
+end
+
+initial begin
+  forever begin
+    @(posedge Clock);
+    for (int m=0;m<4;m++) begin
+      if (seg_data[m][0])
+        seg_value = (seg_digit_value2 * 100 + seg_digit_value1 * 10 + seg_digit_value0) / (10 ** (3-m));
+    end
+  end
+end
+
+initial begin
+  forever begin
     @(posedge DisplayRefresh_Seg);
 
     $display("\n Refresh Seven Segment LED: \n");
@@ -855,6 +918,8 @@ initial begin
     $display("%s\n", seg_row);
     seg_row = "   ";
 
+    $display("\n Seven Segment Number = %0f \n", seg_value);
+
     $display("------------------------------------------------------------------------------");
   
   end
@@ -872,7 +937,7 @@ end
       StartUp;
 
       FastSpeedTest;
-      $display("Wait for 70s...");
+      $display("\n Wait for 70s...");
       $display("------------------------------------------------------------------------------");
       #70s;
 
@@ -893,7 +958,7 @@ end
       StartUp;
 
       FastSpeedTest;
-      $display("Wait for 70s...");
+      $display("\n Wait for 70s...");
       $display("------------------------------------------------------------------------------");
       #70s;
 
@@ -922,7 +987,7 @@ end
       SinglePressModeButton;
 
 
-      for (int i=0; i<10; i++) begin
+      for (int i=0; i<5; i++) begin
         #3s;
         CadenceVerification;
         DisplaySegment;
@@ -941,29 +1006,11 @@ end
 
       FastSpeedTest;
 
-      #5s;
-      OdometerVerification;
-      DisplaySegment;
-
-      PressModeButtonTest;
-      #5s;
-      $display("\n This is trip time. And real trip time is %ds:\n ", trip_time);
-      DisplaySegment;
-
-      PressModeButtonTest;
-      #5s;
-      $display("\n This is speed: And the real speed is %dkm/s", (speed));
-      DisplaySegment;
-
-      PressModeButtonTest;
-      #5s;
-      $display("\n This is cadence:");
-      DisplaySegment;
-
-      #5s;
-      PressTripButtonTest;
-      OdometerVerification;
-      DisplaySegment;
+      for (int i=0;i<10;i++) begin
+        #5s;
+        OdometerVerification;
+        DisplaySegment;
+      end    
 
       $stop;
       $finish;
@@ -1002,7 +1049,7 @@ end
       $display("\n This is cadence. And the real speed is %drps. (%t)\n", cadence, $time);
       DisplaySegment;
 
-      PressModeButtonTest
+      PressModeButtonTest;
       #5s;
       OdometerVerification;
       DisplaySegment;
