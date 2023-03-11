@@ -18,6 +18,7 @@
 // `define CadenceMeterTest  // ----- Passed, 9 samples
 // `define OdometerTest      // ----- Passed, 5 samples
 // `define SimpleBasicTest   // ----- Failed, 5 samples, 2 failed
+`define FullTest // ----- Not Verified.
 
 // 2. AHB Monitor options:
  `define ingore_read_flag
@@ -76,7 +77,7 @@ integer
   wheel_size = 2.136,
   crank_cycle = 1200, // ms
   fork_cycle = 800,  // ms
-  noise = 24; //ms
+  noise = 25; //ms
 
 // Tested real value
 integer
@@ -258,8 +259,8 @@ end
 
   task ButtonNoiseTest; // This will test if the button will debaunce 
     $display("\n Noise test start.");
-    Trip = 1;
-    Mode = 1;
+    Trip = 0;
+    Mode = 0;
     for (int i = 0; i < 10 ; i ++) begin
       Trip = 1;
       #(noise * 1000_000); // 24ms
@@ -314,8 +315,9 @@ end
     #(`clock_period/2); // AHB read mode data
     if (data_button == 1) begin
       $display(" Button trip is pressed. (%t)", $time);
-      odometer = 0;
+      fork_times = 0;
       trip_time = 0;
+      crank_times = 0;
     end
     assert (data_button == 1) else begin
       $display(" *** WARNING ***: Button trip is NOT pressed. (%t)", $time);
@@ -325,35 +327,22 @@ end
     $display("------------------------------------------------------------------------------");
   endtask
 
-  task SettingModeTest; // This will test if the press of the mode button twice will be detected
-    $display("\n Setting mode test start.\n");
-    #1s   -> press_mode_button;
-    #1ns  -> press_trip_button;
-    for(int i=0;i<3;i++) begin
-      #1s -> press_mode_button;
-      for(int j=0;j<2;j++)
-        #0.5s -> press_trip_button;
-    end
-    $display("\n Setting mode test end.\n");
-  endtask
-
   task NightModeTest; // This will test if the button will be debounced
-    $display("\n Night mode test start.\n");
-    $display("------------------------------------------------------------------------------");
+    $display("\n Night mode test start.");
     for(int i=0;i<2;i++)
       #0.4s -> press_mode_button;
-    $display("\n Wait for the software to check to the button.\n");
+    $display("\n Wait for the software to check to the button.");
     while (!(sel_button && (ahb_addr[4:2] == 0))) // AHB read mode command
       @(posedge Clock);
     #(`clock_period/2); // AHB read mode data
     if (data_button == 1) begin
-      $display("\n Night/Day Mode is Activated. (%t)\n", $time);
+      $display("\n Night/Day Mode is Activated. (%t)", $time);
     end
     assert (data_button == 1) else begin
-      $display("\n *** WARNING ***:  Night/Day Mode activate signal NOT detected. (%t)\n", $time);
+      $display(" *** WARNING ***:  Night/Day Mode activate signal NOT detected. (%t)", $time);
       error = error + 1;
     end
-    $display("\n Night mode test end.\n");
+    $display("\n Night mode test end.");
     $display("------------------------------------------------------------------------------");
   endtask
 
@@ -361,23 +350,20 @@ end
   // Seven Segment Manager Tasks
   //--------------------------------------------------------------
   task WheelSizeSwitchTest;
-    $display("\n Wheel size switch test start.\n");
-    $display("------------------------------------------------------------------------------");
+    $display("\n Wheel size switch test start.");
     #1s -> press_mode_button;
     #17ms -> press_trip_button;
     for (int j=0;j<3;j++) begin
-      for (int i=0;i<0;i++) begin
-        #1s -> press_trip_button;
+      #1s DisplaySegment;
+      for (int i=0;i<2;i++) begin
+        SinglePressTripButton;
+        #1s DisplaySegment;
       end
-      #1s -> press_mode_button;
-      @(posedge Clock);
-      DisplayRefresh_Seg = 0;
-      @(posedge Clock);
-      DisplayRefresh_Seg = 1;
-      @(posedge Clock);
-      DisplayRefresh_Seg = 0;
-      $stop;
+      SinglePressModeButton;
     end
+    #1s DisplaySegment;
+    $display("\n Wheel size switch test end.");
+    $display("------------------------------------------------------------------------------");
   endtask
 
   //--------------------------------------------------------------
@@ -385,25 +371,25 @@ end
   //--------------------------------------------------------------
 
   task SuperFastSpeed;
-    $display("\n Watch out! Super Man is riding the bicycle!\n");
+    $display("\n Watch out! Super Man is riding the bicycle! (%t)\n", $time);
     crank_cycle = 40; // ms
     fork_cycle = 30;  // ms
   endtask
 
   task FastSpeedTest;
-    $display("\n Change to fast speed.\n");
+    $display("\n Change to fast speed. (%t)\n", $time);
     crank_cycle = 190; // ms
     fork_cycle = 300;  // ms
   endtask
 
   task LowSpeedTest;
-    $display("\n Change to Low speed.\n");
+    $display("\n Change to Low speed. (%t)\n", $time);
     crank_cycle = 1600; // ms
     fork_cycle = 1100;  // ms
   endtask
 
   task ZeroSpeedTest;
-    $display("\n Bicycle stopped.\n");
+    $display("\n Bicycle stopped. (%t)\n", $time);
     crank_cycle = 100_000; // ms
     fork_cycle = 100_000;  // ms
   endtask
@@ -442,13 +428,11 @@ end
 
   task SinglePressModeButton;
     $display("\n Mode button will be pressed once.\n");
-    $display("------------------------------------------------------------------------------");
     #1s -> press_mode_button;
   endtask
 
   task SinglePressTripButton;
     $display("\n Trip button will be pressed once.\n");
-    $display("------------------------------------------------------------------------------");
     #1s -> press_trip_button;
   endtask
 
@@ -496,7 +480,7 @@ end
       ZeroSpeedTest;
       #70s;
 
-      trip_time = 60;
+      trip_time = 55;
       
       TripTimeVerification;
 
@@ -586,6 +570,129 @@ end
       PressModeButtonTest;
       #5s;
       OdometerVerification;
+
+      EndSimulation;
+    end
+  
+  //--------------------------------------------------------------
+  // Software Self Submmit Verification Test
+  //--------------------------------------------------------------
+
+  `elsif FullTest
+    integer stop_time = 0;
+    initial begin
+      StartUp;
+
+      $display("\n *************** Basic Test ***************\n");
+
+      ButtonNoiseTest;
+
+      NightModeTest;
+
+      #20s;
+      OdometerVerification;
+      #10s;
+      OdometerVerification;
+      #10s;
+      OdometerVerification;
+
+      PressModeButtonTest;
+      #10s;
+      TripTimeVerification;
+      #10s;
+      TripTimeVerification;
+      #10s;
+      TripTimeVerification;
+
+      PressModeButtonTest;
+      #5s;
+      SpeedVerification;
+      #5s;
+      SpeedVerification;
+      #5s;
+      SpeedVerification;
+
+      PressModeButtonTest;
+      #5s;
+      CadenceVerification;
+      #5s;
+      CadenceVerification;
+      #5s;
+      CadenceVerification;
+
+      PressModeButtonTest;
+      #5s;
+      OdometerVerification;
+
+      PressModeButtonTest;
+      #5s;
+      TripTimeVerification;
+
+      $display("\n *************** Clear Test *************** \n");
+
+      SinglePressModeButton;
+      SinglePressModeButton;
+      SinglePressModeButton;
+      PressTripButtonTest;
+      #1s
+      OdometerVerification;
+      #1s
+      PressModeButtonTest;
+      #1s
+      TripTimeVerification;
+
+      $display("\n *************** Speed Variation Test *************** \n");
+      SinglePressModeButton;
+      for (int i=0; i<3; i++)
+        #3s SpeedVerification;
+
+      FastSpeedTest;
+      for (int i=0; i<3; i++)
+        #3s SpeedVerification;
+
+      LowSpeedTest;
+      for (int i=0; i<3; i++)
+        #3s SpeedVerification;
+
+      $display("\n *************** Cadence Variation Test *************** \n");
+      SinglePressModeButton;
+      for (int i=0; i<3; i++)
+        #3s CadenceVerification;
+
+      FastSpeedTest;
+      for (int i=0; i<3; i++)
+        #3s CadenceVerification;
+
+      LowSpeedTest;
+      for (int i=0; i<3; i++)
+        #3s CadenceVerification;
+
+      $display("\n *************** Bicycle Stop Test ***************\n");
+      SinglePressModeButton;
+      #1s OdometerVerification;
+      SinglePressModeButton;
+      #1s TripTimeVerification;
+      SinglePressModeButton;
+      #1s SpeedVerification;
+      SinglePressModeButton;
+      #1s CadenceVerification;
+      SinglePressModeButton;
+      ZeroSpeedTest;
+      stop_time = trip_time - 5;
+      $display("\n Wait for 70s...");
+      $display(" Stop fork times is: %d", fork_times);
+      #70s;
+      OdometerVerification;
+      SinglePressModeButton;
+      trip_time = stop_time;
+      #1s TripTimeVerification;
+      SinglePressModeButton;
+      #1s SpeedVerification;
+      SinglePressModeButton;
+      #1s CadenceVerification;
+      SinglePressModeButton;
+
+      WheelSizeSwitchTest;
 
       EndSimulation;
     end
