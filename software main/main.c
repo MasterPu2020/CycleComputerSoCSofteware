@@ -123,22 +123,24 @@ int main(void) {
   uint32_t mode, wheel_girth;
   uint32_t 
     present_time, last_time, 
-    present_crank, delta_crank,
+    delta_crank, long_delta_crank,
     present_fork, 
     present_cadence;
   float 
     delta_distance, present_distance, last_distance, 
     delta_time, long_delta_time,
-    present_speed;
+    present_speed, last_speed_1, last_speed_2;
 
   // initiate
   wheel_girth = 2136; // setting
   is_night = false;
   long_delta_time = 0;
-  delta_crank = 0;
+  long_delta_crank = 0;
   last_distance = 0;
-  present_cadence = 0;
   last_time = 0;
+  last_speed_1 = 0;
+  last_speed_2 = 0;
+  present_cadence = 0;
   mode = 0xA;
   display_segment(mode, 0, 0);
   // display_oled();
@@ -170,10 +172,10 @@ int main(void) {
     
     // 1. Time Stamp Data Read
 
-    present_crank = read_crank();
+    delta_crank  = read_crank();
     present_time = read_time_long();
     present_fork = read_fork();
-    delta_time = ((float)read_time_short()) / 1000; // 考虑是否可能等于零? : 按钮的消抖是25ms, 所以其中的值一定大于25.
+    delta_time   = ((float)read_time_short()) / 1000; // 考虑是否可能等于零? : 按钮的消抖是25ms, 所以其中的值一定大于25.
 
     // 2. Calculate
 
@@ -190,30 +192,37 @@ int main(void) {
     last_time = present_time;
     
     // Get speed (unit: km/h)
+    bool present_speed_valid = true;
     present_speed = (delta_distance * 3600) / delta_time; // (unit: km/h)
     if (present_speed > 99.99)
       present_speed =  99.99;
+    if ((uint32_t)last_speed_1 == (uint32_t)last_speed_2){ // ingore unwanted jitter of speed
+      if ((uint32_t)present_speed != (uint32_t)last_speed_1)
+        present_speed_valid = false;
+    }
+    else if ((uint32_t)present_speed == (uint32_t)last_speed_2)
+      last_speed_1 = present_speed;
+    last_speed_2 = last_speed_1;
+    last_speed_1 = present_speed;
+    if (!present_speed_valid)
+      present_speed = last_speed_2;
 
-    // Get cadence (unit: round/second)
+    // Get cadence (unit: round/second) 
     long_delta_time = long_delta_time + delta_time;
-    delta_crank = delta_crank + present_crank;
+    long_delta_crank = long_delta_crank + delta_crank;
     if (long_delta_time > 10){
-      present_cadence = (uint32_t) (delta_crank * 60 / long_delta_time);
-      present_cadence = (present_cadence / 5) * 5; // Precision: 5 round (unit: round/second)
+      present_cadence = (uint32_t) (long_delta_crank * 60 / long_delta_time);
+      present_cadence = (present_cadence / 5 + 1) * 5; // Precision: 5 round (unit: round/second)
       long_delta_time = 0;
-      delta_crank = 0;
-    }
-    else{
-      present_cadence = (4 * present_cadence + (uint32_t) (present_crank * 60 / delta_time)) / 5;
-      present_cadence = (present_cadence / 5) * 5; // Precision: 5 round (unit: round/second)
-    }
-    if (present_cadence > 999)
+      long_delta_crank = 0;
+      if (present_cadence > 999)
         present_cadence = 999;
+    }
 
     // 3. Refresh Segment
 
     uint32_t display_int, display_frac; //  This coding is to save more energy
-    if (mode == 0xA){ 
+    if (mode == 0xA){
       display_int  = (uint32_t) present_distance; // km
       display_frac = (uint32_t) ((present_distance - display_int) * 100); // km
     }
@@ -235,7 +244,7 @@ int main(void) {
     // 4. Furture Design
 
     // check_speed();
-    // get_oled_image(delta_distance, present_speed, ave_speed, energe, max_speed, delta_time, present_crank, switchDisplay, is_night);
+    // get_oled_image(delta_distance, present_speed, ave_speed, energe, max_speed, delta_time, delta_crank, switchDisplay, is_night);
     // display_oled();
 
   }

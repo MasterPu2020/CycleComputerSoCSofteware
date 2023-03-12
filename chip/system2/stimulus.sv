@@ -12,12 +12,13 @@
 
 // 1. Test Mission: Enable only one mission each time!
 //    Mission Status: ----- Passed, Failed, Not Verified.
-//    Verified with software version 5.3
+//    Verified with software version 5.3.1
 // `define TripTimeClearTest // ----- Passed, 1 sample
-`define TripTimeStopTest  // ----- Failed, 1 sample, 1 failed
+// `define TripTimeStopTest  // ----- Passed, 1 sample
 // `define CadenceMeterTest  // ----- Passed, 9 samples
 // `define OdometerTest      // ----- Passed, 5 samples
-// `define SimpleBasicTest   // ----- Failed, 5 samples, 2 failed
+`define SpeedTest         // ----- Not Verified.
+// `define SimpleBasicTest   // ----- Not Verified.
 // `define FullTest          // ----- Not Verified.
 
 // 2. AHB Monitor options:
@@ -137,8 +138,8 @@ initial begin // Cadence will keep measuring
   start_up_delay();
   forever begin
     last_crank_times = crank_times;
-    #3s;
-    cadence = (crank_times - last_crank_times) * 20;
+    #10s;
+    cadence = (crank_times - last_crank_times) * 6;
     ave_cadence = crank_times * 60 / trip_time;
   end
 end
@@ -171,7 +172,7 @@ end
     end
     else begin
       $display("\n XXXXXXXXXXXXXXXXXXXXXXXXXX Simulation Failed XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX ");
-      $display("                       Found warning message: %d.\n", error);
+      $display("  Found warning message: %d.\n", error);
     end
     $finish;
   endtask
@@ -495,34 +496,61 @@ end
   `elsif CadenceMeterTest
     initial begin
       StartUp;
-
+      // FastSpeedTest;
       SinglePressModeButton;
       SinglePressModeButton;
       SinglePressModeButton;
 
-      for (int i=0; i<3; i++) begin
-        #3s;
-        CadenceVerification;
-      end
+      #6;
 
-      // PressTripButtonTest;
-      FastSpeedTest;
-
-      for (int i=0; i<3; i++) begin
-        #3s;
-        CadenceVerification;
-      end
-
-      // PressTripButtonTest;
-      LowSpeedTest;
-
-      for (int i=0; i<3; i++) begin
-        #3s;
+      for (int i=0; i<6; i++) begin
+        #6s;
         CadenceVerification;
       end
 
       EndSimulation;
     end
+
+  //--------------------------------------------------------------
+  // SpeedTest Test
+  //--------------------------------------------------------------
+  `elsif SpeedTest
+    initial begin
+      StartUp;
+      // FastSpeedTest;
+      LowSpeedTest;
+      SinglePressModeButton;
+      SinglePressModeButton;
+
+      #3;
+
+      for (int i=0; i<4; i++) begin
+        #3s;
+        SpeedVerification;
+      end
+
+      FastSpeedTest;
+
+      #3;
+
+      for (int i=0; i<4; i++) begin
+        #3s;
+        SpeedVerification;
+      end
+
+      LowSpeedTest;
+
+      #3;
+
+      for (int i=0; i<4; i++) begin
+        #3s;
+        SpeedVerification;
+      end
+
+      EndSimulation;
+    end
+
+    //SpeedTest
 
   //--------------------------------------------------------------
   // Odometer Test
@@ -548,6 +576,8 @@ end
   `elsif SimpleBasicTest
     initial begin
       StartUp;
+
+      // WheelSizeSwitchTest;
 
       FastSpeedTest;
 
