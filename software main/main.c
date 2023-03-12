@@ -2,7 +2,7 @@
 // Titile:  Cortex M0 Software Main C File
 // Author:  ChangXin Shen & Clark Pu
 // Team:    C4 Chip Designed
-// Version: 5.3.1
+// Version: 5.5
 // Verification: Not Verified
 // Comment: Optimizition on code writing and ROM comsuption by Clark. Using UTF-8
 //------------------------------------------------------------------------------
@@ -175,7 +175,7 @@ int main(void) {
     delta_crank  = read_crank();
     present_time = read_time_long();
     present_fork = read_fork();
-    delta_time   = ((float)read_time_short()) / 1000; // 考虑是否可能等于零? : 按钮的消抖是25ms, 所以其中的值一定大于25.
+    delta_time   = ((float)read_time_short()) / 1000;
 
     // 2. Calculate
 

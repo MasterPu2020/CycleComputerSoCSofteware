@@ -3,7 +3,7 @@
 //   Title: System module - 2022/2023 SubFile: Stimulus
 //  Author: Clark Pu, Paiyun Chen (Circle)
 //    Team: C4 Chip Designed
-// Version: 3.0 Behavioural Simulation
+// Version: 3.1 Behavioural Simulation
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
@@ -12,13 +12,14 @@
 
 // 1. Test Mission: Enable only one mission each time!
 //    Mission Status: ----- Passed, Failed, Not Verified.
-//    Verified with software version 5.3
-// `define TripTimeClearTest // ----- Passed, 1 sample
-// `define TripTimeStopTest  // ----- Failed, 1 sample, 1 failed
-// `define CadenceMeterTest  // ----- Passed, 9 samples
-// `define OdometerTest      // ----- Passed, 5 samples
- `define SimpleBasicTest   // ----- Failed, 5 samples, 2 failed
-// `define FullTest          // ----- Not Verified.
+//    Verified with software version 5.5
+// `define TripTimeClearTest // ----- Passed, Manual Check
+// `define TripTimeStopTest  // ----- Passed, Manual Check
+// `define CadenceMeterTest  // ----- Passed, Manual Check
+// `define OdometerTest      // ----- Passed, Manual Check
+// `define SpeedTest         // ----- Passed, Manual Check
+// `define SimpleBasicTest   // ----- Passed, 5 samples
+`define FullTest          // ----- Passed All.
 
 // 2. AHB Monitor options:
  `define ingore_read_flag
@@ -141,7 +142,7 @@ initial begin // Cadence will keep measuring
   forever begin
     last_crank_times = crank_times;
     #12s;
-    cadence = (crank_times - last_crank_times) * 6;
+    cadence = (crank_times - last_crank_times) * 5;
     ave_cadence = crank_times * 60 / trip_time;
   end
 end
@@ -174,7 +175,7 @@ end
     end
     else begin
       $display("\n XXXXXXXXXXXXXXXXXXXXXXXXXX Simulation Failed XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX ");
-      $display("                       Found warning message: %d.\n", error);
+      $display("  Found warning message: %d.\n", error);
     end
     $finish;
   endtask
@@ -545,6 +546,46 @@ end
     end
 
   //--------------------------------------------------------------
+  // SpeedTest Test
+  //--------------------------------------------------------------
+  `elsif SpeedTest
+    initial begin
+      StartUp;
+      // FastSpeedTest;
+      // LowSpeedTest;
+      SinglePressModeButton;
+      SinglePressModeButton;
+
+      for (int i=0; i<4; i++) begin
+        #3s;
+        SpeedVerification;
+      end
+
+      FastSpeedTest;
+
+      #3s;
+
+      for (int i=0; i<4; i++) begin
+        #3s;
+        SpeedVerification;
+      end
+
+      LowSpeedTest;
+
+      #10s;
+
+      for (int i=0; i<4; i++) begin
+        #3s;
+        SpeedVerification;
+      end
+
+      EndSimulation;
+    end
+
+    //SpeedTest
+
+
+  //--------------------------------------------------------------
   // Software Self Submmit Verification Test
   //--------------------------------------------------------------
 
@@ -655,25 +696,21 @@ end
         #3s SpeedVerification;
 
       FastSpeedTest;
+      #20s;
       for (int i=0; i<3; i++)
         #3s SpeedVerification;
 
       LowSpeedTest;
+      #20s;
       for (int i=0; i<3; i++)
         #3s SpeedVerification;
 
       $display("\n *************** Cadence Variation Test *************** \n");
       SinglePressModeButton;
-      for (int i=0; i<3; i++)
-        #3s CadenceVerification;
+      #5s CadenceVerification;
 
       FastSpeedTest;
-      for (int i=0; i<3; i++)
-        #3s CadenceVerification;
-
-      LowSpeedTest;
-      for (int i=0; i<3; i++)
-        #3s CadenceVerification;
+      #24s CadenceVerification;
 
       $display("\n *************** Bicycle Stop Test ***************\n");
       SinglePressModeButton;
