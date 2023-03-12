@@ -443,9 +443,62 @@ end
 //------------------------------------------------------------------------------
 
   //--------------------------------------------------------------
+  // Trip Time Test
+  //--------------------------------------------------------------
+  `ifdef TripTimeTest
+    initial begin
+      StartUp;
+
+      FastSpeedTest;
+      PressModeButtonTest;
+      $display("\n Wait for 305s..."); 
+      #305s;
+      TripTimeVerification;
+      $display("\n Wait for 305s..."); 
+      #305s;
+      TripTimeVerification;
+      $display("\n Wait for 305s..."); 
+      #305s;
+      TripTimeVerification;
+      $display("\n Wait for 305s..."); 
+      #305s;
+      TripTimeVerification;
+      $display("\n Wait for 305s..."); 
+      #305s;
+      TripTimeVerification;
+      $display("\n Wait for 305s..."); 
+      #305s;
+      TripTimeVerification;
+      $display("\n Wait for 305s..."); 
+      #305s;
+      TripTimeVerification;
+      $display("\n Wait for 305s..."); 
+      #305s;
+      TripTimeVerification;
+      $display("\n Wait for 305s..."); 
+      #305s;
+      TripTimeVerification;
+      $display("\n Wait for 305s..."); 
+      #305s;
+      TripTimeVerification;
+      $display("\n Wait for 305s..."); 
+      #305s;
+      TripTimeVerification;
+      $display("\n Wait for 305s..."); 
+      #305s;
+      TripTimeVerification;
+      $display("\n Wait for 305s..."); 
+      #305s;
+      TripTimeVerification;
+
+
+      EndSimulation;
+    end
+
+  //--------------------------------------------------------------
   // Trip Time Clear Test
   //--------------------------------------------------------------
-  `ifdef TripTimeClearTest
+  `elsif TripTimeClearTest
     initial begin
       StartUp;
 

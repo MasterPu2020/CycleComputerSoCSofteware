@@ -1,0 +1,90 @@
+ 
+****************************************
+Report : power
+        -analysis_effort low
+Design : comp_core
+Version: K-2015.06-SP5
+Date   : Sun Mar 12 15:35:18 2023
+****************************************
+
+
+Library(s) Used:
+
+    c35_CORELIB_WC (File: /opt/cad/designkits/ams/v410/synopsys/c35_3.3V/c35_CORELIB_WC.db)
+
+
+Operating Conditions: WORST-MIL   Library: c35_CORELIB_WC
+Wire Load Model Mode: enclosed
+
+Design        Wire Load Model            Library
+------------------------------------------------
+comp_core              30k               c35_CORELIB_WC
+CORTEXM0DS_test_1      10k               c35_CORELIB_WC
+ahb_interconnect_test_1
+                       10k               c35_CORELIB_WC
+ahb_rom_test_1         10k               c35_CORELIB_WC
+ahb_ram_test_1         10k               c35_CORELIB_WC
+timer_test_1           10k               c35_CORELIB_WC
+sensor_manager_test_1  10k               c35_CORELIB_WC
+oled_manager_test_1    10k               c35_CORELIB_WC
+button_manager_test_1  10k               c35_CORELIB_WC
+seven_segment_test_1   10k               c35_CORELIB_WC
+cortexm0ds_logic_test_1
+                       10k               c35_CORELIB_WC
+timer_DW01_inc_0       10k               c35_CORELIB_WC
+timer_DW01_inc_1       10k               c35_CORELIB_WC
+sensor_manager_DW01_inc_0
+                       10k               c35_CORELIB_WC
+sensor_manager_DW01_inc_1
+                       10k               c35_CORELIB_WC
+button_manager_DW01_inc_0
+                       10k               c35_CORELIB_WC
+button_manager_DW01_inc_1
+                       10k               c35_CORELIB_WC
+button_manager_DW01_inc_2
+                       10k               c35_CORELIB_WC
+button_manager_DW01_inc_3
+                       10k               c35_CORELIB_WC
+cortexm0ds_logic_DW01_incdec_0
+                       10k               c35_CORELIB_WC
+cortexm0ds_logic_DW01_add_0
+                       10k               c35_CORELIB_WC
+cortexm0ds_logic_DW01_inc_0
+                       10k               c35_CORELIB_WC
+cortexm0ds_logic_DW01_inc_1
+                       10k               c35_CORELIB_WC
+cortexm0ds_logic_DW01_add_1
+                       10k               c35_CORELIB_WC
+
+
+Global Operating Voltage = 3    
+Power-specific unit information :
+    Voltage Units = 1V
+    Capacitance Units = 1.000000pf
+    Time Units = 1ns
+    Dynamic Power Units = 1mW    (derived from V,C,T units)
+    Leakage Power Units = 1pW
+
+
+  Cell Internal Power  =  78.0388 mW   (74%)
+  Net Switching Power  =  28.0587 mW   (26%)
+                         ---------
+Total Dynamic Power    = 106.0975 mW  (100%)
+
+Cell Leakage Power     =  42.2658 uW
+
+Information: report_power power group summary does not include estimated clock tree power. (PWR-789)
+
+                 Internal         Switching           Leakage            Total
+Power Group      Power            Power               Power              Power   (   %    )  Attrs
+--------------------------------------------------------------------------------------------------
+io_pad             0.0000            0.0000            0.0000            0.0000  (   0.00%)
+memory             0.0000            0.0000            0.0000            0.0000  (   0.00%)
+black_box          0.0000            0.0000            0.0000            0.0000  (   0.00%)
+clock_network      0.0000            0.0000            0.0000            0.0000  (   0.00%)
+register           0.0000            0.0000            0.0000            0.0000  (   0.00%)
+sequential        72.9052            3.1161        2.6316e+07           76.0477  (  71.65%)
+combinational      5.1336           24.9424        1.5950e+07           30.0919  (  28.35%)
+--------------------------------------------------------------------------------------------------
+Total             78.0387 mW        28.0586 mW     4.2266e+07 pW       106.1395 mW
+1

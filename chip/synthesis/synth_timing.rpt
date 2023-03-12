@@ -1,0 +1,61 @@
+ 
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -max_paths 1
+Design : comp_core
+Version: K-2015.06-SP5
+Date   : Sun Mar 12 15:35:18 2023
+****************************************
+
+ # A fanout number of 1000 was used for high fanout net computations.
+
+Operating Conditions: WORST-MIL   Library: c35_CORELIB_WC
+Wire Load Model Mode: enclosed
+
+  Startpoint: seven_segment_1/Store_Mode_reg_0_
+              (rising edge-triggered flip-flop)
+  Endpoint: SegE (output port)
+  Path Group: (none)
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  comp_core          30k                   c35_CORELIB_WC
+  seven_segment_test_1
+                     10k                   c35_CORELIB_WC
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  seven_segment_1/Store_Mode_reg_0_/C (DFSEC1)            0.00       0.00 r
+  seven_segment_1/Store_Mode_reg_0_/QN (DFSEC1)           2.11       2.11 r
+  seven_segment_1/U97/Q (XNR20)                           1.24       3.35 f
+  seven_segment_1/U96/Q (OAI310)                          0.63       3.97 r
+  seven_segment_1/U95/Q (CLKIN0)                          0.48       4.46 f
+  seven_segment_1/U94/Q (NAND40)                          1.24       5.70 r
+  seven_segment_1/U93/Q (CLKIN0)                          1.18       6.88 f
+  seven_segment_1/U91/Q (NAND30)                          1.53       8.41 r
+  seven_segment_1/U89/Q (NAND20)                          0.82       9.23 f
+  seven_segment_1/U75/Q (CLKIN0)                          0.76       9.99 r
+  seven_segment_1/U74/Q (AOI220)                          1.04      11.02 f
+  seven_segment_1/U64/Q (OAI220)                          0.88      11.91 r
+  seven_segment_1/U16/Q (AOI211)                          0.50      12.41 f
+  seven_segment_1/U15/Q (OAI2111)                         1.21      13.62 r
+  seven_segment_1/U63/Q (CLKIN0)                          1.36      14.98 f
+  seven_segment_1/U62/Q (NOR20)                           1.34      16.32 r
+  seven_segment_1/U61/Q (CLKIN0)                          0.95      17.27 f
+  seven_segment_1/U47/Q (NOR20)                           1.17      18.43 r
+  seven_segment_1/U42/Q (NAND20)                          1.08      19.51 f
+  seven_segment_1/U33/Q (CLKIN0)                          0.83      20.34 r
+  seven_segment_1/U32/Q (AOI2110)                         1.31      21.65 f
+  seven_segment_1/U31/Q (NAND30)                          1.30      22.95 r
+  seven_segment_1/U6/Q (BUF6)                             2.06      25.01 r
+  seven_segment_1/SegE (seven_segment_test_1)             0.00      25.01 r
+  SegE (out)                                              0.01      25.02 r
+  data arrival time                                                 25.02
+  --------------------------------------------------------------------------
+  (Path is unconstrained)
+
+
+1
