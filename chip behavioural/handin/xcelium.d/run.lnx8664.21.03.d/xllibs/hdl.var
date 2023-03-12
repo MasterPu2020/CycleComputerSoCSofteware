@@ -1,0 +1,17 @@
+define LIB_MAP ( $LIB_MAP \
+, ../../../behavioural => behavioural \
+, ../../../../../../../../../srv/cad/designkits/ams/v410/verilog/udp.v => udp \
+, ../../../../../../../../../srv/cad/designkits/ams/v410/verilog/c35b4/FILLANT.v => FILLANT \
+, ../../../../../../../../../srv/cad/designkits/ams/v410/verilog/c35b4/c35_IOLIBV5.v => c35_IOLIBV5 \
+, ../../../../../../../../../srv/cad/designkits/ams/v410/verilog/c35b4/c35_IOLIB.v => c35_IOLIB \
+, ../../../../../../../../../srv/cad/designkits/ams/v410/verilog/c35b4/c35_IOLIBCV5_3B.v => c35_IOLIBCV5_3B \
+, ../../../../../../../../../srv/cad/designkits/ams/v410/verilog/c35b4/c35_IOLIBC_3B.v => c35_IOLIBC_3B \
+, ../../../../../../../../../srv/cad/designkits/ams/v410/verilog/c35b4/c35_IOLIB_3B.v => c35_IOLIB_3B \
+, ../../../../../../../../../srv/cad/designkits/ams/v410/verilog/c35b4/c35_CORELIB_V5.v => c35_CORELIB_V5 \
+, ../../../../../../../../../srv/cad/designkits/ams/v410/verilog/c35b4/c35_CORELIB_V5_3B.v => c35_CORELIB_V5_3B \
+, ../../../../../../../../../srv/cad/designkits/ams/v410/verilog/c35b4/c35_CORELIB.v => c35_CORELIB \
+, ../../../../../../../../../srv/cad/designkits/ams/v410/verilog/c35b4/c35_CORELIBD.v => c35_CORELIBD \
+, ../../../../../../../../../srv/cad/designkits/ams/v410/verilog/c35b4/c35_CORELIBD_3B.v => c35_CORELIBD_3B \
+, ../../../../../../../../../srv/cad/designkits/ams/v410/verilog/c35b4/c35_CORELIB_3B.v => c35_CORELIB_3B \
+, ../../../system => system \
+)

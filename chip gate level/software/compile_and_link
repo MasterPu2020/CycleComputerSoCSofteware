@@ -1,0 +1,55 @@
+#! /bin/sh
+
+# add the ARM gnu cros-compilers to the search path
+export PATH=/opt/cad/soft/arm/gcc/bin:$PATH
+
+# compile and link the C files to create an Intel format hex file
+make
+
+( set -x #echo on
+
+# convert the Intel format hex file to a 4 byte per line format for $readmemh
+/opt/cad/bim/c/hex2v/hex2v_arm test_designstart.hex 4 > code.hex
+
+# now create assign statements which might be used for rom synthesis
+/opt/cad/bim/c/hex2v/hex2v_arm test_designstart.hex 4 memory > code.vmem
+
+)
+
+if [ "$1" = "-install" ]
+then
+  rom_file=$2
+  if [ "$rom_file" = "" ]
+  then
+    printf "\nERROR - must specify destination ROM file with -install option\n"
+  elif [ ! -f "$rom_file" ]
+  then
+    printf "\nERROR - ROM file '$rom_file' not found\n"
+  else
+    if grep '^// BEGIN CUSTOM$' $rom_file > /dev/null &&
+       grep '^// END CUSTOM$' $rom_file > /dev/null
+    then
+      printf "Creating custom ROM file\n"
+      sed -e  '/^.. BEGIN CUSTOM$/,$ d' $rom_file > rom.sv
+      printf "// BEGIN CUSTOM\n\n" >> rom.sv
+      cat code.vmem >> rom.sv
+      printf "\n// END CUSTOM\n" >> rom.sv
+      sed -e  '1,/^.. END CUSTOM$/ d' $rom_file >> rom.sv
+      if [ ! -e "${rom_file}_orig" ]
+      then
+        printf "Saving '$rom_file' as '${rom_file}_orig'\n"
+        mv $rom_file ${rom_file}_orig
+        printf "Writing '$rom_file'\n"
+        mv rom.sv $rom_file
+        printf "To recover orignal file type\n"
+        printf "  mv ${rom_file}_orig $rom_file\n"
+      else
+        printf "Overwriting '$rom_file'\n"
+        mv rom.sv $rom_file
+      fi
+      
+    else
+      printf "\nERROR - ROM file '$rom_file' seems to be missing expected comments\n"
+    fi
+  fi
+fi                                                                                                                                                                                                                    

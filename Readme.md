@@ -8,12 +8,17 @@
 
 ***
 
-### chip 文件夹下是 "behavioural milestone (DDL)" 的工作文件夹
+### chip behavioural 文件夹下是 "Behavioural milestone (DDL)" 的工作文件夹
 
-- [SoC硬件代码](./chip/behavioural)
-- [SoC软件代码](./chip/software/code/main.c)
-- [SoC仿真文件](./chip/system2/stimulus.sv)
-- [SoC软件代码改进](./software%20main/)
+- [SoC硬件代码](./chip behavioural/behavioural)
+- [SoC软件代码](./chip behavioural/software/code/main.c)
+- [SoC仿真文件](./chip behavioural/system2/stimulus.sv)
+
+### chip gate level 文件夹下是 "Gate level milestone (DDL)" 的工作文件夹
+
+- [SoC硬件代码](./chip gate level/behavioural)
+- [SoC软件代码](./chip gate level/software/code/main.c)
+- [SoC仿真文件](./chip gate level/system2/stimulus.sv)
 
 ***
 

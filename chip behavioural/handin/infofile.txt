@@ -1,0 +1,15 @@
+USER DATA:
+----------
+
+what=behavioural
+system_on_chip=false
+tech=c35b4
+sim_time=20s
+
+BEHAVIOURAL SIMULATION:
+-------------
+
+simcommand=./simulate -no_graphics -tech c35b4 -gate behavioural 20s +define+basic_mode_change
+COMPILATION OK
+CLOCK PERIOD IS 30517.6ns
+
