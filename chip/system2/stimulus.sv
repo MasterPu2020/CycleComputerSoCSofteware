@@ -148,7 +148,7 @@ end
 //------------------------------------------------------------------------------
 
   //--------------------------------------------------------------
-  // Initialization Task
+  // Initialization and Completion Tasks
   //--------------------------------------------------------------
   task StartUp;
     $display("\n Start Up.\n");
@@ -369,15 +369,15 @@ end
     for (int j=0;j<3;j++) begin
       for (int i=0;i<12;i++) begin
         #1s -> press_trip_button;
-      end
+        #0.5s;
+        @(posedge Clock);
+        DisplayRefresh_Seg = 0;
+        @(posedge Clock);
+        DisplayRefresh_Seg = 1;
+        @(posedge Clock);
+        DisplayRefresh_Seg = 0;
+        end
       #1s -> press_mode_button;
-      #0.5s;
-      @(posedge Clock);
-      DisplayRefresh_Seg = 0;
-      @(posedge Clock);
-      DisplayRefresh_Seg = 1;
-      @(posedge Clock);
-      DisplayRefresh_Seg = 0;
     end
   endtask
 
