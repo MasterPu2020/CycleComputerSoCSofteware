@@ -83,33 +83,30 @@ bool wait_for_press(void){
       return false;
 }
 
-uint32_t wait_for_setting(uint32_t wheel_iso) {
-  uint32_t press_times = 0;
-  uint32_t wheel_1, wheel_2, wheel_3;
-  uint32_t wheel_f_bcd;
-  wheel_f_bcd = int2bcd(wheel_iso);
-  display_segment(0xE, wheel_f_bcd, 0);
+uint32_t wait_for_wheel_girth(uint32_t wheel_girth) {
+  int press_times = 0;
+  int wheel_3 = wheel_girth / 100 % 10;
+  int wheel_2 = wheel_girth / 10 % 10;
+  int wheel_1 = wheel_girth % 10;
+  display_segment(0xE, int2bcd(wheel_girth % 1000), 0);
   while (1){
-    wheel_3 = wheel_iso / 100;
-    wheel_2 = (wheel_iso - wheel_3 * 100) / 10;
-    wheel_1 = (wheel_iso - wheel_3 * 100) - (wheel_2 * 10);
     if (check_button()) {
       if (press_mode()) {
         press_times ++;
         if (press_times == 3)
-          return wheel_iso;
-      } else if(press_trip()) {
-        if (press_times == 0) 
+          return wheel_girth;
+      }
+      else if(press_trip()) {
+        if (press_times == 0)
           wheel_3 = (wheel_3 + 1) % 10;
         else if (press_times == 1)
-          wheel_2 = (wheel_2 + 1) % 10;               
-        else if (press_times == 2)            
+          wheel_2 = (wheel_2 + 1) % 10;
+        else if (press_times == 2)
           wheel_1 = (wheel_1 + 1) % 10;
-        wheel_iso = wheel_3 * 100 + wheel_2 * 10 + wheel_1;
-        wheel_f_bcd = int2bcd(wheel_iso);
-        display_segment(0xE, wheel_f_bcd, 0);
-          //get_setting_image();
-          //display_oled();
+        wheel_girth = 2000 + wheel_3 * 100 + wheel_2 * 10 + wheel_1;
+        display_segment(0xE, int2bcd(wheel_girth % 1000), 0);
+        // get_setting_image();
+        // display_oled();
       }
     }
   }  
@@ -124,10 +121,9 @@ int main(void) {
   // initiate
   bool is_night;
   float delta_distance, distance, last_distance, delta_time, speed;
-  uint32_t mode, wheel_iso, wheel_girth;
+  uint32_t mode, wheel_girth;
   uint32_t present_time, last_time, present_crank, present_fork, cadence;
-  wheel_iso = 700;
-  wheel_girth = 2136; // prepare a look up table
+  wheel_girth = 2136; // setting
   is_night = false;
   last_distance = 0;
   last_time = 0;
@@ -140,9 +136,9 @@ int main(void) {
 
     // I. Button interrupted 3 seconds wait
 
-    if (wait_for_press()) {
+    if (wait_for_press()){
       if (setting())
-        wheel_iso = wait_for_setting(wheel_iso);
+        wheel_girth = wait_for_wheel_girth(wheel_girth);
       else {
         if (press_trip()) { // Don't clear short here, it's not necessary and may cause a divide-zero error.
           clear_fork();
@@ -161,6 +157,7 @@ int main(void) {
     // II. Refresh Time, Speed, Distance, Cadence.
     
     // 1. Time Stamp Data Read
+
     present_crank = read_crank();
     present_time = read_time_long();
     present_fork = read_fork();
@@ -174,7 +171,7 @@ int main(void) {
       distance = 99.99;
     delta_distance = distance - last_distance;
     last_distance = distance;
-
+    
     // Get present time (unit: second)
     if (delta_distance == 0) // if bicycle stopped
       present_time = last_time;
@@ -195,6 +192,7 @@ int main(void) {
       cadence = 999;
 
     // 3. Refresh Segment
+
     uint32_t display_int, display_frac; //  This coding is to save more energy
     if (mode == 0xA){ 
       display_int  = (uint32_t) distance; // km
@@ -216,6 +214,7 @@ int main(void) {
     display_segment(mode, int2bcd(display_int), int2bcd(display_frac));
 
     // 4. Furture Design
+
     // check_speed();
     // get_oled_image(delta_distance, speed, ave_speed, energe, max_speed, delta_time, present_crank, switchDisplay, is_night);
     // display_oled();
