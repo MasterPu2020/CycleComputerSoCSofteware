@@ -13,6 +13,7 @@
 - [SoC硬件代码](./chip/behavioural)
 - [SoC软件代码](./chip/software/code/main.c)
 - [SoC仿真文件](./chip/system2/stimulus.sv)
+- [SoC软件代码改进](./software%20main/)
 
 ***
 

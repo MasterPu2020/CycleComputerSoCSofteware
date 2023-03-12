@@ -14,11 +14,11 @@
 //    Mission Status: ----- Passed, Failed, Not Verified.
 //    Verified with software version 5.3
 // `define TripTimeClearTest // ----- Passed, 1 sample
-// `define TripTimeStopTest  // ----- Failed, 1 sample, 1 failed
+`define TripTimeStopTest  // ----- Failed, 1 sample, 1 failed
 // `define CadenceMeterTest  // ----- Passed, 9 samples
 // `define OdometerTest      // ----- Passed, 5 samples
 // `define SimpleBasicTest   // ----- Failed, 5 samples, 2 failed
-`define FullTest // ----- Not Verified.
+// `define FullTest          // ----- Not Verified.
 
 // 2. AHB Monitor options:
  `define ingore_read_flag
@@ -72,7 +72,7 @@ end
 //------------------------------------------------------------------------------
 
 // Tested real variable
-integer
+real
   error = 0,
   wheel_size = 2.136,
   crank_cycle = 1200, // ms
@@ -454,10 +454,10 @@ end
       #70s;
 
       TripTimeVerification;
-      #0.5s;
+      #1s;
       PressTripButtonTest;
 
-      #0.5s;
+      #1s;
       TripTimeVerification;
 
       EndSimulation;
@@ -471,13 +471,15 @@ end
       StartUp;
 
       FastSpeedTest;
-      $display("\n Wait for 70s...");
+      $display("\n Wait for 60s...");
       PressModeButtonTest;
       #60s;
 
       TripTimeVerification;
 
       ZeroSpeedTest;
+      $display("\n Wait for 70s...");
+      $display(" Stop fork times is: %d", fork_times);
       #70s;
 
       trip_time = 55;
@@ -540,30 +542,19 @@ end
     end
 
   //--------------------------------------------------------------
-  // Wheel Size Switch Test
+  // Software Self Submmit Verification Test
   //--------------------------------------------------------------
-  `elsif WheelSizeSwitchTest
+
+  `elsif SimpleBasicTest
     initial begin
       StartUp;
 
       FastSpeedTest;
 
-      WheelSizeSwitchVerification;
+      #10s;
+      OdometerVerification;
 
-      $stop;
-      $finish;
-    end
-
-  //--------------------------------------------------------------
-  // Software Self Submmit Verification Test
-  //--------------------------------------------------------------
-  `elsif SimpleBasicTest
-    initial begin
-      StartUp;
-
-      // FastSpeedTest;
-
-      #20s;
+      #10s;
       OdometerVerification;
 
       #20s;

@@ -15,14 +15,11 @@
 // Hardware Address
 //------------------------------------------------------------------------------
 
-#define AHB_SOFTWARE_DEBUG       0xD0000000
 #define AHB_OLEDR_MANAGER_BASE   0xC0000000
 #define AHB_SEGMENT_MANAGER_BASE 0xA0000000
 #define AHB_TIMER_BASE           0x80000000
 #define AHB_SENSOR_MANAGER_BASE  0x60000000
 #define AHB_BUTTON_MANAGER_BASE  0x40000000
-volatile uint32_t* DEBUG   = (volatile uint32_t*) AHB_SOFTWARE_DEBUG;
-// DEBUG[n]                      This is software a debug address
 volatile uint32_t* OLED    = (volatile uint32_t*) AHB_OLEDR_MANAGER_BASE;
 // OLED[0]        X              0xC0000000
 // OLED[1]        Y              0xC0000004
@@ -377,14 +374,13 @@ int main(void) {
 
   initiate();
 
-    // repeat forever (embedded programs generally do not terminate)
   while(1) {
 
     check_time_stop();
 
     if (wait_for_press()) { // 等待三秒或等待按钮按下后
 
-    // 按钮按下后，处理按钮操作
+      // 按钮按下后，处理按钮操作
       if (setting()) {
         
         // 设置操作，更改wheel 
@@ -398,16 +394,7 @@ int main(void) {
           clear_fork();
           post_time = 0;
           clear_timer_long();
-
-          if (mode == 0xA){    
-
-            display_segment(mode, 0, 0);
-
-          } else if (mode == 0xB) {           
- 
-            display_segment(mode, 0, 0);
-
-          }
+          display_segment(mode, 0, 0);
                
         } else if (press_mode()) {     // A里程  B时间  C速度  D踏频  E设置
 
