@@ -118,20 +118,32 @@ uint32_t wait_for_wheel_girth(uint32_t wheel_girth) {
 
 int main(void) {
 
-  // initiate
+  // variables
   bool is_night;
-  float delta_distance, distance, last_distance, delta_time, speed;
   uint32_t mode, wheel_girth;
-  uint32_t present_time, last_time, present_crank, present_fork, cadence;
+  uint32_t 
+    present_time, last_time, 
+    present_crank, delta_crank,
+    present_fork, 
+    present_cadence;
+  float 
+    delta_distance, present_distance, last_distance, 
+    delta_time, long_delta_time,
+    present_speed;
+
+  // initiate
   wheel_girth = 2136; // setting
   is_night = false;
+  long_delta_time = 0;
+  delta_crank = 0;
   last_distance = 0;
+  present_cadence = 0;
   last_time = 0;
   mode = 0xA;
-
   display_segment(mode, 0, 0);
   // display_oled();
 
+  // process start
   while(1) {
 
     // I. Button interrupted 3 seconds wait
@@ -161,16 +173,16 @@ int main(void) {
     present_crank = read_crank();
     present_time = read_time_long();
     present_fork = read_fork();
-    delta_time = ((float)read_time_short())/1000.0; // 考虑是否可能等于零? : 按钮的消抖是25ms, 所以其中的值一定大于25.
+    delta_time = ((float)read_time_short()) / 1000; // 考虑是否可能等于零? : 按钮的消抖是25ms, 所以其中的值一定大于25.
 
     // 2. Calculate
 
-    // Get distance (unit: km)
-    distance = (float)(present_fork * wheel_girth) / 1000000 + 0.01; // Number 0.01 is a bias. (unit: km)
-    if (distance > 99.99)
-      distance = 99.99;
-    delta_distance = distance - last_distance;
-    last_distance = distance;
+    // Get present distance (unit: km)
+    present_distance = (float)(present_fork * wheel_girth) / 1000000 + 0.01; // Number 0.01 is a bias. (unit: km)
+    if (present_distance > 99.99)
+      present_distance = 99.99;
+    delta_distance = present_distance - last_distance;
+    last_distance = present_distance;
     
     // Get present time (unit: second)
     if (delta_distance == 0) // if bicycle stopped
@@ -178,36 +190,43 @@ int main(void) {
     last_time = present_time;
     
     // Get speed (unit: km/h)
-    speed = (delta_distance * 3600) / delta_time; // (unit: km/h)
-    if (speed > 99.99)
-      speed =  99.99;
+    present_speed = (delta_distance * 3600) / delta_time; // (unit: km/h)
+    if (present_speed > 99.99)
+      present_speed =  99.99;
 
     // Get cadence (unit: round/second)
-    cadence = (uint32_t) (present_crank * 60 / delta_time);
-    int cadence_5 = cadence / 5;
-    if (cadence % 10 >= 5)
-      cadence_5 ++;
-    cadence = cadence_5 * 5; // Precision: 5 round (unit: round/second)
-    if (cadence > 999)
-      cadence = 999;
+    long_delta_time = long_delta_time + delta_time;
+    delta_crank = delta_crank + present_crank;
+    if (long_delta_time > 10){
+      present_cadence = (uint32_t) (delta_crank * 60 / long_delta_time);
+      present_cadence = (present_cadence / 5) * 5; // Precision: 5 round (unit: round/second)
+      long_delta_time = 0;
+      delta_crank = 0;
+    }
+    else{
+      present_cadence = (4 * present_cadence + (uint32_t) (present_crank * 60 / delta_time)) / 5;
+      present_cadence = (present_cadence / 5) * 5; // Precision: 5 round (unit: round/second)
+    }
+    if (present_cadence > 999)
+        present_cadence = 999;
 
     // 3. Refresh Segment
 
     uint32_t display_int, display_frac; //  This coding is to save more energy
     if (mode == 0xA){ 
-      display_int  = (uint32_t) distance; // km
-      display_frac = (uint32_t) ((distance - display_int) * 100); // km
+      display_int  = (uint32_t) present_distance; // km
+      display_frac = (uint32_t) ((present_distance - display_int) * 100); // km
     }
     else if (mode == 0xB){
       display_int  = present_time / 3600; // hour
       display_frac = (present_time % 3600) / 60; // minute
     }
     else if (mode == 0xC){
-      display_int  = (uint32_t) speed; // km/h
-      display_frac = (uint32_t) ((speed - display_int) * 100); // km/h
+      display_int  = (uint32_t) present_speed; // km/h
+      display_frac = (uint32_t) ((present_speed - display_int) * 100); // km/h
     }
     else if (mode == 0xD){
-      display_int  = cadence; // r/s
+      display_int  = present_cadence; // r/s
       display_frac = 0; // nothing to show
     }
 
@@ -216,7 +235,7 @@ int main(void) {
     // 4. Furture Design
 
     // check_speed();
-    // get_oled_image(delta_distance, speed, ave_speed, energe, max_speed, delta_time, present_crank, switchDisplay, is_night);
+    // get_oled_image(delta_distance, present_speed, ave_speed, energe, max_speed, delta_time, present_crank, switchDisplay, is_night);
     // display_oled();
 
   }
