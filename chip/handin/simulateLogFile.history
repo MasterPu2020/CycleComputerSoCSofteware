@@ -1,1 +1,0 @@
-s1(07Mar2023:18:05:12):  xmverilog +sv -y behavioural -y ./system2 -y system -f /opt/cad/designkits/ecs/verilog/c35b4/gate_models.inc +libext+.sv +libext+.v +incdir+behavioural system/system.sv +define+sim_time=20s +xmtimescale+1ns/10ps +define+external_pullup +define+functional +define+no_button_presses -l simulateLogFile 

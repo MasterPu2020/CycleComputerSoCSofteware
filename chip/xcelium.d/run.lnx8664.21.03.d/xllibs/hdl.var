@@ -1,4 +1,0 @@
-define LIB_MAP ( $LIB_MAP \
-, ../../../behavioural => behavioural \
-, ../../../system => system \
-)
