@@ -17,9 +17,9 @@
 // `define TripTimeStopTest  // ----- Passed, Manual Check
 // `define CadenceMeterTest  // ----- Passed, Manual Check
 // `define OdometerTest      // ----- Passed, Manual Check
-// `define SpeedTest         // ----- Passed, Manual Check
+ `define SpeedTest         // ----- Passed, Manual Check
 // `define SimpleBasicTest   // ----- Passed, 5 samples
-`define FullTest          // ----- Passed All.
+// `define FullTest             // ----- Passed All.
 
 // 2. AHB Monitor options:
  `define ingore_read_flag
@@ -131,7 +131,7 @@ initial begin // Speed will keep measuring
   forever begin
     last_trip_time = trip_time;
     last_fork_times = fork_times;
-    #10s;
+    #3s;
     speed = (wheel_size * (fork_times - last_fork_times))/(trip_time - last_trip_time); // m/s
     ave_speed = wheel_size * fork_times / trip_time;
   end
@@ -505,23 +505,27 @@ end
       SinglePressModeButton;
 
       for (int i=0; i<3; i++) begin
-        #3s;
+        #12s;
         CadenceVerification;
       end
 
       // PressTripButtonTest;
       FastSpeedTest;
 
+      #3s;
+
       for (int i=0; i<3; i++) begin
-        #3s;
+        #12s;
         CadenceVerification;
       end
 
       // PressTripButtonTest;
       LowSpeedTest;
 
+      #3s;
+
       for (int i=0; i<3; i++) begin
-        #3s;
+        #12s;
         CadenceVerification;
       end
 
@@ -552,10 +556,13 @@ end
     initial begin
       StartUp;
       // FastSpeedTest;
-      // LowSpeedTest;
+      LowSpeedTest;
       SinglePressModeButton;
       SinglePressModeButton;
 
+      #3s;
+
+      @(posedge Clock);
       for (int i=0; i<4; i++) begin
         #3s;
         SpeedVerification;
@@ -565,6 +572,7 @@ end
 
       #3s;
 
+      @(posedge Clock);
       for (int i=0; i<4; i++) begin
         #3s;
         SpeedVerification;
@@ -572,8 +580,9 @@ end
 
       LowSpeedTest;
 
-      #10s;
+      #3s;
 
+      @ (posedge Clock);
       for (int i=0; i<4; i++) begin
         #3s;
         SpeedVerification;
