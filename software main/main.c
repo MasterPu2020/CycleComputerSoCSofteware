@@ -207,12 +207,13 @@ int main(void) {
     if (!present_speed_valid)
       present_speed = last_speed_2;
 
-    // Get cadence (unit: round/second) 
+    // Get cadence (unit: round/second)
     long_delta_time = long_delta_time + delta_time;
     long_delta_crank = long_delta_crank + delta_crank;
     if (long_delta_time > 10){
       present_cadence = (uint32_t) (long_delta_crank * 60 / long_delta_time);
-      present_cadence = (present_cadence / 5 + 1) * 5; // Precision: 5 round (unit: round/second)
+      if (present_cadence != 0)
+        present_cadence = (present_cadence / 5 + 1) * 5; // Precision: 5 round (unit: round/second)
       long_delta_time = 0;
       long_delta_crank = 0;
       if (present_cadence > 999)
