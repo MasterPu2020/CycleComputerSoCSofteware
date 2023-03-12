@@ -1,0 +1,232 @@
+         Created directory chip/handin
+
+         Created: behavioural.tar
+         Created: system.tar
+         Created: system2.tar
+         Created: software.tar
+         Created: macro_models.tar
+         Created first cut handin file (MK I): handin_behavioural.tar
+         Found SystemVerilog file: ../behavioural/comp_core.sv
+         Found SystemVerilog file: ../system/system.sv
+         Created updated handin file (MK II): handin_behavioural.tar
+simcommand=./simulate -no_graphics -tech c35b4 -gate behavioural 20s +define+basic_mode_change
+***
+***
+***
+Setting simulation time
+xmverilog +sv -y behavioural -y ./system2 -y system -f /opt/cad/designkits/ecs/verilog/c35b4/gate_models.inc +libext+.sv +libext+.v +incdir+behavioural system/system.sv +define+sim_time=20s +xmtimescale+1ns/10ps +define+external_pullup +define+functional +define+basic_mode_change -l simulateLogFile
+TOOL:	xmverilog	21.03-s009: Started on Mar 12, 2023 at 19:49:27 GMT
+TOOL:	xmverilog	21.03-s009: Started on Mar 12, 2023 at 19:49:27 GMT
+xmverilog(64): 21.03-s009: (c) Copyright 1995-2021 Cadence Design Systems, Inc.
+file: system/system.sv
+`define external_pullup
+                       |
+xmvlog: *W,MACNDF (behavioural/options.sv,41|23): The text macro 'external_pullup' has also been defined on the command line using the -DEFINE command line option.  The compiler will ignore the definition found in the Verilog source code.
+(`include file: behavioural/options.sv line 41, file: system/system.sv line 9)
+	module worklib.system:sv
+		errors: 0, warnings: 0
+file: system/computer.sv
+`define external_pullup
+                       |
+xmvlog: *W,MACNDF (behavioural/options.sv,41|23): The text macro 'external_pullup' has also been defined on the command line using the -DEFINE command line option.  The compiler will ignore the definition found in the Verilog source code.
+(`include file: behavioural/options.sv line 41, file: system/computer.sv line 10)
+	module system.computer:sv
+		errors: 0, warnings: 0
+file: system/computer.sv
+`define external_pullup
+                       |
+xmvlog: *W,MACNDF (behavioural/options.sv,41|23): The text macro 'external_pullup' has also been defined on the command line using the -DEFINE command line option.  The compiler will ignore the definition found in the Verilog source code.
+(`include file: behavioural/options.sv line 41, file: system/computer.sv line 10)
+file: system/led_display.sv
+`define external_pullup
+                       |
+xmvlog: *W,MACNDF (behavioural/options.sv,41|23): The text macro 'external_pullup' has also been defined on the command line using the -DEFINE command line option.  The compiler will ignore the definition found in the Verilog source code.
+(`include file: behavioural/options.sv line 41, file: system/led_display.sv line 35)
+	module system.led_display:sv
+		errors: 0, warnings: 0
+file: /opt/cad/designkits/ams/v410/verilog/c35b4/c35_CORELIB_3B.v
+file: /opt/cad/designkits/ams/v410/verilog/c35b4/c35_CORELIBD_3B.v
+file: /opt/cad/designkits/ams/v410/verilog/c35b4/c35_CORELIBD.v
+file: /opt/cad/designkits/ams/v410/verilog/c35b4/c35_CORELIB.v
+file: /opt/cad/designkits/ams/v410/verilog/c35b4/c35_CORELIB_V5_3B.v
+file: /opt/cad/designkits/ams/v410/verilog/c35b4/c35_CORELIB_V5.v
+file: /opt/cad/designkits/ams/v410/verilog/c35b4/c35_IOLIB_3B.v
+file: /opt/cad/designkits/ams/v410/verilog/c35b4/c35_IOLIBC_3B.v
+file: /opt/cad/designkits/ams/v410/verilog/c35b4/c35_IOLIBCV5_3B.v
+file: /opt/cad/designkits/ams/v410/verilog/c35b4/c35_IOLIB.v
+file: /opt/cad/designkits/ams/v410/verilog/c35b4/c35_IOLIBV5.v
+file: /opt/cad/designkits/ams/v410/verilog/c35b4/FILLANT.v
+file: /opt/cad/designkits/ams/v410/verilog/udp.v
+file: behavioural/comp_core.sv
+	module behavioural.comp_core:sv
+		errors: 0, warnings: 0
+file: behavioural/CORTEXM0DS.sv
+	module behavioural.CORTEXM0DS:sv
+		errors: 0, warnings: 0
+file: behavioural/ahb_interconnect.sv
+	module behavioural.ahb_interconnect:sv
+		errors: 0, warnings: 0
+file: behavioural/ahb_rom.sv
+	module behavioural.ahb_rom:sv
+		errors: 0, warnings: 0
+file: behavioural/ahb_ram.sv
+	module behavioural.ahb_ram:sv
+		errors: 0, warnings: 0
+file: behavioural/timer.sv
+	module behavioural.timer:sv
+		errors: 0, warnings: 0
+file: behavioural/sensor_manager.sv
+	module behavioural.sensor_manager:sv
+		errors: 0, warnings: 0
+file: behavioural/oled_manager.sv
+	module behavioural.oled_manager:sv
+		errors: 0, warnings: 0
+file: behavioural/button_manager.sv
+	module behavioural.button_manager:sv
+		errors: 0, warnings: 0
+file: behavioural/seven_segment.sv
+	module behavioural.seven_segment:sv
+		errors: 0, warnings: 0
+file: behavioural/cortexm0ds_logic.sv
+	module behavioural.cortexm0ds_logic:sv
+		errors: 0, warnings: 0
+xmvlog: *W,LIBNOU: Library "./system2" given but not used.
+xmvlog: *W,LIBNOU: Library "/opt/cad/designkits/ams/v410/verilog/c35b4/c35_CORELIB_3B.v" given but not used.
+xmvlog: *W,LIBNOU: Library "/opt/cad/designkits/ams/v410/verilog/c35b4/c35_CORELIBD_3B.v" given but not used.
+xmvlog: *W,LIBNOU: Library "/opt/cad/designkits/ams/v410/verilog/c35b4/c35_CORELIBD.v" given but not used.
+xmvlog: *W,LIBNOU: Library "/opt/cad/designkits/ams/v410/verilog/c35b4/c35_CORELIB.v" given but not used.
+xmvlog: *W,LIBNOU: Library "/opt/cad/designkits/ams/v410/verilog/c35b4/c35_CORELIB_V5_3B.v" given but not used.
+xmvlog: *W,LIBNOU: Library "/opt/cad/designkits/ams/v410/verilog/c35b4/c35_CORELIB_V5.v" given but not used.
+xmvlog: *W,LIBNOU: Library "/opt/cad/designkits/ams/v410/verilog/c35b4/c35_IOLIB_3B.v" given but not used.
+xmvlog: *W,LIBNOU: Library "/opt/cad/designkits/ams/v410/verilog/c35b4/c35_IOLIBC_3B.v" given but not used.
+xmvlog: *W,LIBNOU: Library "/opt/cad/designkits/ams/v410/verilog/c35b4/c35_IOLIBCV5_3B.v" given but not used.
+xmvlog: *W,LIBNOU: Library "/opt/cad/designkits/ams/v410/verilog/c35b4/c35_IOLIB.v" given but not used.
+xmvlog: *W,LIBNOU: Library "/opt/cad/designkits/ams/v410/verilog/c35b4/c35_IOLIBV5.v" given but not used.
+xmvlog: *W,LIBNOU: Library "/opt/cad/designkits/ams/v410/verilog/c35b4/FILLANT.v" given but not used.
+xmvlog: *W,LIBNOU: Library "/opt/cad/designkits/ams/v410/verilog/udp.v" given but not used.
+	Total errors/warnings found outside modules and primitives:
+		errors: 0, warnings: 18
+		Caching library 'behavioural' ....... Done
+		Caching library 'system' ....... Done
+		Caching library 'worklib' ....... Done
+	Elaborating the design hierarchy:
+comp_core COMP_core ( 
+                  |
+xmelab: *W,CUVWSP (./system/computer.sv,133|18): 4 output ports were not connected:
+xmelab: (./behavioural/comp_core.sv,14): nCS
+xmelab: (./behavioural/comp_core.sv,14): DnC
+xmelab: (./behavioural/comp_core.sv,14): SDIN
+xmelab: (./behavioural/comp_core.sv,14): SCLK
+
+xmelab: *W,DSEMEL: This SystemVerilog design will be simulated as per IEEE 1800-2009 SystemVerilog simulation semantics. Use -disable_sem2009 option for turning off SV 2009 simulation semantics.
+      $display("  Found warning message: %d.\n", error);
+                                                     |
+xmelab: *W,REALCV (../system2/stimulus.sv,178|53): Real argument converted to integer for (%d).
+    $display("\n Real Speed is %f km/h. Segment display is %f km/h (ave speed = %dkm/h). (%t)", (speed * 3.6), seg_value, ave_speed*3.6, $time);
+                                                                                                                                   |
+xmelab: *W,REALCV (../system2/stimulus.sv,213|131): Real argument converted to integer for (%d).
+    $display("\n Real Cadence is %d rpm. Segment display is %d rpm (ave cadence = %d). (%t)", cadence, seg_value, ave_cadence, $time);
+                                                                                                               |
+xmelab: *W,REALCV (../system2/stimulus.sv,232|111): Real argument converted to integer for (%d).
+    $display("\n Real Cadence is %d rpm. Segment display is %d rpm (ave cadence = %d). (%t)", cadence, seg_value, ave_cadence, $time);
+                                                                                                                            |
+xmelab: *W,REALCV (../system2/stimulus.sv,232|124): Real argument converted to integer for (%d).
+	Building instance overlay tables: .................... Done
+	Generating native compiled code:
+		behavioural.seven_segment:sv <0x42992e5c>
+			streams:  18, words: 26287
+		behavioural.oled_manager:sv <0x3fc9f716>
+			streams:  13, words: 10806
+		behavioural.sensor_manager:sv <0x39b9caea>
+			streams:   8, words:  3426
+		behavioural.timer:sv <0x1ad90812>
+			streams:   9, words:  4249
+		behavioural.ahb_ram:sv <0x7352b465>
+			streams:  15, words:  9364
+		behavioural.ahb_rom:sv <0x729b1492>
+			streams:   7, words: 982167
+		behavioural.ahb_interconnect:sv <0x32a77587>
+			streams:   4, words:  4719
+		behavioural.cortexm0ds_logic:sv <0x79aba438>
+			streams: 2365, words: 993112
+		behavioural.CORTEXM0DS:sv <0x21443abb>
+			streams:   0, words:     0
+		behavioural.comp_core:sv <0x1a6cf2d0>
+			streams:   2, words:   935
+		behavioural.button_manager:sv <0x52264e41>
+			streams:  34, words: 19134
+		worklib.system:sv <0x5441f99b>
+			streams:  66, words: 166195
+		system.led_display:sv <0x7d398184>
+			streams:   1, words:   260
+		system.computer:sv <0x3af971b0>
+			streams:   3, words:  1897
+	Building instance specific data structures.
+	Loading native compiled code:     .................... Done
+	Design hierarchy summary:
+		                   Instances  Unique
+		Modules:                  14      14
+		Primitives:                5       1
+		Registers:              1029    1029
+		Scalar wires:          11169       -
+		Expanded wires:          131       6
+		Vectored wires:         2275       -
+		Named events:              5       5
+		Always blocks:           880     880
+		Initial blocks:           40      40
+		Cont. assignments:       957   13386
+		Pseudo assignments:        2       2
+		Timing checks:             8       8
+		Assertions:                9       9
+		Simulation timescale:   10ps
+	Writing initial simulation snapshot: worklib.system:sv
+Loading snapshot worklib.system:sv .................... Done
+xmsim: *W,DSEM2009: This SystemVerilog design is simulated as per IEEE 1800-2009 SystemVerilog simulation semantics. Use -disable_sem2009 option for turning off SV 2009 simulation semantics.
+xcelium> source /eda/cadence/xcelium/tools/xcelium/files/xmsimrc
+xcelium> run
+COMPILATION OK
+CLOCK PERIOD IS 30517.6ns
+DISPLAY IS LED ONLY
+This Bicycle Computer supports 4 modes:
+  Mode 0: Distance
+  Mode 1: Duration
+  Mode 2: Cadence
+  Mode 3: Speed
+ (the computer will enter mode 0 on reset)
+
+ Start Up.
+
+------------------------------------------------------------------------------
+
+ Simulation Start.
+
+------------------------------------------------------------------------------
+
+ *************** Basic Test ***************
+
+
+ Noise test start.
+
+ Noise test end.
+------------------------------------------------------------------------------
+
+ Night mode test start.
+
+ Wait for the software to check to the button.
+
+ Night/Day Mode is Activated. (     1.95s)
+
+ Night mode test end.
+------------------------------------------------------------------------------
+Simulation stopped via $stop(1) at time 20 S + 0
+./system/system.sv:367       $stop;
+xcelium> TOOL:	xmverilog	21.03-s009: Exiting on Mar 12, 2023 at 19:50:06 GMT  (total: 00:00:39)
+***
+***
+***
+         Done
+         simulation checks completed ok
+
+
+       Writing handin_behavioural.tar (MK III)
+       Done
