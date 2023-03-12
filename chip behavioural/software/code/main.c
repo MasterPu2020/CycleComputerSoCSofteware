@@ -191,7 +191,7 @@ int main(void) {
       present_time = last_time;
     last_time = present_time;
     
-    // Get speed (unit: km/h)
+    // Get speed (unit: km/h)   
     bool present_speed_valid = true;
     present_speed = (delta_distance * 3600) / delta_time; // (unit: km/h)
     if (present_speed > 99.99)
