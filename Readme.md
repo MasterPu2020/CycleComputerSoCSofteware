@@ -13,6 +13,7 @@
 - [SoC硬件代码](./chip/behavioural)
 - [SoC软件代码](./chip/software/code/main.c)
 - [SoC仿真文件](./chip/system2/stimulus.sv)
+- [SoC软件代码改进](./software%20main/)
 
 ***
 
@@ -47,3 +48,5 @@
 **Comment by Circle:** *优化了代码，但没完全优化，Bug越De越Bug*
 
 **Comment by Clark:** *什么玩意？*
+
+**Comment by Clark:** *“奖励你的组员西班牙一周游”*

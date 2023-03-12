@@ -50,9 +50,9 @@ logic [15:0] long_counter;
 logic [ 5:0] short_counter;
 // Parameters
 localparam
-  ClockCycle = 30500, // ns = 30.5 us
-  Count1S = 32787,    // = 1s / ClockCycle = 1,000,000 / 32,786.9
-  Count1MS = 32,      // = 1ms / ClockCycle = 1,000 / 32.8 adjusted to fit 3s
+  ClockCycle = 30518, // ns = 30.5 us
+  Count1S    = 32768, // = 1s / ClockCycle = 1,000,000 / 32,786.9
+  Count1MS   = 32,    // = 1ms / ClockCycle = 1,000 / 32.8 adjusted to fit 3s
   TimeUp     = 3000,  // 3000 ms = 3s
   NoTransfer = 2'b00; // AHB disabled
 
