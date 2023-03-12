@@ -44,18 +44,6 @@
       cell = "ICP"
     )
     (inst
-      name = "PAD_SDI"
-      cell = "ICP"
-    )
-    (inst
-      name = "PAD_Test"
-      cell = "ICP"
-    )
-    (inst
-      name = "PAD_ScanEnable"
-      cell = "ICP"
-    )
-    (inst
       name = "PAD_nTrip"
       cell = "ICP"
     )
@@ -112,10 +100,6 @@
     (inst
       name = "CORE_VDD_1"
       cell = "VDD3IP"
-    )
-    (inst
-      name = "PAD_SDO"
-      cell = "ICP"
     )
     (inst
       name = "PAD_nCS"

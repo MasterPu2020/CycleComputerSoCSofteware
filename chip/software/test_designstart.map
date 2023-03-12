@@ -4,6 +4,8 @@ Archive member included to satisfy reference by file (symbol)
                               ./code/main.o (__aeabi_uidiv)
 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_dvmd_tls.o)
                               /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_udivsi3.o) (__aeabi_idiv0)
+/srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_arm_cmpdf2.o)
+                              ./code/main.o (__aeabi_dcmpgt)
 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_arm_cmpsf2.o)
                               ./code/main.o (__aeabi_fcmplt)
 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_fixunssfsi.o)
@@ -24,6 +26,18 @@ Archive member included to satisfy reference by file (symbol)
                               /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_fixunssfsi.o) (__aeabi_f2iz)
 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(floatunsisf.o)
                               ./code/main.o (__aeabi_ui2f)
+/srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(adddf3.o)
+                              ./code/main.o (__aeabi_dadd)
+/srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(eqdf2.o)
+                              /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_arm_cmpdf2.o) (__eqdf2)
+/srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(gedf2.o)
+                              /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_arm_cmpdf2.o) (__gedf2)
+/srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(ledf2.o)
+                              /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_arm_cmpdf2.o) (__ledf2)
+/srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(extendsfdf2.o)
+                              ./code/main.o (__aeabi_f2d)
+/srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(truncdfsf2.o)
+                              ./code/main.o (__aeabi_d2f)
 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_clzsi2.o)
                               /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(divsf3.o) (__clzsi2)
 
@@ -31,26 +45,43 @@ Allocating common symbols
 Common symbol       size              file
 
 wheel               0x4               ./code/main.o
+stop_time_mode      0x4               ./code/main.o
+stop_time           0x4               ./code/main.o
 time_h              0x4               ./code/main.o
+fork_equal          0x4               ./code/main.o
+post_fork           0x4               ./code/main.o
+time_h_bcd          0x4               ./code/main.o
+total_distance_b_bcd
+                    0x4               ./code/main.o
 now_time            0x4               ./code/main.o
+post_stop_time      0x4               ./code/main.o
+speed_f_bcd         0x4               ./code/main.o
 max_speed           0x4               ./code/main.o
 distance            0x4               ./code/main.o
 switchDisplay       0x1               ./code/main.o
 post_time           0x4               ./code/main.o
+store_stop_time     0x4               ./code/main.o
 time_m              0x4               ./code/main.o
 mode                0x4               ./code/main.o
 cadence             0x4               ./code/main.o
 total_distance_f    0x4               ./code/main.o
+total_distance_f_bcd
+                    0x4               ./code/main.o
 post_distance       0x4               ./code/main.o
 speed_b             0x4               ./code/main.o
 speed_red           0x1               ./code/main.o
 time                0x4               ./code/main.o
 speed_f             0x4               ./code/main.o
+cadence_bcd         0x4               ./code/main.o
+now_stop_time       0x4               ./code/main.o
 total_distance      0x4               ./code/main.o
+wheel_d             0x4               ./code/main.o
 speed               0x4               ./code/main.o
 total_distance_b    0x4               ./code/main.o
 isNight             0x1               ./code/main.o
 bike_fork           0x4               ./code/main.o
+time_m_bcd          0x4               ./code/main.o
+speed_b_bcd         0x4               ./code/main.o
 crank               0x4               ./code/main.o
 
 Memory Configuration
@@ -70,7 +101,7 @@ LOAD /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-
 LOAD /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/armv6-m/libc.a
 END GROUP
 
-.text           0x00000000     0x13c4
+.text           0x00000000     0x2228
                 0x00000000                _stext = .
  CREATE_OBJECT_SYMBOLS
  *(.vectors)
@@ -106,7 +137,7 @@ END GROUP
                 0x00000148                PIO_2_IRQHandler
                 0x0000014c                PIO_1_IRQHandler
                 0x00000150                PIO_0_IRQHandler
- .text          0x00000154      0x630 ./code/main.o
+ .text          0x00000154      0x9e4 ./code/main.o
                 0x00000154                setting
                 0x0000016c                press_trip
                 0x00000184                press_mode
@@ -120,118 +151,151 @@ END GROUP
                 0x00000220                clear_fork
                 0x00000230                clear_timer_long
                 0x0000024c                display_segment
-                0x00000270                wait_for_press
-                0x00000290                wait_for_setting
-                0x0000036c                check_speed
-                0x000003bc                get_distance
-                0x00000414                get_speed
-                0x00000448                get_cadence
-                0x00000488                initiate
-                0x00000518                main
- .text          0x00000784      0x114 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_udivsi3.o)
-                0x00000784                __udivsi3
-                0x00000784                __aeabi_uidiv
-                0x00000890                __aeabi_uidivmod
- .text          0x00000898        0x4 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_dvmd_tls.o)
-                0x00000898                __aeabi_ldiv0
-                0x00000898                __aeabi_idiv0
- .text          0x0000089c       0x74 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_arm_cmpsf2.o)
-                0x0000089c                __aeabi_cfrcmple
-                0x000008a4                __aeabi_cfcmple
-                0x000008a4                __aeabi_cfcmpeq
-                0x000008b4                __aeabi_fcmpeq
-                0x000008c0                __aeabi_fcmplt
-                0x000008d4                __aeabi_fcmple
-                0x000008e8                __aeabi_fcmpgt
-                0x000008fc                __aeabi_fcmpge
- .text          0x00000910       0x30 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_fixunssfsi.o)
-                0x00000910                __aeabi_f2uiz
-                0x00000910                __fixunssfsi
- .text          0x00000940      0x234 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(divsf3.o)
-                0x00000940                __aeabi_fdiv
- .text          0x00000b74       0x50 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(eqsf2.o)
-                0x00000b74                __nesf2
-                0x00000b74                __eqsf2
- .text          0x00000bc4       0x88 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(gesf2.o)
-                0x00000bc4                __gtsf2
-                0x00000bc4                __gesf2
- .text          0x00000c4c       0x88 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(lesf2.o)
-                0x00000c4c                __lesf2
-                0x00000c4c                __ltsf2
- .text          0x00000cd4      0x228 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(mulsf3.o)
-                0x00000cd4                __aeabi_fmul
- .text          0x00000efc      0x30c /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(subsf3.o)
-                0x00000efc                __aeabi_fsub
- .text          0x00001208       0x44 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(fixsfsi.o)
-                0x00001208                __aeabi_f2iz
- .text          0x0000124c       0x7c /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(floatunsisf.o)
-                0x0000124c                __aeabi_ui2f
- .text          0x000012c8       0x3c /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_clzsi2.o)
-                0x000012c8                __clzsi2
+                0x0000027c                int2bcd
+                0x000002cc                check_time_stop
+                0x00000398                wait_for_press
+                0x000003bc                wait_for_setting
+                0x000004d0                check_speed
+                0x00000520                get_distance
+                0x000005a8                get_speed
+                0x00000610                get_cadence
+                0x00000698                refresh_segment
+                0x0000072c                initiate
+                0x000007ec                main
+ .text          0x00000b38      0x114 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_udivsi3.o)
+                0x00000b38                __udivsi3
+                0x00000b38                __aeabi_uidiv
+                0x00000c44                __aeabi_uidivmod
+ .text          0x00000c4c        0x4 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_dvmd_tls.o)
+                0x00000c4c                __aeabi_ldiv0
+                0x00000c4c                __aeabi_idiv0
+ .text          0x00000c50       0x7c /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_arm_cmpdf2.o)
+                0x00000c50                __aeabi_cdrcmple
+                0x00000c60                __aeabi_cdcmple
+                0x00000c60                __aeabi_cdcmpeq
+                0x00000c70                __aeabi_dcmpeq
+                0x00000c7c                __aeabi_dcmplt
+                0x00000c90                __aeabi_dcmple
+                0x00000ca4                __aeabi_dcmpgt
+                0x00000cb8                __aeabi_dcmpge
+ .text          0x00000ccc       0x74 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_arm_cmpsf2.o)
+                0x00000ccc                __aeabi_cfrcmple
+                0x00000cd4                __aeabi_cfcmple
+                0x00000cd4                __aeabi_cfcmpeq
+                0x00000ce4                __aeabi_fcmpeq
+                0x00000cf0                __aeabi_fcmplt
+                0x00000d04                __aeabi_fcmple
+                0x00000d18                __aeabi_fcmpgt
+                0x00000d2c                __aeabi_fcmpge
+ .text          0x00000d40       0x30 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_fixunssfsi.o)
+                0x00000d40                __aeabi_f2uiz
+                0x00000d40                __fixunssfsi
+ .text          0x00000d70      0x234 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(divsf3.o)
+                0x00000d70                __aeabi_fdiv
+ .text          0x00000fa4       0x50 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(eqsf2.o)
+                0x00000fa4                __nesf2
+                0x00000fa4                __eqsf2
+ .text          0x00000ff4       0x88 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(gesf2.o)
+                0x00000ff4                __gtsf2
+                0x00000ff4                __gesf2
+ .text          0x0000107c       0x88 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(lesf2.o)
+                0x0000107c                __lesf2
+                0x0000107c                __ltsf2
+ .text          0x00001104      0x228 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(mulsf3.o)
+                0x00001104                __aeabi_fmul
+ .text          0x0000132c      0x30c /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(subsf3.o)
+                0x0000132c                __aeabi_fsub
+ .text          0x00001638       0x44 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(fixsfsi.o)
+                0x00001638                __aeabi_f2iz
+ .text          0x0000167c       0x7c /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(floatunsisf.o)
+                0x0000167c                __aeabi_ui2f
+ .text          0x000016f8      0x658 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(adddf3.o)
+                0x000016f8                __aeabi_dadd
+ .text          0x00001d50       0x80 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(eqdf2.o)
+                0x00001d50                __eqdf2
+                0x00001d50                __nedf2
+ .text          0x00001dd0       0xc8 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(gedf2.o)
+                0x00001dd0                __gtdf2
+                0x00001dd0                __gedf2
+ .text          0x00001e98       0xd4 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(ledf2.o)
+                0x00001e98                __ltdf2
+                0x00001e98                __ledf2
+ .text          0x00001f6c       0xa8 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(extendsfdf2.o)
+                0x00001f6c                __aeabi_f2d
+ .text          0x00002014      0x118 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(truncdfsf2.o)
+                0x00002014                __aeabi_d2f
+ .text          0x0000212c       0x3c /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_clzsi2.o)
+                0x0000212c                __clzsi2
  *(.text.*)
-                0x00001304                . = ALIGN (0x4)
+                0x00002168                . = ALIGN (0x4)
  *(.rodata)
- .rodata        0x00001304       0x80 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(divsf3.o)
- .rodata        0x00001384       0x40 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(mulsf3.o)
+ .rodata        0x00002168       0x80 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(divsf3.o)
+ .rodata        0x000021e8       0x40 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(mulsf3.o)
  *(.rodata.*)
-                0x000013c4                . = ALIGN (0x4)
-                0x000013c4                _etext = .
+                0x00002228                . = ALIGN (0x4)
+                0x00002228                _etext = .
 
-.glue_7         0x000013c4        0x0
- .glue_7        0x000013c4        0x0 linker stubs
+.glue_7         0x00002228        0x0
+ .glue_7        0x00002228        0x0 linker stubs
 
-.glue_7t        0x000013c4        0x0
- .glue_7t       0x000013c4        0x0 linker stubs
+.glue_7t        0x00002228        0x0
+ .glue_7t       0x00002228        0x0 linker stubs
 
-.vfp11_veneer   0x000013c4        0x0
- .vfp11_veneer  0x000013c4        0x0 linker stubs
+.vfp11_veneer   0x00002228        0x0
+ .vfp11_veneer  0x00002228        0x0 linker stubs
 
-.v4_bx          0x000013c4        0x0
- .v4_bx         0x000013c4        0x0 linker stubs
+.v4_bx          0x00002228        0x0
+ .v4_bx         0x00002228        0x0 linker stubs
 
-.iplt           0x000013c4        0x0
- .iplt          0x000013c4        0x0 ./code/crt.o
+.iplt           0x00002228        0x0
+ .iplt          0x00002228        0x0 ./code/crt.o
 
-.rel.dyn        0x000013c4        0x0
- .rel.iplt      0x000013c4        0x0 ./code/crt.o
+.rel.dyn        0x00002228        0x0
+ .rel.iplt      0x00002228        0x0 ./code/crt.o
 
-.data           0x000013c4       0x18
-                0x000013c4                . = ALIGN (0x4)
-                0x000013c4                _sdata = .
+.data           0x00002228       0x14
+                0x00002228                . = ALIGN (0x4)
+                0x00002228                _sdata = .
  *(.data)
- .data          0x000013c4        0x0 ./code/crt.o
- .data          0x000013c4        0x0 ./code/vectors_designstart.o
- .data          0x000013c4       0x18 ./code/main.o
-                0x000013c4                DEBUG
-                0x000013c8                OLED
-                0x000013cc                SEGMENT
-                0x000013d0                TIMER
-                0x000013d4                SENSOR
-                0x000013d8                BUTTON
- .data          0x000013dc        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_udivsi3.o)
- .data          0x000013dc        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_dvmd_tls.o)
- .data          0x000013dc        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_arm_cmpsf2.o)
- .data          0x000013dc        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_fixunssfsi.o)
- .data          0x000013dc        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(divsf3.o)
- .data          0x000013dc        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(eqsf2.o)
- .data          0x000013dc        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(gesf2.o)
- .data          0x000013dc        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(lesf2.o)
- .data          0x000013dc        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(mulsf3.o)
- .data          0x000013dc        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(subsf3.o)
- .data          0x000013dc        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(fixsfsi.o)
- .data          0x000013dc        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(floatunsisf.o)
- .data          0x000013dc        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_clzsi2.o)
+ .data          0x00002228        0x0 ./code/crt.o
+ .data          0x00002228        0x0 ./code/vectors_designstart.o
+ .data          0x00002228       0x14 ./code/main.o
+                0x00002228                OLED
+                0x0000222c                SEGMENT
+                0x00002230                TIMER
+                0x00002234                SENSOR
+                0x00002238                BUTTON
+ .data          0x0000223c        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_udivsi3.o)
+ .data          0x0000223c        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_dvmd_tls.o)
+ .data          0x0000223c        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_arm_cmpdf2.o)
+ .data          0x0000223c        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_arm_cmpsf2.o)
+ .data          0x0000223c        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_fixunssfsi.o)
+ .data          0x0000223c        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(divsf3.o)
+ .data          0x0000223c        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(eqsf2.o)
+ .data          0x0000223c        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(gesf2.o)
+ .data          0x0000223c        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(lesf2.o)
+ .data          0x0000223c        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(mulsf3.o)
+ .data          0x0000223c        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(subsf3.o)
+ .data          0x0000223c        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(fixsfsi.o)
+ .data          0x0000223c        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(floatunsisf.o)
+ .data          0x0000223c        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(adddf3.o)
+ .data          0x0000223c        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(eqdf2.o)
+ .data          0x0000223c        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(gedf2.o)
+ .data          0x0000223c        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(ledf2.o)
+ .data          0x0000223c        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(extendsfdf2.o)
+ .data          0x0000223c        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(truncdfsf2.o)
+ .data          0x0000223c        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_clzsi2.o)
  *(.data.*)
-                0x000013dc                . = ALIGN (0x4)
+                0x0000223c                . = ALIGN (0x4)
  *(.fastrun)
  *(.fastrun.*)
-                0x000013dc                . = ALIGN (0x4)
-                0x000013dc                _edata = .
+                0x0000223c                . = ALIGN (0x4)
+                0x0000223c                _edata = .
 
-.igot.plt       0x000013dc        0x0
- .igot.plt      0x000013dc        0x0 ./code/crt.o
+.igot.plt       0x0000223c        0x0
+ .igot.plt      0x0000223c        0x0 ./code/crt.o
 
-.bss            0x20000000       0x58
+.bss            0x20000000       0x94
                 0x20000000                . = ALIGN (0x4)
                 0x20000000                _sbss = .
  *(.bss)
@@ -240,6 +304,7 @@ END GROUP
  .bss           0x20000000        0x0 ./code/main.o
  .bss           0x20000000        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_udivsi3.o)
  .bss           0x20000000        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_dvmd_tls.o)
+ .bss           0x20000000        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_arm_cmpdf2.o)
  .bss           0x20000000        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_arm_cmpsf2.o)
  .bss           0x20000000        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_fixunssfsi.o)
  .bss           0x20000000        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(divsf3.o)
@@ -250,52 +315,73 @@ END GROUP
  .bss           0x20000000        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(subsf3.o)
  .bss           0x20000000        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(fixsfsi.o)
  .bss           0x20000000        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(floatunsisf.o)
+ .bss           0x20000000        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(adddf3.o)
+ .bss           0x20000000        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(eqdf2.o)
+ .bss           0x20000000        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(gedf2.o)
+ .bss           0x20000000        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(ledf2.o)
+ .bss           0x20000000        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(extendsfdf2.o)
+ .bss           0x20000000        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(truncdfsf2.o)
  .bss           0x20000000        0x0 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_clzsi2.o)
  *(.bss.*)
                 0x20000000                . = ALIGN (0x4)
- COMMON         0x20000000       0x58 ./code/main.o
+ COMMON         0x20000000       0x94 ./code/main.o
                 0x20000000                wheel
-                0x20000004                time_h
-                0x20000008                now_time
-                0x2000000c                max_speed
-                0x20000010                distance
-                0x20000014                switchDisplay
-                0x20000018                post_time
-                0x2000001c                time_m
-                0x20000020                mode
-                0x20000024                cadence
-                0x20000028                total_distance_f
-                0x2000002c                post_distance
-                0x20000030                speed_b
-                0x20000034                speed_red
-                0x20000038                time
-                0x2000003c                speed_f
-                0x20000040                total_distance
-                0x20000044                speed
-                0x20000048                total_distance_b
-                0x2000004c                isNight
-                0x20000050                bike_fork
-                0x20000054                crank
-                0x20000058                _ebss = .
+                0x20000004                stop_time_mode
+                0x20000008                stop_time
+                0x2000000c                time_h
+                0x20000010                fork_equal
+                0x20000014                post_fork
+                0x20000018                time_h_bcd
+                0x2000001c                total_distance_b_bcd
+                0x20000020                now_time
+                0x20000024                post_stop_time
+                0x20000028                speed_f_bcd
+                0x2000002c                max_speed
+                0x20000030                distance
+                0x20000034                switchDisplay
+                0x20000038                post_time
+                0x2000003c                store_stop_time
+                0x20000040                time_m
+                0x20000044                mode
+                0x20000048                cadence
+                0x2000004c                total_distance_f
+                0x20000050                total_distance_f_bcd
+                0x20000054                post_distance
+                0x20000058                speed_b
+                0x2000005c                speed_red
+                0x20000060                time
+                0x20000064                speed_f
+                0x20000068                cadence_bcd
+                0x2000006c                now_stop_time
+                0x20000070                total_distance
+                0x20000074                wheel_d
+                0x20000078                speed
+                0x2000007c                total_distance_b
+                0x20000080                isNight
+                0x20000084                bike_fork
+                0x20000088                time_m_bcd
+                0x2000008c                speed_b_bcd
+                0x20000090                crank
+                0x20000094                _ebss = .
                 0x20000100                _estack = (ORIGIN (RAM) + LENGTH (RAM))
 
 /DISCARD/
  *(.ARM.exidx*)
 OUTPUT(test_designstart.elf elf32-littlearm)
 
-.debug_info     0x00000000      0x8fe
+.debug_info     0x00000000      0xab9
  .debug_info    0x00000000       0xcb ./code/crt.o
  .debug_info    0x000000cb      0x297 ./code/vectors_designstart.o
- .debug_info    0x00000362      0x59c ./code/main.o
+ .debug_info    0x00000362      0x757 ./code/main.o
 
-.debug_abbrev   0x00000000      0x23c
+.debug_abbrev   0x00000000      0x2aa
  .debug_abbrev  0x00000000       0x7a ./code/crt.o
  .debug_abbrev  0x0000007a       0x82 ./code/vectors_designstart.o
- .debug_abbrev  0x000000fc      0x140 ./code/main.o
+ .debug_abbrev  0x000000fc      0x1ae ./code/main.o
 
-.debug_loc      0x00000000      0x17c
+.debug_loc      0x00000000      0x1e8
  .debug_loc     0x00000000       0x2c ./code/crt.o
- .debug_loc     0x0000002c      0x150 ./code/main.o
+ .debug_loc     0x0000002c      0x1bc ./code/main.o
 
 .debug_aranges  0x00000000       0x60
  .debug_aranges
@@ -305,18 +391,18 @@ OUTPUT(test_designstart.elf elf32-littlearm)
  .debug_aranges
                 0x00000040       0x20 ./code/main.o
 
-.debug_line     0x00000000      0x32a
+.debug_line     0x00000000      0x38e
  .debug_line    0x00000000       0xe1 ./code/crt.o
  .debug_line    0x000000e1       0xe6 ./code/vectors_designstart.o
- .debug_line    0x000001c7      0x163 ./code/main.o
+ .debug_line    0x000001c7      0x1c7 ./code/main.o
 
-.debug_str      0x00000000      0x580
+.debug_str      0x00000000      0x6a4
  .debug_str     0x00000000      0x14e ./code/crt.o
                                 0x18b (size before relaxing)
  .debug_str     0x0000014e      0x1e0 ./code/vectors_designstart.o
                                 0x2bb (size before relaxing)
- .debug_str     0x0000032e      0x252 ./code/main.o
-                                0x39d (size before relaxing)
+ .debug_str     0x0000032e      0x376 ./code/main.o
+                                0x4cb (size before relaxing)
 
 .comment        0x00000000       0x6e
  .comment       0x00000000       0x6e ./code/crt.o
@@ -337,42 +423,62 @@ OUTPUT(test_designstart.elf elf32-littlearm)
  .ARM.attributes
                 0x000000b1       0x1e /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_dvmd_tls.o)
  .ARM.attributes
-                0x000000cf       0x1e /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_arm_cmpsf2.o)
+                0x000000cf       0x1e /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_arm_cmpdf2.o)
  .ARM.attributes
-                0x000000ed       0x2c /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_fixunssfsi.o)
+                0x000000ed       0x1e /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_arm_cmpsf2.o)
  .ARM.attributes
-                0x00000119       0x2c /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(divsf3.o)
+                0x0000010b       0x2c /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_fixunssfsi.o)
  .ARM.attributes
-                0x00000145       0x2c /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(eqsf2.o)
+                0x00000137       0x2c /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(divsf3.o)
  .ARM.attributes
-                0x00000171       0x2c /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(gesf2.o)
+                0x00000163       0x2c /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(eqsf2.o)
  .ARM.attributes
-                0x0000019d       0x2c /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(lesf2.o)
+                0x0000018f       0x2c /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(gesf2.o)
  .ARM.attributes
-                0x000001c9       0x2c /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(mulsf3.o)
+                0x000001bb       0x2c /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(lesf2.o)
  .ARM.attributes
-                0x000001f5       0x2c /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(subsf3.o)
+                0x000001e7       0x2c /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(mulsf3.o)
  .ARM.attributes
-                0x00000221       0x2c /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(fixsfsi.o)
+                0x00000213       0x2c /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(subsf3.o)
  .ARM.attributes
-                0x0000024d       0x2c /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(floatunsisf.o)
+                0x0000023f       0x2c /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(fixsfsi.o)
  .ARM.attributes
-                0x00000279       0x1e /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_clzsi2.o)
+                0x0000026b       0x2c /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(floatunsisf.o)
+ .ARM.attributes
+                0x00000297       0x2c /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(adddf3.o)
+ .ARM.attributes
+                0x000002c3       0x2c /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(eqdf2.o)
+ .ARM.attributes
+                0x000002ef       0x2c /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(gedf2.o)
+ .ARM.attributes
+                0x0000031b       0x2c /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(ledf2.o)
+ .ARM.attributes
+                0x00000347       0x2c /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(extendsfdf2.o)
+ .ARM.attributes
+                0x00000373       0x2c /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(truncdfsf2.o)
+ .ARM.attributes
+                0x0000039f       0x1e /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_clzsi2.o)
 
-.debug_frame    0x00000000      0x564
+.debug_frame    0x00000000      0x6f4
  .debug_frame   0x00000000       0x2c ./code/crt.o
  .debug_frame   0x0000002c      0x1b0 ./code/vectors_designstart.o
- .debug_frame   0x000001dc      0x1c4 ./code/main.o
- .debug_frame   0x000003a0       0x20 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_udivsi3.o)
- .debug_frame   0x000003c0       0x28 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_fixunssfsi.o)
- .debug_frame   0x000003e8       0x3c /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(divsf3.o)
- .debug_frame   0x00000424       0x2c /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(eqsf2.o)
- .debug_frame   0x00000450       0x30 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(gesf2.o)
- .debug_frame   0x00000480       0x30 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(lesf2.o)
- .debug_frame   0x000004b0       0x38 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(mulsf3.o)
- .debug_frame   0x000004e8       0x30 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(subsf3.o)
- .debug_frame   0x00000518       0x20 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(fixsfsi.o)
- .debug_frame   0x00000538       0x2c /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(floatunsisf.o)
+ .debug_frame   0x000001dc      0x218 ./code/main.o
+ .debug_frame   0x000003f4       0x20 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_udivsi3.o)
+ .debug_frame   0x00000414       0x28 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_fixunssfsi.o)
+ .debug_frame   0x0000043c       0x3c /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(divsf3.o)
+ .debug_frame   0x00000478       0x2c /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(eqsf2.o)
+ .debug_frame   0x000004a4       0x30 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(gesf2.o)
+ .debug_frame   0x000004d4       0x30 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(lesf2.o)
+ .debug_frame   0x00000504       0x38 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(mulsf3.o)
+ .debug_frame   0x0000053c       0x30 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(subsf3.o)
+ .debug_frame   0x0000056c       0x20 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(fixsfsi.o)
+ .debug_frame   0x0000058c       0x2c /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(floatunsisf.o)
+ .debug_frame   0x000005b8       0x3c /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(adddf3.o)
+ .debug_frame   0x000005f4       0x38 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(eqdf2.o)
+ .debug_frame   0x0000062c       0x38 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(gedf2.o)
+ .debug_frame   0x00000664       0x38 /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(ledf2.o)
+ .debug_frame   0x0000069c       0x2c /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(extendsfdf2.o)
+ .debug_frame   0x000006c8       0x2c /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(truncdfsf2.o)
 
 Cross Reference Table
 
@@ -386,7 +492,6 @@ CT16B1_IRQHandler                                 ./code/vectors_designstart.o
 CT32B0_IRQHandler                                 ./code/vectors_designstart.o
 CT32B1_IRQHandler                                 ./code/vectors_designstart.o
 C_CAN_IRQHandler                                  ./code/vectors_designstart.o
-DEBUG                                             ./code/main.o
 DebugMon_Handler                                  ./code/vectors_designstart.o
 HardFault_Handler                                 ./code/vectors_designstart.o
 I2C_IRQHandler                                    ./code/vectors_designstart.o
@@ -411,9 +516,24 @@ UART_IRQHandler                                   ./code/vectors_designstart.o
 UsageFault_Handler                                ./code/vectors_designstart.o
 WAKEUP_IRQHandler                                 ./code/vectors_designstart.o
 WDT_IRQHandler                                    ./code/vectors_designstart.o
+__aeabi_cdcmpeq                                   /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_arm_cmpdf2.o)
+__aeabi_cdcmple                                   /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_arm_cmpdf2.o)
+__aeabi_cdrcmple                                  /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_arm_cmpdf2.o)
 __aeabi_cfcmpeq                                   /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_arm_cmpsf2.o)
 __aeabi_cfcmple                                   /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_arm_cmpsf2.o)
 __aeabi_cfrcmple                                  /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_arm_cmpsf2.o)
+__aeabi_d2f                                       /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(truncdfsf2.o)
+                                                  ./code/main.o
+__aeabi_dadd                                      /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(adddf3.o)
+                                                  ./code/main.o
+__aeabi_dcmpeq                                    /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_arm_cmpdf2.o)
+__aeabi_dcmpge                                    /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_arm_cmpdf2.o)
+__aeabi_dcmpgt                                    /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_arm_cmpdf2.o)
+                                                  ./code/main.o
+__aeabi_dcmple                                    /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_arm_cmpdf2.o)
+__aeabi_dcmplt                                    /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_arm_cmpdf2.o)
+__aeabi_f2d                                       /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(extendsfdf2.o)
+                                                  ./code/main.o
 __aeabi_f2iz                                      /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(fixsfsi.o)
                                                   /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_fixunssfsi.o)
 __aeabi_f2uiz                                     /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_fixunssfsi.o)
@@ -443,19 +563,30 @@ __aeabi_uidiv                                     /srv/gcc-arm-none-eabi-5_4-201
 __aeabi_uidivmod                                  /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_udivsi3.o)
                                                   ./code/main.o
 __clzsi2                                          /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_clzsi2.o)
+                                                  /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(extendsfdf2.o)
+                                                  /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(adddf3.o)
                                                   /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(floatunsisf.o)
                                                   /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(subsf3.o)
                                                   /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(mulsf3.o)
                                                   /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(divsf3.o)
+__eqdf2                                           /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(eqdf2.o)
+                                                  /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_arm_cmpdf2.o)
 __eqsf2                                           /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(eqsf2.o)
                                                   /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_arm_cmpsf2.o)
 __fixunssfsi                                      /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_fixunssfsi.o)
+__gedf2                                           /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(gedf2.o)
+                                                  /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_arm_cmpdf2.o)
 __gesf2                                           /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(gesf2.o)
                                                   /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_arm_cmpsf2.o)
+__gtdf2                                           /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(gedf2.o)
 __gtsf2                                           /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(gesf2.o)
+__ledf2                                           /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(ledf2.o)
+                                                  /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_arm_cmpdf2.o)
 __lesf2                                           /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(lesf2.o)
                                                   /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_arm_cmpsf2.o)
+__ltdf2                                           /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(ledf2.o)
 __ltsf2                                           /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(lesf2.o)
+__nedf2                                           /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(eqdf2.o)
 __nesf2                                           /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(eqsf2.o)
 __udivsi3                                         /srv/gcc-arm-none-eabi-5_4-2016q3/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/libgcc.a(_udivsi3.o)
 _ebss                                             ./code/crt.o
@@ -463,25 +594,32 @@ _estack                                           ./code/vectors_designstart.o
 _sbss                                             ./code/crt.o
 bike_fork                                         ./code/main.o
 cadence                                           ./code/main.o
+cadence_bcd                                       ./code/main.o
 check_button                                      ./code/main.o
 check_speed                                       ./code/main.o
+check_time_stop                                   ./code/main.o
 clear_fork                                        ./code/main.o
 clear_timer_long                                  ./code/main.o
 crank                                             ./code/main.o
 display_segment                                   ./code/main.o
 distance                                          ./code/main.o
+fork_equal                                        ./code/main.o
 gVectors                                          ./code/vectors_designstart.o
 get_cadence                                       ./code/main.o
 get_distance                                      ./code/main.o
 get_speed                                         ./code/main.o
 initiate                                          ./code/main.o
+int2bcd                                           ./code/main.o
 isNight                                           ./code/main.o
 main                                              ./code/main.o
                                                   ./code/crt.o
 max_speed                                         ./code/main.o
 mode                                              ./code/main.o
+now_stop_time                                     ./code/main.o
 now_time                                          ./code/main.o
 post_distance                                     ./code/main.o
+post_fork                                         ./code/main.o
+post_stop_time                                    ./code/main.o
 post_time                                         ./code/main.o
 press_d_mode                                      ./code/main.o
 press_mode                                        ./code/main.o
@@ -490,19 +628,30 @@ read_crank                                        ./code/main.o
 read_fork                                         ./code/main.o
 read_time_long                                    ./code/main.o
 read_time_short                                   ./code/main.o
+refresh_segment                                   ./code/main.o
 setting                                           ./code/main.o
 speed                                             ./code/main.o
 speed_b                                           ./code/main.o
+speed_b_bcd                                       ./code/main.o
 speed_f                                           ./code/main.o
+speed_f_bcd                                       ./code/main.o
 speed_red                                         ./code/main.o
+stop_time                                         ./code/main.o
+stop_time_mode                                    ./code/main.o
+store_stop_time                                   ./code/main.o
 switchDisplay                                     ./code/main.o
 time                                              ./code/main.o
 time_h                                            ./code/main.o
+time_h_bcd                                        ./code/main.o
 time_m                                            ./code/main.o
+time_m_bcd                                        ./code/main.o
 time_up                                           ./code/main.o
 total_distance                                    ./code/main.o
 total_distance_b                                  ./code/main.o
+total_distance_b_bcd                              ./code/main.o
 total_distance_f                                  ./code/main.o
+total_distance_f_bcd                              ./code/main.o
 wait_for_press                                    ./code/main.o
 wait_for_setting                                  ./code/main.o
 wheel                                             ./code/main.o
+wheel_d                                           ./code/main.o

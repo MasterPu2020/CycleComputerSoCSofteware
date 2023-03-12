@@ -87,6 +87,7 @@
 
     write_sdc ../constraints/wrap_chip.sdc
     write_sdf ../gate_level/wrap_chip.sdf
+    write_sdf ../system2/wrap_chip.sdf
 
     report_power
     report_timing

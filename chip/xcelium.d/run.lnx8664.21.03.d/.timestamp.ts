@@ -1,0 +1,14 @@
+1678616089 /home/yh19n22/mydocuments/design/chip/behavioural/seven_segment.sv
+1678616089 /home/yh19n22/mydocuments/design/chip/behavioural/ahb_interconnect.sv
+1678316299 /home/yh19n22/mydocuments/design/chip/system/led_display.sv
+1678316299 /home/yh19n22/mydocuments/design/chip/behavioural/ahb_rom.sv
+1678316299 /home/yh19n22/mydocuments/design/chip/behavioural/sensor_manager.sv
+1678316299 /home/yh19n22/mydocuments/design/chip/system/computer.sv
+1678316299 /home/yh19n22/mydocuments/design/chip/behavioural/ahb_ram.sv
+1678316299 /home/yh19n22/mydocuments/design/chip/behavioural/oled_manager.sv
+1678316299 /home/yh19n22/mydocuments/design/chip/behavioural/cortexm0ds_logic.sv
+1678316299 /home/yh19n22/mydocuments/design/chip/system/system.sv
+1678616089 /home/yh19n22/mydocuments/design/chip/behavioural/button_manager.sv
+1678316299 /home/yh19n22/mydocuments/design/chip/behavioural/CORTEXM0DS.sv
+1678316299 /home/yh19n22/mydocuments/design/chip/behavioural/comp_core.sv
+1678316299 /home/yh19n22/mydocuments/design/chip/behavioural/timer.sv
