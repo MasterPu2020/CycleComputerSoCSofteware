@@ -13,13 +13,14 @@
 // 1. Test Mission: Enable only one mission each time!
 //    Mission Status: ----- Passed, Failed, Not Verified.
 //    Verified with software version 5.5
+// `define TripTimeTest
 // `define TripTimeClearTest // ----- Passed, Manual Check
 // `define TripTimeStopTest  // ----- Passed, Manual Check
 // `define CadenceMeterTest  // ----- Passed, Manual Check
 // `define OdometerTest      // ----- Passed, Manual Check
 // `define SpeedTest         // ----- Passed, Manual Check
-// `define SimpleBasicTest   // ----- Passed, 5 samples
-`define FullTest          // ----- Passed All.
+`define SimpleBasicTest   // ----- Passed, 5 samples
+// `define FullTest          // ----- Passed All.
 
 // 2. AHB Monitor options:
  `define ingore_read_flag
@@ -446,9 +447,27 @@ end
 //------------------------------------------------------------------------------
 
   //--------------------------------------------------------------
+  // Trip Time Test
+  //--------------------------------------------------------------
+  `ifdef TripTimeTest
+    initial begin
+      StartUp;
+
+      FastSpeedTest;
+      PressModeButtonTest;
+      for (int i=0;i<76;i++) begin
+      $display("\n Wait for 60s..."); 
+      #60s;
+      TripTimeVerification;
+      end
+
+      EndSimulation;
+    end
+
+  //--------------------------------------------------------------
   // Trip Time Clear Test
   //--------------------------------------------------------------
-  `ifdef TripTimeClearTest
+  `elsif TripTimeClearTest
     initial begin
       StartUp;
 
