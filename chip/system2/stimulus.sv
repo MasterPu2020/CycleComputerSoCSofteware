@@ -13,8 +13,9 @@
 // 1. Test Mission: Enable only one mission each time!
 //    Mission Status: ----- Passed, Failed, Not Verified.
 //    Verified with software version 5.3
+`define TripTimeTest
 // `define TripTimeClearTest // ----- Passed, 1 sample
-`define TripTimeStopTest  // ----- Failed, 1 sample, 1 failed
+// `define TripTimeStopTest  // ----- Failed, 1 sample, 1 failed
 // `define CadenceMeterTest  // ----- Passed, 9 samples
 // `define OdometerTest      // ----- Passed, 5 samples
 // `define SimpleBasicTest   // ----- Failed, 5 samples, 2 failed
@@ -442,9 +443,62 @@ end
 //------------------------------------------------------------------------------
 
   //--------------------------------------------------------------
+  // Trip Time Test
+  //--------------------------------------------------------------
+  `ifdef TripTimeTest
+    initial begin
+      StartUp;
+
+      FastSpeedTest;
+      PressModeButtonTest;
+      $display("\n Wait for 305s..."); 
+      #305s;
+      TripTimeVerification;
+      $display("\n Wait for 305s..."); 
+      #305s;
+      TripTimeVerification;
+      $display("\n Wait for 305s..."); 
+      #305s;
+      TripTimeVerification;
+      $display("\n Wait for 305s..."); 
+      #305s;
+      TripTimeVerification;
+      $display("\n Wait for 305s..."); 
+      #305s;
+      TripTimeVerification;
+      $display("\n Wait for 305s..."); 
+      #305s;
+      TripTimeVerification;
+      $display("\n Wait for 305s..."); 
+      #305s;
+      TripTimeVerification;
+      $display("\n Wait for 305s..."); 
+      #305s;
+      TripTimeVerification;
+      $display("\n Wait for 305s..."); 
+      #305s;
+      TripTimeVerification;
+      $display("\n Wait for 305s..."); 
+      #305s;
+      TripTimeVerification;
+      $display("\n Wait for 305s..."); 
+      #305s;
+      TripTimeVerification;
+      $display("\n Wait for 305s..."); 
+      #305s;
+      TripTimeVerification;
+      $display("\n Wait for 305s..."); 
+      #305s;
+      TripTimeVerification;
+
+
+      EndSimulation;
+    end
+
+  //--------------------------------------------------------------
   // Trip Time Clear Test
   //--------------------------------------------------------------
-  `ifdef TripTimeClearTest
+  `elsif TripTimeClearTest
     initial begin
       StartUp;
 
