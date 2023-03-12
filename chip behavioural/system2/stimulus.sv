@@ -523,7 +523,9 @@ end
       SinglePressModeButton;
       SinglePressModeButton;
 
-      for (int i=0; i<3; i++) begin
+      #12s;
+      
+      for (int i=0; i<20; i++) begin
         #3s;
         CadenceVerification;
       end
@@ -531,7 +533,9 @@ end
       // PressTripButtonTest;
       FastSpeedTest;
 
-      for (int i=0; i<3; i++) begin
+      #12s;
+      
+      for (int i=0; i<20; i++) begin
         #3s;
         CadenceVerification;
       end
@@ -539,7 +543,9 @@ end
       // PressTripButtonTest;
       LowSpeedTest;
 
-      for (int i=0; i<3; i++) begin
+      #12s;
+
+      for (int i=0; i<20; i++) begin
         #3s;
         CadenceVerification;
       end
@@ -575,10 +581,10 @@ end
       SinglePressModeButton;
       SinglePressModeButton;
 
-      #10s;
+      #8
 
-      for (int i=0; i<4; i++) begin
-        #3s;
+      for (int i=0; i<30; i++) begin
+        #1s;
         SpeedVerification;
       end
 
@@ -586,8 +592,8 @@ end
 
       #10s;
 
-      for (int i=0; i<4; i++) begin
-        #3s;
+      for (int i=0; i<30; i++) begin
+        #1s;
         SpeedVerification;
       end
 
@@ -595,8 +601,8 @@ end
 
       #10s;
 
-      for (int i=0; i<4; i++) begin
-        #3s;
+      for (int i=0; i<30; i++) begin
+        #1s;
         SpeedVerification;
       end
 
@@ -604,7 +610,6 @@ end
     end
 
     //SpeedTest
-
 
   //--------------------------------------------------------------
   // Software Self Submmit Verification Test
