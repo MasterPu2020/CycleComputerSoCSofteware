@@ -575,6 +575,8 @@ end
       SinglePressModeButton;
       SinglePressModeButton;
 
+      #10s;
+
       for (int i=0; i<4; i++) begin
         #3s;
         SpeedVerification;
@@ -582,7 +584,7 @@ end
 
       FastSpeedTest;
 
-      #3s;
+      #10s;
 
       for (int i=0; i<4; i++) begin
         #3s;
