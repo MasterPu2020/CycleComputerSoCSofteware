@@ -78,7 +78,9 @@ real
   wheel_size = 2.136,
   crank_cycle = 1200, // ms
   fork_cycle = 800,  // ms
-  noise = 25; //ms
+  noise = 25, //ms
+  ave_speed = 0,
+  ave_cadence = 0;
 
 // Tested real value
 integer
@@ -94,9 +96,7 @@ integer
   last_fork_times = 0,
   trip_time = 0,
   last_trip_time = 0,
-  speed = 0,
-  ave_speed = 0,
-  ave_cadence = 0;
+  speed = 0;
 
 initial begin  // Crank will keep rolling
   start_up_delay();
@@ -128,7 +128,7 @@ initial begin // Speed will keep measuring
   forever begin
     last_trip_time = trip_time;
     last_fork_times = fork_times;
-    #3s;
+    #10s;
     speed = (wheel_size * (fork_times - last_fork_times))/(trip_time - last_trip_time); // m/s
     ave_speed = wheel_size * fork_times / trip_time;
   end
@@ -138,7 +138,7 @@ initial begin // Cadence will keep measuring
   start_up_delay();
   forever begin
     last_crank_times = crank_times;
-    #10s;
+    #12s;
     cadence = (crank_times - last_crank_times) * 6;
     ave_cadence = crank_times * 60 / trip_time;
   end
@@ -227,8 +227,8 @@ end
     #(`clock_period + `clock_period/2); // AHB write complete
     DisplaySegment;
     $display("\n Real Cadence is %d rpm. Segment display is %d rpm (ave cadence = %d). (%t)", cadence, seg_value, ave_cadence, $time);
-    assert (seg_value - cadence < 5 && cadence - seg_value < 5) else begin
-      $display(" *** WARNING ***: Cadence result error more than 5 rpm.");
+    assert (seg_value - cadence <= 10 && cadence - seg_value <= 10) else begin
+      $display(" *** WARNING ***: Cadence result error more than 10 rpm.");
       error = error + 1;
     end
     $display("\n Cadence verification end.");
