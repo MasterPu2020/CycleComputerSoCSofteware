@@ -1,0 +1,5 @@
+//
+// File created by:  xrun
+// Do not modify this file
+
+s1::(12Mar2023:16:34:37):( xmverilog +sv -y behavioural -y ./system2 -y system +libext+.sv +libext+.v +incdir+behavioural system/system.sv +define+prog_file=software/code.hex +define+prog_file_vmem=code.vmem +incdir+software +define+functional )

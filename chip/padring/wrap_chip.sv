@@ -1,11 +1,8 @@
 module wrap_chip (
   input nMode,
   output DnC,
-  input ScanEnable,
   input nReset,
   output [3:0] nDigit,
-  input SDI,
-  input Test,
   output SDIN,
   output SegF,
   input nCrank,
@@ -13,11 +10,10 @@ module wrap_chip (
   output DP,
   output SegC,
   output SegE,
-  output SegD,
   output nCS,
+  output SegD,
   input nTrip,
   output SegA,
-  input SDO,
   output SegB,
   input Clock,
   input nFork,
@@ -26,11 +22,8 @@ module wrap_chip (
 
   wire CORE_nMode;
   wire CORE_DnC;
-  wire CORE_ScanEnable;
   wire CORE_nReset;
   wire [3:0] CORE_nDigit;
-  wire CORE_SDI;
-  wire CORE_Test;
   wire CORE_SDIN;
   wire CORE_SegF;
   wire CORE_nCrank;
@@ -38,11 +31,10 @@ module wrap_chip (
   wire CORE_DP;
   wire CORE_SegC;
   wire CORE_SegE;
-  wire CORE_SegD;
   wire CORE_nCS;
+  wire CORE_SegD;
   wire CORE_nTrip;
   wire CORE_SegA;
-  wire CORE_SDO;
   wire CORE_SegB;
   wire CORE_Clock;
   wire CORE_nFork;
@@ -50,14 +42,10 @@ module wrap_chip (
 
   ICP PAD_nFork ( .PAD(nFork), .Y(CORE_nFork) );
   ICP PAD_nCrank ( .PAD(nCrank), .Y(CORE_nCrank) );
-  ICP PAD_SDI ( .PAD(SDI), .Y(CORE_SDI) );
-  ICP PAD_Test ( .PAD(Test), .Y(CORE_Test) );
-  ICP PAD_ScanEnable ( .PAD(ScanEnable), .Y(CORE_ScanEnable) );
   ICP PAD_nTrip ( .PAD(nTrip), .Y(CORE_nTrip) );
   ICP PAD_nMode ( .PAD(nMode), .Y(CORE_nMode) );
   ICCK2P PAD_Clock ( .PAD(Clock), .Y(CORE_Clock) );
   ICP PAD_nReset ( .PAD(nReset), .Y(CORE_nReset) );
-  ICP PAD_SDO ( .PAD(SDO), .Y(CORE_SDO) );
   BU8P PAD_nCS ( .PAD(nCS), .A(CORE_nCS) );
   BU8P PAD_DnC ( .PAD(DnC), .A(CORE_DnC) );
   BU8P PAD_SDIN ( .PAD(SDIN), .A(CORE_SDIN) );
@@ -78,11 +66,8 @@ module wrap_chip (
   chip core_inst (
     .nMode(CORE_nMode),
     .DnC(CORE_DnC),
-    .ScanEnable(CORE_ScanEnable),
     .nReset(CORE_nReset),
     .nDigit(CORE_nDigit),
-    .SDI(CORE_SDI),
-    .Test(CORE_Test),
     .SDIN(CORE_SDIN),
     .SegF(CORE_SegF),
     .nCrank(CORE_nCrank),
@@ -90,11 +75,10 @@ module wrap_chip (
     .DP(CORE_DP),
     .SegC(CORE_SegC),
     .SegE(CORE_SegE),
-    .SegD(CORE_SegD),
     .nCS(CORE_nCS),
+    .SegD(CORE_SegD),
     .nTrip(CORE_nTrip),
     .SegA(CORE_SegA),
-    .SDO(CORE_SDO),
     .SegB(CORE_SegB),
     .Clock(CORE_Clock),
     .nFork(CORE_nFork),

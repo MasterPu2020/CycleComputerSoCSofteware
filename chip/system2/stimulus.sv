@@ -12,19 +12,21 @@
 
 // 1. Test Mission: Enable only one mission each time!
 //    Mission Status: ----- Passed, Failed, Not Verified.
-//    Verified with software version 5.3.1
+//    Verified with software version 5.3
 // `define TripTimeClearTest // ----- Passed, 1 sample
-// `define TripTimeStopTest  // ----- Passed, 1 sample
+// `define TripTimeStopTest  // ----- Failed, 1 sample, 1 failed
 // `define CadenceMeterTest  // ----- Passed, 9 samples
 // `define OdometerTest      // ----- Passed, 5 samples
-`define SpeedTest         // ----- Not Verified.
-// `define SimpleBasicTest   // ----- Not Verified.
+ `define SimpleBasicTest   // ----- Failed, 5 samples, 2 failed
 // `define FullTest          // ----- Not Verified.
 
 // 2. AHB Monitor options:
  `define ingore_read_flag
 
-// 3. Monitor enable:
+// 3.SDF Annotation:
+ `define sdf_file "../system2/wrap_chip.sdf"
+
+// 4. Monitor enable:
 `include "../system2/display.sv"
 // `include "../system2/monitor.sv"
 
@@ -138,8 +140,8 @@ initial begin // Cadence will keep measuring
   start_up_delay();
   forever begin
     last_crank_times = crank_times;
-    #10s;
-    cadence = (crank_times - last_crank_times) * 6;
+    #3s;
+    cadence = (crank_times - last_crank_times) * 20;
     ave_cadence = crank_times * 60 / trip_time;
   end
 end
@@ -172,7 +174,7 @@ end
     end
     else begin
       $display("\n XXXXXXXXXXXXXXXXXXXXXXXXXX Simulation Failed XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX ");
-      $display("  Found warning message: %d.\n", error);
+      $display("                       Found warning message: %d.\n", error);
     end
     $finish;
   endtask
@@ -443,62 +445,9 @@ end
 //------------------------------------------------------------------------------
 
   //--------------------------------------------------------------
-  // Trip Time Test
-  //--------------------------------------------------------------
-  `ifdef TripTimeTest
-    initial begin
-      StartUp;
-
-      FastSpeedTest;
-      PressModeButtonTest;
-      $display("\n Wait for 305s..."); 
-      #305s;
-      TripTimeVerification;
-      $display("\n Wait for 305s..."); 
-      #305s;
-      TripTimeVerification;
-      $display("\n Wait for 305s..."); 
-      #305s;
-      TripTimeVerification;
-      $display("\n Wait for 305s..."); 
-      #305s;
-      TripTimeVerification;
-      $display("\n Wait for 305s..."); 
-      #305s;
-      TripTimeVerification;
-      $display("\n Wait for 305s..."); 
-      #305s;
-      TripTimeVerification;
-      $display("\n Wait for 305s..."); 
-      #305s;
-      TripTimeVerification;
-      $display("\n Wait for 305s..."); 
-      #305s;
-      TripTimeVerification;
-      $display("\n Wait for 305s..."); 
-      #305s;
-      TripTimeVerification;
-      $display("\n Wait for 305s..."); 
-      #305s;
-      TripTimeVerification;
-      $display("\n Wait for 305s..."); 
-      #305s;
-      TripTimeVerification;
-      $display("\n Wait for 305s..."); 
-      #305s;
-      TripTimeVerification;
-      $display("\n Wait for 305s..."); 
-      #305s;
-      TripTimeVerification;
-
-
-      EndSimulation;
-    end
-
-  //--------------------------------------------------------------
   // Trip Time Clear Test
   //--------------------------------------------------------------
-  `elsif TripTimeClearTest
+  `ifdef TripTimeClearTest
     initial begin
       StartUp;
 
@@ -549,61 +498,34 @@ end
   `elsif CadenceMeterTest
     initial begin
       StartUp;
-      // FastSpeedTest;
+
       SinglePressModeButton;
       SinglePressModeButton;
       SinglePressModeButton;
 
-      #6;
+      for (int i=0; i<3; i++) begin
+        #3s;
+        CadenceVerification;
+      end
 
-      for (int i=0; i<6; i++) begin
-        #6s;
+      // PressTripButtonTest;
+      FastSpeedTest;
+
+      for (int i=0; i<3; i++) begin
+        #3s;
+        CadenceVerification;
+      end
+
+      // PressTripButtonTest;
+      LowSpeedTest;
+
+      for (int i=0; i<3; i++) begin
+        #3s;
         CadenceVerification;
       end
 
       EndSimulation;
     end
-
-  //--------------------------------------------------------------
-  // SpeedTest Test
-  //--------------------------------------------------------------
-  `elsif SpeedTest
-    initial begin
-      StartUp;
-      // FastSpeedTest;
-      LowSpeedTest;
-      SinglePressModeButton;
-      SinglePressModeButton;
-
-      #3;
-
-      for (int i=0; i<4; i++) begin
-        #3s;
-        SpeedVerification;
-      end
-
-      FastSpeedTest;
-
-      #3;
-
-      for (int i=0; i<4; i++) begin
-        #3s;
-        SpeedVerification;
-      end
-
-      LowSpeedTest;
-
-      #3;
-
-      for (int i=0; i<4; i++) begin
-        #3s;
-        SpeedVerification;
-      end
-
-      EndSimulation;
-    end
-
-    //SpeedTest
 
   //--------------------------------------------------------------
   // Odometer Test
@@ -629,8 +551,6 @@ end
   `elsif SimpleBasicTest
     initial begin
       StartUp;
-
-      // WheelSizeSwitchTest;
 
       FastSpeedTest;
 

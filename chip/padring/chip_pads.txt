@@ -61,16 +61,16 @@
     TOP    INPUT       nFork	
     TOP    PADS_VDD
     TOP    INPUT       nCrank
-    TOP    INPUT       SDI
-    TOP    INPUT       Test
-    TOP    INPUT       ScanEnable
+#    TOP    INPUT       SDI
+#    TOP    INPUT       Test
+#    TOP    INPUT       ScanEnable
     TOP    INPUT       nTrip	
 
     LEFT   INPUT       nMode
     LEFT   INPUT_CLOCK Clock	
     LEFT   INPUT       nReset	
     LEFT   CORE_VDD
-    LEFT   INPUT       SDO
+#    LEFT   INPUT       SDO
     LEFT   OUTPUT      nCS
     LEFT   OUTPUT      DnC
     LEFT   OUTPUT      SDIN
