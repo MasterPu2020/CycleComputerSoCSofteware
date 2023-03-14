@@ -4,7 +4,7 @@
 // Author:  Clark Pu
 // Team:    C4 Chip Designed
 // Version: 4.0
-// Verification: 
+// Verification: Verified with testbench
 // Comment: 1 package for 8 or 16 bit data.
 //          Redesigned oled manager will have a 1bit command register,
 //          16bit data register, and 1bit ready. If ready set to 0 by software, 
@@ -89,10 +89,10 @@ always_comb begin
   DnC  = dnc;
   nCS  = 1;
   SCLK = 0;
-  SDIN = 0;
+  SDIN = dnc?data[7]:data[15];
   case (state)
     Wait       : begin nCS = 0; SCLK = 0; end
-    ChangeData : begin nCS = 1; SCLK = 0; SDIN = dnc?data[7]:data[15]; end
+    ChangeData : begin nCS = 1; SCLK = 0; end
     SendData   : begin nCS = 1; SCLK = 1; end
   endcase
 end
@@ -114,22 +114,24 @@ always_ff @(posedge HCLK, negedge HRESETn) begin
         if (ready == 0) begin
           state <= ChangeData;
           if (dnc)
-            counter <= 7;
+            counter <= 8;
         end
       end
       ChangeData: begin
-        data <= data << 1;
-        if (counter == 16) begin
+        state <= SendData;
+      end
+      SendData: begin
+        if (counter == 15) begin
           counter <= 0;
-          ready <= 1;
-          state <= Wait;
+          ready   <= 1;
+          state   <= Wait;
         end
         else begin
           counter <= counter + 1;
-          state <= SendData;
+          state   <= ChangeData;
         end
+        data <= data << 1;
       end
-      SendData: state <= ChangeData;
     endcase
     //--------------------------------------------------------------------------
     // One Cycle Delayed AHB Control
