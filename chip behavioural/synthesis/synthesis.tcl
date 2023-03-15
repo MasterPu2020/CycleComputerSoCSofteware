@@ -1,12 +1,12 @@
-    analyze -format sv  "../behavioural/wrap_dice.sv ../behavioural/dice.sv ../behavioural/control.sv ../behavioural/encoder.sv ../behavioural/random.sv ../behavioural/dtype.sv"
+    analyze -format sv  "../behavioural/wrap_chip.sv ../behavioural/ahb_interconnect.sv ../behavioural/ahb_ram.sv ../behavioural/ahb_rom.sv ../behavioural/button_manager.sv ../behavioural/comp_core.sv ../behavioural/cortexm0ds_logic.sv ../behavioural/oled_manager.sv ../behavioural/sensor_manager.sv ../behavioural/seven_segment.sv ../behavioural/timer.sv"
 
-    elaborate wrap_dice
+    elaborate wrap_chip
 
     link
 
-    set_max_area 400000
+    set_max_area 0
     
-    create_clock -name master_clock  -period 30  [get_ports Clock]
+    create_clock -name master_clock  -period 30  [get_ports HCLK]
     
     set_clock_latency     2.5 [get_clocks master_clock]
     set_clock_transition  0.5 [get_clocks master_clock]
@@ -28,15 +28,11 @@
     set_driving_cell -max -library c35_IOLIB_WC -lib_cell BU24P -pin PAD [all_inputs]
     set_driving_cell -min -library c35_IOLIB_WC -lib_cell BU1P -pin PAD [all_inputs]
 
-    set_false_path -from [get_ports nReset]
+    set_ideal_path -from [get_ports nReset]
 
     set_fix_hold master_clock
 
-    set_dont_touch [get_cells RESET_SYNC_FF*]
-
-    set_max_area 0
- 
-    compile
+    #set_dont_touch [get_cells RESET_SYNC_FF*]
 
     current_design wrap_dice
     #ungroup -all -flatten
@@ -61,12 +57,8 @@
 
     set_scan_configuration -chain_count 1
 
-
-#set_dft_clock_gating_configuration -dont_connect_cgs_of \
+#   set_dft_clock_gating_configuration -dont_connect_cgs_of \
 #   {u_dice/u_random/dtype1/Q_reg u_dice/u_random/dtype2/Q_reg u_dice/u_random/dtype3/Q_reg u_dice/u_random/dtype4/Q_reg u_dice/u_random/dtype5/Q_reg u_dice/u_random/dtype6/Q_reg u_dice/u_random/dtype7/Q_reg u_dice/u_random/dtype8/Q_reg u_dice/u_random/dtype9/Q_reg u_dice/u_random/dtype10/Q_reg u_dice/u_random/dtype11/Q_reg}
-
-
-
     
     preview_dft
 
@@ -78,15 +70,13 @@
     
     compile -scan
 
-    
-
     report_names -rules verilog
     change_names -rules verilog -hierarchy -verbose
 
-    write -f verilog -hierarchy -output "../gate_level/wrap_dice.v"
+    write -f verilog -hierarchy -output "../gate_level/wrap_chip.v"
 
-    write_sdc ../constraints/wrap_dice.sdc
-    write_sdf ../gate_level/wrap_dice.sdf
+    write_sdc ../constraints/wrap_chip.sdc
+    write_sdf ../gate_level/wrap_chip.sdf
 
     report_power
     report_timing
@@ -98,4 +88,4 @@
     report_timing > synth_timing.rpt
 
 
-	#set_app_var test_default_delay 0
+    #set_app_var test_default_delay 0

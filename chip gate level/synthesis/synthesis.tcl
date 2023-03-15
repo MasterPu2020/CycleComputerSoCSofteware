@@ -1,10 +1,10 @@
-    analyze -format sv  "../behavioural/comp_core.sv ../behavioural/CORTEXM0DS.sv ../behavioural/ahb_interconnect.sv ../behavioural/ahb_ram.sv ../behavioural/ahb_rom.sv ../behavioural/button_manager.sv ../behavioural/oled_manager.sv ../behavioural/sensor_manager.sv ../behavioural/seven_segment.sv  ../behavioural/timer.sv  ../behavioural/cortexm0ds_logic.sv ../behavioural/wrap_chip.sv"
+    analyze -format sv  "../behavioural/wrap_chip.sv ../behavioural/ahb_interconnect.sv ../behavioural/ahb_ram.sv ../behavioural/ahb_rom.sv ../behavioural/button_manager.sv ../behavioural/comp_core.sv ../behavioural/cortexm0ds_logic.sv ../behavioural/oled_manager.sv ../behavioural/sensor_manager.sv ../behavioural/seven_segment.sv ../behavioural/timer.sv"
 
     elaborate comp_core
 
     link
 
-    set_max_area 400000
+    set_max_area 0
     
     create_clock -name master_clock  -period 30  [get_ports HCLK]
     
