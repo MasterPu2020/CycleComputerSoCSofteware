@@ -126,6 +126,7 @@ int main(void) {
     delta_crank, long_delta_crank,
     present_fork, 
     present_cadence;
+  int last_cadence_1, last_cadence_2;
   float 
     delta_distance, present_distance, last_distance, 
     delta_time, long_delta_time,
@@ -140,6 +141,8 @@ int main(void) {
   last_time = 0;
   last_speed_1 = 0;
   last_speed_2 = 0;
+  last_cadence_1 = 0;
+  last_cadence_2 = 0;
   present_cadence = 0;
   mode = 0xA;
   display_segment(mode, 0, 0);
@@ -196,7 +199,8 @@ int main(void) {
     present_speed = (delta_distance * 3600) / delta_time; // (unit: km/h)
     if (present_speed > 99.99)
       present_speed =  99.99;
-    if ((uint32_t)last_speed_1 == (uint32_t)last_speed_2){ // ingore unwanted jitter of speed
+    // ingore unwanted jitter of speed
+    if ((uint32_t)last_speed_1 == (uint32_t)last_speed_2){
       if ((uint32_t)present_speed != (uint32_t)last_speed_1)
         present_speed_valid = false;
     }
@@ -210,13 +214,25 @@ int main(void) {
     // Get cadence (unit: round/second)
     long_delta_time = long_delta_time + delta_time;
     long_delta_crank = long_delta_crank + delta_crank;
-    if (long_delta_time > 10){
+    if (long_delta_time > 5){
       present_cadence = (uint32_t) (long_delta_crank * 60 / long_delta_time);
       present_cadence = (present_cadence / 5) * 5; // Precision: 5 round (unit: round/second)
-      long_delta_time = 0;
-      long_delta_crank = 0;
       if (present_cadence > 999)
         present_cadence = 999;
+      long_delta_time = 0;
+      long_delta_crank = 0;
+      // ingore unwanted jitter of speed
+      bool present_cadence_valid = true;
+      if (last_cadence_1 == last_cadence_2){
+        if (present_cadence != last_cadence_1)
+          present_cadence_valid = false;
+      }
+      else if (present_cadence == last_cadence_2)
+        last_cadence_1 = present_cadence;
+      last_cadence_2 = last_cadence_1;
+      last_cadence_1 = present_cadence;
+      if (!present_cadence_valid)
+        present_cadence = last_cadence_2;
     }
 
     // 3. Refresh Segment
