@@ -59,15 +59,8 @@
 
     current_design wrap_chip  
 
-    set_scan_configuration -chain_count 1
-
-
-#set_dft_clock_gating_configuration -dont_connect_cgs_of \
-#   {u_dice/u_random/dtype1/Q_reg u_dice/u_random/dtype2/Q_reg u_dice/u_random/dtype3/Q_reg u_dice/u_random/dtype4/Q_reg u_dice/u_random/dtype5/Q_reg u_dice/u_random/dtype6/Q_reg u_dice/u_random/dtype7/Q_reg u_dice/u_random/dtype8/Q_reg u_dice/u_random/dtype9/Q_reg u_dice/u_random/dtype10/Q_reg u_dice/u_random/dtype11/Q_reg}
-
-
-
-    
+    set_scan_configuration -style multiplexed_flip_flop -chain_count 1
+  
     preview_dft
 
     insert_dft
@@ -77,8 +70,6 @@
     compile -map_effort high -incremental_mapping
     
     compile -scan
-
-    
 
     report_names -rules verilog
     change_names -rules verilog -hierarchy -verbose

@@ -1,0 +1,76 @@
+# PAD RING DEFINITION FILE	
+
+# FORMAT:
+#
+#	CORE		<core_module_name>
+#
+# if no CORE line exists, the default core module name is topcell
+#
+#	WRAPPER		<wrapper_module_name>
+#
+# if no WRAPPER line exists, the default wrapper module name is wrap_<core_module_name>
+#
+#	INSTANCE	<core_instance_name>
+#
+# if no INSTANCE line exists, the default core instance name is core_instance
+#
+#	<side>,	<pad_type>,	<external_port_name>,	<internal_port_name(s)_if_different>
+#
+# where <side> is one of:
+#	TOP
+#	BOTTOM
+#	LEFT
+#	RIGHT
+#
+# and <pad_type> is one of:
+#	INPUT
+#	OUTPUT
+#	OUTPUT_TRISTATE
+#	INPUT_PULLUP
+#	INOUT
+#	PADS_VDD
+#	PADS_GND
+#	CORE_VDD
+#	CORE_GND
+
+# DEFAULT PORT ORDER IS ANTICLOCKWISE
+
+WRAPPER		computer
+CORE		comp_core
+INSTANCE	COMP_core
+
+BOTTOM	INPUT     SDI	
+BOTTOM	OUTPUT	  SDO
+BOTTOM	INPUT     nMode
+BOTTOM	INPUT		  nTrip
+BOTTOM	PADS_VDD
+BOTTOM	INPUT     nFork
+BOTTOM	INPUT     nCrank
+
+RIGHT	  OUTPUT    SegF
+RIGHT	  OUTPUT    SegG
+RIGHT	  OUTPUT    DP
+RIGHT	  CORE_GND
+RIGHT	  OUTPUT    nDigit[0]
+RIGHT	  OUTPUT    nDigit[1]		  
+RIGHT	  OUTPUT    nDigit[2]
+RIGHT	  OUTPUT    nDigit[3]
+
+TOP	    INPUT     Clock
+TOP	    OUTPUT    SegA
+TOP	    OUTPUT    SegB
+TOP	    OUTPUT    SegC
+TOP	    PADS_GND
+TOP	    OUTPUT		SegD
+TOP	    OUTPUT		SegE
+
+LEFT	  INPUT		  nReset
+LEFT	  INPUT     SCLK
+LEFT	  INPUT     nCS
+LEFT	  CORE_VDD
+LEFT	  OUTPUT		SDI	
+LEFT	  OUTPUT		DnC
+LEFT	  OUTPUT    SDIN
+LEFT	  INPUT		  Test
+LEFT    INPUT     ScanEnable
+
