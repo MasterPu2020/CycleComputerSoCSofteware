@@ -1,12 +1,12 @@
-    analyze -format sv  "../behavioural/wrap_chip.sv ../behavioural/ahb_interconnect.sv ../behavioural/ahb_ram.sv ../behavioural/ahb_rom.sv ../behavioural/button_manager.sv ../behavioural/comp_core.sv ../behavioural/cortexm0ds_logic.sv ../behavioural/oled_manager.sv ../behavioural/sensor_manager.sv ../behavioural/seven_segment.sv ../behavioural/timer.sv"
+    analyze -format sv  "../behavioural/computer.sv ../behavioural/comp_core.sv ../behavioural/CORTEXM0DS.sv ../behavioural/cortexm0ds_logic.sv ../behavioural/ahb_interconnect.sv ../behavioural/ahb_ram.sv ../behavioural/ahb_rom.sv ../behavioural/button_manager.sv  ../behavioural/oled_manager.sv ../behavioural/sensor_manager.sv ../behavioural/seven_segment.sv ../behavioural/timer.sv"
 
-    elaborate comp_core
+    elaborate computer
 
     link
 
     set_max_area 0
     
-    create_clock -name master_clock  -period 30  [get_ports HCLK]
+    create_clock -name master_clock  -period 20  [get_ports HCLK]
     
     set_clock_latency     2.5 [get_clocks master_clock]
     set_clock_transition  0.5 [get_clocks master_clock]
@@ -28,17 +28,17 @@
     set_driving_cell -max -library c35_IOLIB_WC -lib_cell BU24P -pin PAD [all_inputs]
     set_driving_cell -min -library c35_IOLIB_WC -lib_cell BU1P -pin PAD [all_inputs]
 
-    set_ideal_path -from [get_ports nReset]
+    set_false_path -from [get_ports nReset]
 
     set_fix_hold master_clock
 
-    #set_dont_touch [get_cells RESET_SYNC_FF*]
+    set_dont_touch [get_cells RESET_SYNC_FF*]
 
     set_max_area 0
  
     compile
 
-    current_design wrap_chip
+    current_design computer
     #ungroup -all -flatten
     
     set_dft_signal -view existing_dft -type ScanClock   -port Clock        -timing {45 60}
@@ -57,7 +57,7 @@
     set_dft_configuration -fix_set enable
     set_autofix_configuration -type set -method mux -control Test -test_data nReset
 
-    current_design wrap_chip  
+    current_design computer  
 
     set_scan_configuration -style multiplexed_flip_flop -chain_count 1
   
