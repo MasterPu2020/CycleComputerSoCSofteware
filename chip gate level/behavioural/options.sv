@@ -13,7 +13,7 @@
 `define stimulus ../system2/stimulus.sv
 
 // The following lines indicates that a stimulus time exists and contains
-// custom simulation time information
+// custom stimulus time information
 //
 // `define sim_time 200s
 
@@ -79,5 +79,5 @@
 //
 `define Mode0 Distance
 `define Mode1 Duration
-`define Mode2 Speed
-`define Mode3 Cadence
+`define Mode3 Speed
+`define Mode2 Cadence

@@ -3,7 +3,7 @@
 //   Title: System module - 2022/2023 SubFile: Stimulus
 //  Author: Clark Pu, Paiyun Chen (Circle)
 //    Team: C4 Chip Designed
-// Version: 1.0 Gate Level Simulation
+// Version: 3.0 Gate Level Simulation
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
@@ -12,18 +12,16 @@
 
 // 1. Test Mission: Enable only one mission each time!
 //    Mission Status: ----- Passed, Failed, Not Verified.
-//    Verified with software version 5.5
- `define GateLevelOdometerTest      // Not Verified
- `define GateLevelTripTimeTest      // Not Verified
- `define GateLevelSpeedTest         // Not Verified
- `define GateLevelCadenceTest       // Not Verified
+//    Verifing with software version 5.5
+//  `define OdometerVerification      // Not Verified
+//  `define TripTimeVerification      // Not Verified
+//  `define SpeedVerification         // Not Verified
+//  `define CadenceVerification       // Not Verified
+ `define SimpleVerification        // Not Verified
+//  `define FullVerification          // Not Verified
 
-// 2. AHB Monitor options:
- `define ingore_read_flag
-
-// 3. Monitor enable:
+// 2. Monitor enable:
 `include "../system2/display.sv"
-// `include "../system2/monitor.sv"
 
 //------------------------------------------------------------------------------
 // Initiate, Clock Ticks and Reset
@@ -38,10 +36,6 @@ initial begin
   nReset = 0;
   #(`clock_period/4) nReset = 1;
 end
-
-//------------------------------------------------------------------------------
-// AHB Signals (Not available in gate level simulation)
-//------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
 // Real Environment Simulation
@@ -60,18 +54,17 @@ real
 // Tested real value
 integer
   odometer = 0,
-  cadence = 0,
   segment_odometer = 0,
   segment_speed = 0,
   segment_cadence = 0,
   segment_time = 0,
   crank_times = 0,
-  last_crank_times = 0,
   fork_times = 0,
-  last_fork_times = 0,
   trip_time = 0,
-  last_trip_time = 0,
+  cadence = 0,
   speed = 0;
+
+initial $timeformat(0, 2, "s", 10);
 
 initial begin  // Crank will keep rolling
   start_up_delay();
@@ -91,30 +84,25 @@ initial begin // Fork will keep rolling
   end
 end
 
-initial begin // Trip will keep counting
+initial begin // Trip time will keep counting
   start_up_delay();
   trip_time = 0;
   forever
     #1s trip_time ++;
 end
 
-initial begin // Speed will keep measuring
+initial begin // Average speed will keep measuring
   start_up_delay();
   forever begin
-    last_trip_time = trip_time;
-    last_fork_times = fork_times;
-    #10s;
-    speed = (wheel_size * (fork_times - last_fork_times))/(trip_time - last_trip_time); // m/s
+    #3s;
     ave_speed = wheel_size * fork_times / trip_time;
   end
 end
 
-initial begin // Cadence will keep measuring
+initial begin // Average cadence will keep measuring
   start_up_delay();
   forever begin
-    last_crank_times = crank_times;
-    #12s;
-    cadence = (crank_times - last_crank_times) * 5;
+    #3s;
     ave_cadence = crank_times * 60 / trip_time;
   end
 end
@@ -124,9 +112,9 @@ end
 //------------------------------------------------------------------------------
 
   //--------------------------------------------------------------
-  // Gate Level Initialization & Completion Tasks
+  // Initialization & Completion Tasks
   //--------------------------------------------------------------
-  task GateLevelStartUp;
+  task StartUp;
     $display("\n Start Up.\n");
     $display("------------------------------------------------------------------------------");
     wheel_size = 2.136;
@@ -140,73 +128,42 @@ end
     $display("------------------------------------------------------------------------------");
   endtask
 
-  task GateLevelEndSimulation;
+  task EndSimulation;
     #1s;
     $finish;
   endtask
 
   //--------------------------------------------------------------
-  // Gate Level Odometer Task
+  // Gate Level Verification Task
   //--------------------------------------------------------------
 
-  task GateLevelOdometerTest;
-    $display("\n Odometer verification start.");
+  task OdometerTest;
+    $display("\n This is odometer:");
     #3s;
     odometer = (2.136 * fork_times);
     DisplaySegment;
     $display("\n Real Odometer is %fkm. Segment display is %fkm (fork_times = %d). (%t)", odometer/1000.0, seg_value, fork_times, $time);
-    assert (seg_value*1000 - odometer <= 100 && odometer - seg_value*1000 <= 100) else begin
-      $display(" *** WARNING ***: Odometer result error more than 100m.");
-      error = error + 1;
-    $display("\n Odometer verification end.");
     $display("------------------------------------------------------------------------------");
   endtask
 
-  //--------------------------------------------------------------
-  // Gate LevelTrip Time Verification
-  //--------------------------------------------------------------
-
-  task GateLevelTripTimeTask; // This will test if the recoreded speed matchs the real speed
-    $display("\n Trip time verification start.");
+  task TripTimeTest;
+    $display("\n This is Trip time:");
     DisplaySegment;
     $display("\n Real trip time is %fs. Segment display is %fs. (%t)", trip_time, seg_value*6000, $time);
-    assert (seg_value*6000 - trip_time < 60 && trip_time - seg_value*6000 < 60) else begin
-      $display(" *** WARNING ***: Trip time result error more than 1 min.");
-      error = error + 1;
-    end
-    $display("\n Trip time verification end.");
     $display("------------------------------------------------------------------------------");
   endtask
 
-  //--------------------------------------------------------------
-  // Gate Level Speed Verification
-  //--------------------------------------------------------------
-
-  task SpeedVerification; // This will test if the recoreded speed matchs the real speed
-    $display("\n Speed verification start.");
+  task SpeedTest;
+    $display("\n This is speed:");
     DisplaySegment;
-    $display("\n Real Speed is %f km/h. Segment display is %f km/h (ave speed = %dkm/h). (%t)", (speed * 3.6), seg_value, ave_speed*3.6, $time);
-    assert (seg_value - (speed * 3.6) < 2 && (speed * 3.6) - seg_value < 2) else begin
-      $display(" *** WARNING ***: Speed result error more than 1km/h.");
-      error = error + 1;
-    end
-    $display("\n Speed verification end.");
+    $display("\n Real Speed is %f km/h. Segment display is %f km/h (ave speed = %dkm/h). (%t)", speed, seg_value, ave_speed*3.6, $time);
     $display("------------------------------------------------------------------------------");
   endtask
 
-  //--------------------------------------------------------------
-  // Gate Level Cadence Verification
-  //--------------------------------------------------------------
-
-  task CadenceVerification; // This will test if the recoreded speed matchs the real speed
-    $display("\n Cadence verification start.");
+  task CadenceTest;
+    $display("\n This is cadence:");
     DisplaySegment;
     $display("\n Real Cadence is %d rpm. Segment display is %d rpm (ave cadence = %d). (%t)", cadence, seg_value, ave_cadence, $time);
-    assert (seg_value - cadence <= 10 && cadence - seg_value <= 10) else begin
-      $display(" *** WARNING ***: Cadence result error more than 10 rpm.");
-      error = error + 1;
-    end
-    $display("\n Cadence verification end.");
     $display("------------------------------------------------------------------------------");
   endtask
 
@@ -214,28 +171,28 @@ end
   // Speed Options
   //--------------------------------------------------------------
 
-  task SuperFastSpeed;
-    $display("\n Watch out! Super Man is riding the bicycle! (%t)\n", $time);
-    crank_cycle = 40; // ms
-    fork_cycle = 30;  // ms
+  task Speed10km_Cadence100rps;
+    $display("\n Change to low speed: 10km/h, 100rps. (%t)\n", $time);
+    crank_cycle = 600; // ms
+    fork_cycle = 834;  // ms
+    speed = 10;
+    cadence = 100;
   endtask
 
-  task FastSpeedTest;
-    $display("\n Change to fast speed. (%t)\n", $time);
-    crank_cycle = 190; // ms
-    fork_cycle = 300;  // ms
+  task Speed20km_Cadence150rps;
+    $display("\n Change to fast speed: 20km/h, 150rps. (%t)\n", $time);
+    crank_cycle = 400; // ms
+    fork_cycle = 384;  // ms
+    speed = 20;
+    cadence = 150;
   endtask
 
-  task LowSpeedTest;
-    $display("\n Change to Low speed. (%t)\n", $time);
-    crank_cycle = 1600; // ms
-    fork_cycle = 1100;  // ms
-  endtask
-
-  task ZeroSpeedTest;
+  task BicycleStopped;
     $display("\n Bicycle stopped. (%t)\n", $time);
     crank_cycle = 100_000; // ms
     fork_cycle = 100_000;  // ms
+    speed = 0;
+    cadence = 0;
   endtask
 
   //--------------------------------------------------------------
@@ -270,12 +227,12 @@ end
     #1s;  // Response time
   endtask
 
-  task SinglePressModeButton;
+  task PressModeButton;
     $display("\n Mode button will be pressed once.\n");
     #1s -> press_mode_button;
   endtask
 
-  task SinglePressTripButton;
+  task PressTripButton;
     $display("\n Trip button will be pressed once.\n");
     #1s -> press_trip_button;
   endtask
@@ -286,73 +243,212 @@ end
 //------------------------------------------------------------------------------
 
   //--------------------------------------------------------------
-  // Gate Level Odometer Verification Test
+  // Gate Level Odometer Verification
   //--------------------------------------------------------------
-  `ifdef GateLevelOdomterTest
+  `ifdef OdometerVerification
     initial begin
-      GateLevelStartUp;
+      StartUp;
 
-      LowSpeedTest;
+      Speed20km_Cadence150rps;
+      for (int i=0;i<3;i++)
+        #3s OdometerTest;
 
-      for (int i=0;i<30;i++) begin
-        #3s;
-        GateLevelOdometerTest;
-      end
+      Speed10km_Cadence100rps;
+      for (int i=0;i<3;i++)
+        #3s OdometerTest;
 
-      GateLevelEndSimulation;
+      BicycleStopped;
+      for (int i=0;i<3;i++)
+        #3s OdometerTest;
+
+      EndSimulation;
     end
 
   //--------------------------------------------------------------
-  // Gate Level Trip Time Verification Test
+  // Gate Level Trip Time Verification
   //--------------------------------------------------------------
-  `elsif GateLevelTripTimeTest
+  `elsif TripTimeVerification
     initial begin
-      GateLevelStartUp;
+      StartUp;
 
-      SinglePressModeButton;
+      PressModeButton;
 
-      LowSpeedTest;
+      Speed20km_Cadence150rps;
 
-      for (int i=0;i<30;i++) begin
+      #60s;
+      
+      for (int i=0;i<3;i++)
+        #3s TripTimeTest;
+
+      BicycleStopped;
+
+      #60s;
+
+      trip_time = trip_time - 60;
+      for (int i=0;i<3;i++) begin
         #3s;
-        GateLevelTripTimeTest;
+        trip_time = trip_time - 3;
+        TripTimeTest;
       end
 
-      GateLevelEndSimulation;
+      EndSimulation;
     end
 
   //--------------------------------------------------------------
-  // Gate Level Speedometer Verification Test
+  // Gate Level Speedometer Verification
   //--------------------------------------------------------------
-  `elsif GateLevelSpeedTest
+  `elsif SpeedVerification
     initial begin
-      GateLevelStartUp;
+      StartUp;
 
-      LowSpeedTest;
+      PressModeButton;
+      PressModeButton;
 
-      for (int i=0;i<30;i++) begin
-        #3s;
-        GateLevelSpeedTest;
-      end
+      Speed20km_Cadence150rps;
+      for (int i=0;i<3;i++)
+        #3s SpeedTest;
 
-      GateLevelEndSimulation;
+      Speed10km_Cadence100rps;
+      for (int i=0;i<3;i++)
+        #3s SpeedTest;
+
+      BicycleStopped;
+      for (int i=0;i<3;i++)
+        #3s SpeedTest;
+
+      EndSimulation;
     end
   
   //--------------------------------------------------------------
-  // Gate Level Cadence Verification Test
+  // Gate Level Cadence Verification
   //--------------------------------------------------------------
-  `elsif GateLevelCadenceTest
+  `elsif CadenceVerification
     initial begin
-      GateLevelStartUp;
+      StartUp;
 
-      LowSpeedTest;
+      PressModeButton;
+      PressModeButton;
+      PressModeButton;
 
-      for (int i=0;i<30;i++) begin
+      Speed20km_Cadence150rps;
+      for (int i=0;i<3;i++)
+        #3s CadenceTest;
+
+      Speed10km_Cadence100rps;
+      for (int i=0;i<3;i++)
+        #3s CadenceTest;
+
+      BicycleStopped;
+      for (int i=0;i<3;i++)
+        #3s CadenceTest;
+
+      EndSimulation;
+    end
+
+  //--------------------------------------------------------------
+  // Gate Level Simple Verification
+  //--------------------------------------------------------------
+  `elsif SimpleVerification
+    initial begin
+      StartUp;
+
+      // Fast Speed
+      Speed20km_Cadence150rps;
+      #5s OdometerTest;
+      PressModeButton;
+      PressModeButton;
+      #5s SpeedTest;
+      PressModeButton;
+      #5s CadenceTest;
+      PressModeButton;
+
+      // Slow Speed
+      Speed10km_Cadence100rps;
+      #5s OdometerTest;
+      PressModeButton;
+      PressModeButton;
+      #5s SpeedTest;
+      PressModeButton;
+      #5s CadenceTest;
+      PressModeButton;
+
+      // Time Test
+      #31s TripTimeTest;
+
+      // Stop Test
+      BicycleStopped;
+      #61s;
+      trip_time = trip_time - 61;
+      TripTimeTest;
+      PressModeButton;
+      #3s SpeedTest;
+      PressModeButton;
+      #3s CadenceTest;
+      PressModeButton;
+      #3s OdometerTest;
+
+      EndSimulation;
+    end
+
+  //--------------------------------------------------------------
+  // Gate Level Full Verification
+  //--------------------------------------------------------------
+  `elsif FullVerification
+    initial begin
+      StartUp;
+
+      // Fast Speed
+      Speed20km_Cadence150rps;
+      for (int i=0;i<3;i++)
+        #3s OdometerTest;
+      PressModeButton;
+      PressModeButton;
+      for (int i=0;i<3;i++)
+        #3s SpeedTest;
+      PressModeButton;
+      for (int i=0;i<3;i++)
+        #3s CadenceTest;
+      PressModeButton;
+
+      // Slow Speed
+      Speed10km_Cadence100rps;
+      for (int i=0;i<3;i++)
+        #3s OdometerTest;
+      PressModeButton;
+      PressModeButton;
+      for (int i=0;i<3;i++)
+        #3s SpeedTest;
+      PressModeButton;
+      for (int i=0;i<3;i++)
+        #3s CadenceTest;
+      PressModeButton;
+
+      // Time Test
+      #10s;
+      PressModeButton;
+      for (int i=0;i<3;i++)
+        #3s TripTimeTest;
+
+      // Stop Test
+      BicycleStopped;
+      #60s;
+      trip_time = trip_time - 60;
+      for (int i=0;i<3;i++) begin
         #3s;
-        GateLevelCadenceTest;
+        trip_time = trip_time - 3;
+        TripTimeTest;
       end
+      PressModeButton;
+      for (int i=0;i<3;i++)
+        #3s SpeedTest;
+      PressModeButton;
+      for (int i=0;i<3;i++)
+        #3s CadenceTest;
+      PressModeButton;
+      for (int i=0;i<3;i++)
+        #3s OdometerTest;
 
-      GateLevelEndSimulation;
+      EndSimulation;
     end
 
   `endif

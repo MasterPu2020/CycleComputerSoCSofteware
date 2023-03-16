@@ -34,8 +34,8 @@ fi
 echo "------------------------------------------"
 echo " > Select Command:"
 echo "1.Compile Software."
-echo "2.Simulation."
-echo "3.Simulation without Graphic."
+echo "2.Simulation (Gate Level)."
+echo "3.Simulation without Graphic (Gate Level)."
 echo "4.DOS Format Check."
 echo "------------------------------------------"
 echo " Enter Number to Run. Enter Any Key Else to Quit."
@@ -48,10 +48,10 @@ if [ "$choice" = "1" ]; then
 	cp ./software/code.vmem ./behavioural/code.vmem
 elif [ "$choice" = "2" ]; then
 	echo -e "\n------------------------------------------\n Processing...\n"
-	./simulate
+	./simulate -gate gate_level -sdf computer.sdf 
 elif [ "$choice" = "3" ]; then
 	echo -e "\n------------------------------------------\n Processing...\n"
-        ./simulate -no_graphics
+	./simulate -no_graphics -gate gate_level -sdf computer.sdf 
 elif [ "$choice" = "4" ]; then
 	echo -e "\n------------------------------------------\n Processing...\n"
 	echo "Check folder chip"
