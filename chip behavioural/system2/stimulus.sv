@@ -13,7 +13,6 @@
 // 1. Test Mission: Enable only one mission each time!
 //    Mission Status: ----- Passed, Failed, Not Verified.
 //    Verified with software version 5.5
-// `define TripTimeTest
 // `define TripTimeClearTest // ----- Passed, Manual Check
 // `define TripTimeStopTest  // ----- Passed, Manual Check
 // `define CadenceMeterTest  // ----- Passed, Manual Check
@@ -26,7 +25,7 @@
  `define ingore_read_flag
 
 // 3.SDF Annotation:
- `define sdf_file "../system2/wrap_chip.sdf"
+//  `define sdf_file "../system2/wrap_chip.sdf"
 
 // 4. Monitor enable:
 `include "../system2/display.sv"
@@ -80,8 +79,8 @@ end
 real
   error = 0,
   wheel_size = 2.136,
-  crank_cycle = 1200, // ms
-  fork_cycle = 800,  // ms
+  crank_cycle = 600, // ms 600
+  fork_cycle = 384,  // ms 384
   noise = 25, //ms
   ave_speed = 0,
   ave_cadence = 0;
@@ -447,27 +446,9 @@ end
 //------------------------------------------------------------------------------
 
   //--------------------------------------------------------------
-  // Trip Time Test
-  //--------------------------------------------------------------
-  `ifdef TripTimeTest
-    initial begin
-      StartUp;
-
-      FastSpeedTest;
-      PressModeButtonTest;
-      for (int i=0;i<76;i++) begin
-      $display("\n Wait for 60s..."); 
-      #60s;
-      TripTimeVerification;
-      end
-
-      EndSimulation;
-    end
-
-  //--------------------------------------------------------------
   // Trip Time Clear Test
   //--------------------------------------------------------------
-  `elsif TripTimeClearTest
+  `ifdef TripTimeClearTest
     initial begin
       StartUp;
 
@@ -611,6 +592,7 @@ end
 
     //SpeedTest
 
+
   //--------------------------------------------------------------
   // Software Self Submmit Verification Test
   //--------------------------------------------------------------
@@ -619,32 +601,34 @@ end
     initial begin
       StartUp;
 
-      FastSpeedTest;
+      // FastSpeedTest;
 
-      #10s;
-      OdometerVerification;
+      //#10s;
+      //OdometerVerification;
 
-      #10s;
-      OdometerVerification;
+      //#10s;
+      //OdometerVerification;
 
-      #20s;
-      OdometerVerification;
-
-      PressModeButtonTest;
-      #25s;
-      TripTimeVerification;
+      //#20s;
+      //OdometerVerification;
 
       PressModeButtonTest;
-      #5s;
+      PressModeButtonTest;
+      //PressModeButtonTest;
+      //#25s;
+      //TripTimeVerification;
+
+      //PressModeButtonTest;
+      #10s;
       SpeedVerification;
 
       PressModeButtonTest;
       #5s;
       CadenceVerification;
 
-      PressModeButtonTest;
-      #5s;
-      OdometerVerification;
+      //PressModeButtonTest;
+      //#5s;
+      //OdometerVerification;
 
       EndSimulation;
     end

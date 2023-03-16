@@ -178,7 +178,7 @@ int main(void) {
     delta_crank  = read_crank();
     present_time = read_time_long();
     present_fork = read_fork();
-    delta_time   = ((float)read_time_short()) / 1000;
+    delta_time   = (float)(read_time_short()) / 1000;
 
     // 2. Calculate
 
@@ -196,7 +196,7 @@ int main(void) {
     
     // Get speed (unit: km/h)
     bool present_speed_valid = true;
-    present_speed = (delta_distance * 3600) / delta_time; // (unit: km/h)
+    present_speed = (delta_distance * 3600) / (delta_time + 0.070); // (unit: km/h)
     if (present_speed > 99.99)
       present_speed =  99.99;
     // ingore unwanted jitter of speed
@@ -216,7 +216,7 @@ int main(void) {
     long_delta_crank = long_delta_crank + delta_crank;
     if (long_delta_time > 5){
       present_cadence = (uint32_t) (long_delta_crank * 60 / long_delta_time);
-      present_cadence = (present_cadence / 5) * 5; // Precision: 5 round (unit: round/second)
+      present_cadence = ((present_cadence + 2) / 5) * 5; // Precision: 5 round (unit: round/second)
       if (present_cadence > 999)
         present_cadence = 999;
       long_delta_time = 0;

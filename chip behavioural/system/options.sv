@@ -79,5 +79,5 @@
 //
 `define Mode0 Distance
 `define Mode1 Duration
-`define Mode2 Cadence
 `define Mode3 Speed
+`define Mode2 Cadence
