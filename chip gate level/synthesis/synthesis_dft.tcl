@@ -57,6 +57,8 @@
 
     current_design computer 
 
+    dft_drc
+
     set_scan_configuration -style multiplexed_flip_flop -chain_count 1
   
     preview_dft
