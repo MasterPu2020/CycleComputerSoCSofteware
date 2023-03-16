@@ -6,7 +6,7 @@
 
     set_max_area 0
     
-    create_clock -name master_clock  -period 20  [get_ports HCLK]
+    create_clock -name master_clock  -period 30517.6  [get_ports HCLK]
     
     set_clock_latency     2.5 [get_clocks master_clock]
     set_clock_transition  0.5 [get_clocks master_clock]
@@ -19,7 +19,7 @@
     
     set_output_delay 2.0 -max -network_latency_included -clock master_clock \
     [all_outputs]
-    set_output_delay 0.1 -min -network_latency_included -clock master_clock \
+    set_output_delay 0.1 -min -netwsork_latency_included -clock master_clock \
     [all_outputs]
     
     set_load 1.0  -max [all_outputs]
