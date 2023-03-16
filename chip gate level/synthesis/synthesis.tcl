@@ -17,7 +17,7 @@
     
     set_output_delay 5.0 -max -network_latency_included -clock master_clock \
     [all_outputs]
-    set_output_delay 0.1 -min -network_latency_included -clock master_clock \
+    set_output_delay 0.1 -min -netwsork_latency_included -clock master_clock \
     [all_outputs]
     
     set_load 1.0  -max [all_outputs]
