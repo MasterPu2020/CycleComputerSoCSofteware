@@ -3,7 +3,7 @@
 // Titile:  OLED Manager Behavioural
 // Author:  Clark Pu
 // Team:    C4 Chip Designed
-// Version: 4.0
+// Version: 4.1
 // Verification: Verified with testbench
 // Comment: 1 package for 8 or 16 bit data.
 //          Redesigned oled manager will have a 1bit command register,
