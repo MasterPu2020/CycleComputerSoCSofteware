@@ -91,9 +91,9 @@ always_comb begin
   SCLK = 0;
   SDIN = dnc?data[7]:data[15];
   case (state)
-    Wait       : begin nCS = 0; SCLK = 0; end
-    ChangeData : begin nCS = 1; SCLK = 0; end
-    SendData   : begin nCS = 1; SCLK = 1; end
+    Wait       : begin nCS = 1; SCLK = 0; end
+    ChangeData : begin nCS = 0; SCLK = 0; end
+    SendData   : begin nCS = 0; SCLK = 1; end
   endcase
 end
 
