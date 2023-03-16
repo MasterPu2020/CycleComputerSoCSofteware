@@ -52,7 +52,7 @@ elif [ "$choice" = "2" ]; then
 	./simulate -gate gate_level -sdf computer.sdf 
 elif [ "$choice" = "3" ]; then
 	echo -e "\n------------------------------------------\n Processing...\n"
-	./simulate -no_graphics -gate gate_level -sdf computer.sdf 
+	./simulate -no_graphics -gate gate_level
 elif [ "$choice" = "4" ]; then
 	echo -e "\n------------------------------------------\n Processing...\n"
 	cd ./synthesis
@@ -94,6 +94,10 @@ elif [ "$choice" = "5" ]; then
 	format
 	cd ..
 	cd ./system
+	echo "Check folder system:"
+	format
+	cd ..
+	cd ./padring
 	echo "Check folder system:"
 	format
 	cd ..

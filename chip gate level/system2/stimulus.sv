@@ -142,7 +142,6 @@ end
 
   task OdometerTest;
     $display("\n This is odometer:");
-    #3s;
     odometer = (2.136 * fork_times);
     DisplaySegment;
     $display("\n Real Odometer is %fkm. Segment display is %fkm (fork_times = %d). (%t)", odometer/1000.0, seg_value, fork_times, $time);
