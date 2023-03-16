@@ -69,7 +69,7 @@ module computer (
   BU8P PAD_SegC ( .PAD(SegC), .A(CORE_SegC) );
   BU8P PAD_SegD ( .PAD(SegD), .A(CORE_SegD) );
   BU8P PAD_SegE ( .PAD(SegE), .A(CORE_SegE) );
-  ICP PAD_nReset ( .PAD(nReset), .Y(CORE_nReset) );
+  ICP PAD_nReset ( .PAD(nReset), .Y(SYNC_IN_nReset) );
   BU8P PAD_SCLK ( .PAD(SCLK), .A(CORE_SCLK) );
   BU8P PAD_nCS ( .PAD(nCS), .A(CORE_nCS) );
   BU8P PAD_DnC ( .PAD(DnC), .A(CORE_DnC) );
@@ -82,11 +82,11 @@ module computer (
   comp_core COMP_core (
     .nMode(CORE_nMode),
     .DnC(CORE_DnC),
-    .ScanEnable(CORE_ScanEnable),
+    //.ScanEnable(CORE_ScanEnable),
     .nReset(CORE_nReset),
     .nDigit(CORE_nDigit),
-    .SDI(CORE_SDI),
-    .Test(CORE_Test),
+    //.SDI(CORE_SDI),
+    //.Test(CORE_Test),
     .SDIN(CORE_SDIN),
     .nCrank(CORE_nCrank),
     .SegF(CORE_SegF),
@@ -98,7 +98,7 @@ module computer (
     .SegD(CORE_SegD),
     .nTrip(CORE_nTrip),
     .SegA(CORE_SegA),
-    .SDO(CORE_SDO),
+    //.SDO(CORE_SDO),
     .SegB(CORE_SegB),
     .nFork(CORE_nFork),
     .Clock(CORE_Clock),

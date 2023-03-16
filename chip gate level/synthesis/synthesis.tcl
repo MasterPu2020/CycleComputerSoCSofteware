@@ -3,21 +3,19 @@
     elaborate computer
 
     link
-
-    set_max_area 0
     
-    create_clock -name master_clock  -period 20  [get_ports HCLK]
+    create_clock -name master_clock  -period 30517.6  [get_ports Clock]
     
     set_clock_latency     2.5 [get_clocks master_clock]
     set_clock_transition  0.5 [get_clocks master_clock]
     set_clock_uncertainty 1.0 [get_clocks master_clock]
      
-    set_input_delay  2.0 -max -network_latency_included -clock master_clock \
+    set_input_delay  5.0 -max -network_latency_included -clock master_clock \
     [remove_from_collection [all_inputs] [get_ports Clock]]
     set_input_delay  0.1 -min -network_latency_included -clock master_clock \
     [remove_from_collection [all_inputs] [get_ports Clock]]
     
-    set_output_delay 2.0 -max -network_latency_included -clock master_clock \
+    set_output_delay 5.0 -max -network_latency_included -clock master_clock \
     [all_outputs]
     set_output_delay 0.1 -min -network_latency_included -clock master_clock \
     [all_outputs]
@@ -39,7 +37,7 @@
     compile
 
     current_design computer
-    #ungroup -all -flatten
+    ungroup -all -flatten
     
     set_dft_signal -view existing_dft -type ScanClock   -port Clock        -timing {45 60}
     set_dft_signal -view existing_dft -type Reset       -port nReset       -active_state 0
@@ -57,7 +55,7 @@
     set_dft_configuration -fix_set enable
     set_autofix_configuration -type set -method mux -control Test -test_data nReset
 
-    current_design computer  
+    current_design computer 
 
     set_scan_configuration -style multiplexed_flip_flop -chain_count 1
   
@@ -67,18 +65,20 @@
 
     dft_drc
 
-    compile -map_effort high -incremental_mapping
-    
+    #compile
+
     compile -scan
+
+    compile -map_effort high -incremental_mapping
 
     report_names -rules verilog
     change_names -rules verilog -hierarchy -verbose
 
-    write -f verilog -hierarchy -output "../gate_level/wrap_chip.v"
+    write -f verilog -hierarchy -output "../gate_level/computer.v"
 
-    write_sdc ../constraints/wrap_chip.sdc
-    write_sdf ../gate_level/wrap_chip.sdf
-    write_sdf ../system2/wrap_chip.sdf
+    write_sdc ../constraints/computer.sdc
+    write_sdf ../gate_level/computer.sdf
+    write_sdf ../system2/computer.sdf
 
     report_power
     report_timing
