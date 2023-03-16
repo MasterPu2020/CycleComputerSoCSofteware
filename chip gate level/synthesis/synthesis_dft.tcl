@@ -67,9 +67,7 @@
 
     #compile
 
-    compile -scan
-
-    compile -map_effort high -incremental_mapping
+    compile -scan -map_effort high -incremental_mapping
 
     report_names -rules verilog
     change_names -rules verilog -hierarchy -verbose

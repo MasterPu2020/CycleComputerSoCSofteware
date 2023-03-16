@@ -90,17 +90,17 @@ module computer (
   DFC1 RESET_SYNC_FF1 ( .D('1), .Q(SYNC_MID_nReset), .C(CORE_Clock), .RN(SYNC_IN_nReset));
   DFC1 RESET_SYNC_FF2 ( .D(SYNC_MID_nReset), .Q(CORE_nReset), .C(CORE_Clock), .RN(SYNC_IN_nReset));
 
-  DFC1 RESET_SYNC_FF1 ( .D(SYNC_IN_nTrip), .Q(SYNC_MID_nTrip), .C(CORE_Clock), .RN(CORE_nReset));
-  DFC1 RESET_SYNC_FF2 ( .D(SYNC_MID_nTrip), .Q(CORE_nTrip), .C(CORE_Clock), .RN(CORE_nReset));
+  DFC1 TRIP_SYNC_FF1 ( .D(SYNC_IN_nTrip), .Q(SYNC_MID_nTrip), .C(CORE_Clock), .RN(CORE_nReset));
+  DFC1 TRIP_SYNC_FF2 ( .D(SYNC_MID_nTrip), .Q(CORE_nTrip), .C(CORE_Clock), .RN(CORE_nReset));
 
-  DFC1 RESET_SYNC_FF1 ( .D(SYNC_IN_nMode), .Q(SYNC_MID_nMode), .C(CORE_Clock), .RN(CORE_nReset));
-  DFC1 RESET_SYNC_FF2 ( .D(SYNC_MID_nMode), .Q(CORE_nMode), .C(CORE_Clock), .RN(CORE_nReset));
+  DFC1 MODE_SYNC_FF1 ( .D(SYNC_IN_nMode), .Q(SYNC_MID_nMode), .C(CORE_Clock), .RN(CORE_nReset));
+  DFC1 MODE_SYNC_FF2 ( .D(SYNC_MID_nMode), .Q(CORE_nMode), .C(CORE_Clock), .RN(CORE_nReset));
 
-  DFC1 RESET_SYNC_FF1 ( .D(SYNC_IN_nFork), .Q(SYNC_MID_nFork), .C(CORE_Clock), .RN(CORE_nReset));
-  DFC1 RESET_SYNC_FF2 ( .D(SYNC_MID_nFork), .Q(CORE_nFork), .C(CORE_Clock), .RN(CORE_nReset));
+  DFC1 FORK_SYNC_FF1 ( .D(SYNC_IN_nFork), .Q(SYNC_MID_nFork), .C(CORE_Clock), .RN(CORE_nReset));
+  DFC1 FORK_SYNC_FF2 ( .D(SYNC_MID_nFork), .Q(CORE_nFork), .C(CORE_Clock), .RN(CORE_nReset));
 
-  DFC1 RESET_SYNC_FF1 ( .D(SYNC_IN_nCrank), .Q(SYNC_MID_nCrank), .C(CORE_Clock), .RN(CORE_nReset));
-  DFC1 RESET_SYNC_FF2 ( .D(SYNC_MID_nCrank), .Q(CORE_nCrank), .C(CORE_Clock), .RN(CORE_nReset));
+  DFC1 CRANK_SYNC_FF1 ( .D(SYNC_IN_nCrank), .Q(SYNC_MID_nCrank), .C(CORE_Clock), .RN(CORE_nReset));
+  DFC1 CRANK_SYNC_FF2 ( .D(SYNC_MID_nCrank), .Q(CORE_nCrank), .C(CORE_Clock), .RN(CORE_nReset));
 
   comp_core COMP_core (
     .nMode(CORE_nMode),

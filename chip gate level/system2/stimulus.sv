@@ -14,9 +14,9 @@
 //    Mission Status: ----- Passed, Failed, Not Verified.
 //    Verified with software version 5.5
  `define GateLevelOdometerTest      // Not Verified
- `define GateLevelTripTimeTest      // Not Verified
- `define GateLevelSpeedTest         // Not Verified
- `define GateLevelCadenceTest       // Not Verified
+// `define GateLevelTripTimeTest      // Not Verified
+// `define GateLevelSpeedTest         // Not Verified
+// `define GateLevelCadenceTest       // Not Verified
 
 // 2. AHB Monitor options:
  `define ingore_read_flag
@@ -134,6 +134,9 @@ end
     Fork = 0;
     Mode = 0;
     Trip = 0;
+    ScanEnable = 0;
+    Test = 0;
+    SDI = 0;
     DisplayRefresh_Seg = 0;
     start_up_delay();
     $display("\n Simulation Start.\n");
@@ -158,6 +161,7 @@ end
     assert (seg_value*1000 - odometer <= 100 && odometer - seg_value*1000 <= 100) else begin
       $display(" *** WARNING ***: Odometer result error more than 100m.");
       error = error + 1;
+    end
     $display("\n Odometer verification end.");
     $display("------------------------------------------------------------------------------");
   endtask
@@ -288,7 +292,7 @@ end
   //--------------------------------------------------------------
   // Gate Level Odometer Verification Test
   //--------------------------------------------------------------
-  `ifdef GateLevelOdomterTest
+  `ifdef GateLevelOdometerTest
     initial begin
       GateLevelStartUp;
 
@@ -328,6 +332,9 @@ end
     initial begin
       GateLevelStartUp;
 
+      SinglePressModeButton;
+      SinglePressModeButton;
+
       LowSpeedTest;
 
       for (int i=0;i<30;i++) begin
@@ -344,6 +351,10 @@ end
   `elsif GateLevelCadenceTest
     initial begin
       GateLevelStartUp;
+
+      SinglePressModeButton;
+      SinglePressModeButton;
+      SinglePressModeButton;
 
       LowSpeedTest;
 
