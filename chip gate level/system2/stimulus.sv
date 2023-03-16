@@ -1,7 +1,7 @@
 
 //------------------------------------------------------------------------------
 //   Title: System module - 2022/2023 SubFile: Stimulus
-//  Author: Paiyun Chen (Circle), Clark Pu
+//  Author: Clark Pu, Paiyun Chen (Circle)
 //    Team: C4 Chip Designed
 // Version: 1.0 Gate Level Simulation
 //------------------------------------------------------------------------------
@@ -13,7 +13,10 @@
 // 1. Test Mission: Enable only one mission each time!
 //    Mission Status: ----- Passed, Failed, Not Verified.
 //    Verified with software version 5.5
- `define GateLevelTest     // Not Verified
+// `define GateLevelOdometerTest    // Not Verified
+// `define GateLevelSpeedTest       // Not Verified
+ `define GateLevelSpeedTest         // Not Verified
+// `define GateLevelTripTimeTest    // Not Verified
 
 // 2. AHB Monitor options:
  `define ingore_read_flag
@@ -117,231 +120,6 @@ initial begin // Cadence will keep measuring
 end
 
 //------------------------------------------------------------------------------
-// Behavioural Tasks (Not available in gate level simulation)
-//------------------------------------------------------------------------------
-/*
-  //--------------------------------------------------------------
-  // Initialization Task
-  //--------------------------------------------------------------
-  task StartUp;
-    $display("\n Start Up.\n");
-    $display("------------------------------------------------------------------------------");
-    wheel_size = 2.136;
-    Crank = 0;
-    Fork = 0;
-    Mode = 0;
-    Trip = 0;
-    DisplayRefresh_Seg = 0;
-    start_up_delay();
-    $display("\n Simulation Start.\n");
-    $display("------------------------------------------------------------------------------");
-  endtask
-
-  task EndSimulation;
-    #1s;
-    if (error == 0) begin
-      $display("\n ************************** Simulation Passed ******************************");
-    end
-    else begin
-      $display("\n XXXXXXXXXXXXXXXXXXXXXXXXXX Simulation Failed XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX ");
-      $display("  Found warning message: %d.\n", error);
-    end
-    $finish;
-  endtask
-
-  //--------------------------------------------------------------
-  // Odometer Verification
-  //--------------------------------------------------------------
-
-  task OdometerVerification; // This will test if the recoreded odometer matchs the real odometer
-    $display("\n Odometer verification start.");
-    while (!(sel_segment && (ahb_addr[2] == 1))) // AHB write
-      @(posedge Clock);
-    #(`clock_period + `clock_period/2); // AHB write complete
-    odometer = (2.136 * fork_times);
-    DisplaySegment;
-    $display("\n Real Odometer is %fkm. Segment display is %fkm (fork_times = %d). (%t)", odometer/1000.0, seg_value, fork_times, $time);
-    assert (seg_value*1000 - odometer <= 100 && odometer - seg_value*1000 <= 100) else begin
-      $display(" *** WARNING ***: Odometer result error more than 100m.");
-      error = error + 1;
-    end
-    $display("\n Odometer verification end.");
-    $display("------------------------------------------------------------------------------");
-  endtask
-
-  //--------------------------------------------------------------
-  // Speed Verification
-  //--------------------------------------------------------------
-
-  task SpeedVerification; // This will test if the recoreded speed matchs the real speed
-    $display("\n Speed verification start.");
-    while (!(sel_segment && (ahb_addr[2] == 1))) // AHB write
-      @(posedge Clock);
-    #(`clock_period + `clock_period/2); // AHB write complete
-    DisplaySegment;
-    $display("\n Real Speed is %f km/h. Segment display is %f km/h (ave speed = %dkm/h). (%t)", (speed * 3.6), seg_value, ave_speed*3.6, $time);
-    assert (seg_value - (speed * 3.6) < 2 && (speed * 3.6) - seg_value < 2) else begin
-      $display(" *** WARNING ***: Speed result error more than 1km/h.");
-      error = error + 1;
-    end
-    $display("\n Speed verification end.");
-    $display("------------------------------------------------------------------------------");
-  endtask
-
-  //--------------------------------------------------------------
-  // Cadence Verification
-  //--------------------------------------------------------------
-
-  task CadenceVerification; // This will test if the recoreded speed matchs the real speed
-    $display("\n Cadence verification start.");
-    while (!(sel_segment && (ahb_addr[2] == 1))) // AHB write
-      @(posedge Clock);
-    #(`clock_period + `clock_period/2); // AHB write complete
-    DisplaySegment;
-    $display("\n Real Cadence is %d rpm. Segment display is %d rpm (ave cadence = %d). (%t)", cadence, seg_value, ave_cadence, $time);
-    assert (seg_value - cadence <= 10 && cadence - seg_value <= 10) else begin
-      $display(" *** WARNING ***: Cadence result error more than 10 rpm.");
-      error = error + 1;
-    end
-    $display("\n Cadence verification end.");
-    $display("------------------------------------------------------------------------------");
-  endtask
-
-  //--------------------------------------------------------------
-  // Trip Time Verification
-  //--------------------------------------------------------------
-
-  task TripTimeVerification; // This will test if the recoreded speed matchs the real speed
-    $display("\n Trip time verification start.");
-    while (!(sel_segment && (ahb_addr[2] == 1))) // AHB write
-      @(posedge Clock);
-    #(`clock_period + `clock_period/2); // AHB write complete
-    DisplaySegment;
-    $display("\n Real trip time is %fs. Segment display is %fs. (%t)", trip_time, seg_value*6000, $time);
-    assert (seg_value*6000 - trip_time < 60 && trip_time - seg_value*6000 < 60) else begin
-      $display(" *** WARNING ***: Trip time result error more than 1 min.");
-      error = error + 1;
-    end
-    $display("\n Trip time verification end.");
-    $display("------------------------------------------------------------------------------");
-  endtask
-
-  //--------------------------------------------------------------
-  // Button Manager Tasks
-  //--------------------------------------------------------------
-
-  task ButtonNoiseTest; // This will test if the button will debaunce 
-    $display("\n Noise test start.");
-    Trip = 0;
-    Mode = 0;
-    for (int i = 0; i < 10 ; i ++) begin
-      Trip = 1;
-      #(noise * 1000_000); // 24ms
-      Trip = 0;
-      for (int j = 0; j < 10; j ++) begin
-        @(posedge Clock);
-          assert (COMPUTER.COMP_core.button_manager_1.NewData == 0)  else begin
-            $display(" *** WARNING ***: Button is triggered by noise.");
-            error = error + 1;
-          end
-      end
-      #(noise * 1000_000); // 24ms
-      Mode = 1;
-      #(noise * 1000_000); // 24ms
-      Mode = 0;
-      for (int j = 0; j < 10; j ++) begin
-        @(posedge Clock);
-          assert (COMPUTER.COMP_core.button_manager_1.NewData == 0)  else begin
-            $display(" *** WARNING ***: Button is triggered by noise.");
-            error = error + 1;
-          end
-      end
-      #(noise * 1000_000); // 24ms
-    end
-    $display("\n Noise test end.");
-    $display("------------------------------------------------------------------------------");
-  endtask
-
-  task PressModeButtonTest; // This will test if the press of the mode button will be detected
-    $display("\n Press Mode 1 times test start.");
-    #1s -> press_mode_button;
-    $display("\n Wait for the software to check to the button.");
-    while (!(sel_button && (ahb_addr[4:2] == 1))) // AHB read mode command
-      @(posedge Clock);
-    #(`clock_period/2); // AHB read mode data
-    if (data_button == 1)
-      $display(" Button mode is pressed. (%t)", $time);
-    assert (data_button == 1) else begin
-      $display(" *** WARNING ***: Button mode is NOT pressed. (%t)", $time);
-      error = error + 1;
-    end
-    $display("\n Press Mode 1 times test end.");
-    $display("------------------------------------------------------------------------------");
-  endtask
-
-  task PressTripButtonTest; // This will test if the press of the trip button will be detected
-    $display("\n Press Trip 1 time test start.");
-    #1s -> press_trip_button;
-    $display("\n Wait for the software to check to the button.");
-    while (!(sel_button && (ahb_addr[4:2] == 2))) // AHB read mode command
-      @(posedge Clock);
-    #(`clock_period/2); // AHB read mode data
-    if (data_button == 1) begin
-      $display(" Button trip is pressed. (%t)", $time);
-      fork_times = 0;
-      trip_time = 0;
-      crank_times = 0;
-    end
-    assert (data_button == 1) else begin
-      $display(" *** WARNING ***: Button trip is NOT pressed. (%t)", $time);
-      error = error + 1;
-    end
-      $display("\n Press Trip 1 time test end.");
-    $display("------------------------------------------------------------------------------");
-  endtask
-
-  task NightModeTest; // This will test if the button will be debounced
-    $display("\n Night mode test start.");
-    for(int i=0;i<2;i++)
-      #0.4s -> press_mode_button;
-    $display("\n Wait for the software to check to the button.");
-    while (!(sel_button && (ahb_addr[4:2] == 0))) // AHB read mode command
-      @(posedge Clock);
-    #(`clock_period/2); // AHB read mode data
-    if (data_button == 1) begin
-      $display("\n Night/Day Mode is Activated. (%t)", $time);
-    end
-    assert (data_button == 1) else begin
-      $display(" *** WARNING ***:  Night/Day Mode activate signal NOT detected. (%t)", $time);
-      error = error + 1;
-    end
-    $display("\n Night mode test end.");
-    $display("------------------------------------------------------------------------------");
-  endtask
-
-  //--------------------------------------------------------------
-  // Seven Segment Manager Tasks
-  //--------------------------------------------------------------
-  task WheelSizeSwitchTest;
-    $display("\n Wheel size switch test start.");
-    #1s -> press_mode_button;
-    #17ms -> press_trip_button;
-    for (int j=0;j<3;j++) begin
-      #1s DisplaySegment;
-      for (int i=0;i<2;i++) begin
-        SinglePressTripButton;
-        #1s DisplaySegment;
-      end
-      SinglePressModeButton;
-    end
-    #1s DisplaySegment;
-    $display("\n Wheel size switch test end.");
-    $display("------------------------------------------------------------------------------");
-  endtask
-
-  
-*/
-//------------------------------------------------------------------------------
 // Gate Level Module Tasks
 //------------------------------------------------------------------------------
 
@@ -370,7 +148,7 @@ end
   //--------------------------------------------------------------
   // Gate Level Odometer Verification Task
   //--------------------------------------------------------------
-  task GateLevelOdometerTest;
+  task GateLevelOdometerTask;
     $display("\n Odometer verification start.");
     #3s;
     odometer = (2.136 * fork_times);
@@ -381,13 +159,32 @@ end
   endtask
 
   //--------------------------------------------------------------
+  // Gate Level Trip Time Verification
+  //--------------------------------------------------------------
+  task GateLevelTripTimeTask; // This will test if the recoreded speed matchs the real speed
+    $display("\n Trip time verification start.");
+    DisplaySegment;
+    $display("\n Real trip time is %fs. Segment display is %fs. (%t)", trip_time, seg_value*6000, $time);
+    assert (seg_value*6000 - trip_time < 60 && trip_time - seg_value*6000 < 60) else begin
+      $display(" *** WARNING ***: Trip time result error more than 1 min.");
+      error = error + 1;
+    end
+    $display("\n Trip time verification end.");
+    $display("------------------------------------------------------------------------------");
+  endtask
+
+  //--------------------------------------------------------------
   // Gate Level Speedometer Verification Task
   //--------------------------------------------------------------
-  task GateLevelSpeedTest;
+  task GateLevelSpeedTask;
     $display("\n Speedometer verification start.");
     #3s;
     DisplaySegment;
     $display("\n Real Speed is %f km/h. Segment display is %f km/h (ave speed = %dkm/h). (%t)", (speed * 3.6), seg_value, ave_speed*3.6, $time);
+    assert (seg_value - (speed * 3.6) < 2 && (speed * 3.6) - seg_value < 2) else begin
+      $display(" *** WARNING ***: Speed result error more than 1km/h.");
+      error = error + 1;
+    end
     $display("\n Speedometer verification end.");
     $display("------------------------------------------------------------------------------");
   endtask
@@ -395,12 +192,8 @@ end
   //--------------------------------------------------------------
   // Gate Level Cadence Verification
   //--------------------------------------------------------------
-
-  task CadenceVerification; // This will test if the recoreded speed matchs the real speed
+  task GateLevelCadenceTask; // This will test if the recoreded speed matchs the real speed
     $display("\n Cadence verification start.");
-    while (!(sel_segment && (ahb_addr[2] == 1))) // AHB write
-      @(posedge Clock);
-    #(`clock_period + `clock_period/2); // AHB write complete
     DisplaySegment;
     $display("\n Real Cadence is %d rpm. Segment display is %d rpm (ave cadence = %d). (%t)", cadence, seg_value, ave_cadence, $time);
     assert (seg_value - cadence <= 10 && cadence - seg_value <= 10) else begin
@@ -487,7 +280,7 @@ end
   //--------------------------------------------------------------
   // Gate Level Odometer Verification Test
   //--------------------------------------------------------------
-  `ifdef GateLevelTest
+  `ifdef GateLevelOdometerTest
     initial begin
       GateLevelStartUp;
 
@@ -495,11 +288,63 @@ end
 
       for (int i=0;i<30;i++) begin
         #3s;
-        GateLevelOdometerTest;
+        GateLevelOdometerTask;
       end
 
       GateLevelEndSimulation;
     end
 
-  
+  //--------------------------------------------------------------
+  // Gate Level Trip Time Verification Test
+  //--------------------------------------------------------------
+  `elsif GateLevelTripTimeTest
+    initial begin
+      GateLevelStartUp;
+
+      LowSpeedTest;
+
+      for (int i=0;i<30;i++) begin
+        #3s;
+        GateLevelTripTimeTask;
+      end
+
+      GateLevelEndSimulation;
+    end
+
+  //--------------------------------------------------------------
+  // Gate Level Speedometer Verification Test
+  //--------------------------------------------------------------
+  `elsif GateLevelSpeedTest
+    initial begin
+      GateLevelStartUp;
+
+      SinglePressModeButton;
+
+      LowSpeedTest;
+
+      for (int i=0;i<30;i++) begin
+        #3s;
+        GateLevelSpeedTask;
+      end
+
+      GateLevelEndSimulation;
+    end
+
+  //--------------------------------------------------------------
+  // Gate Level Cadence Verification Test
+  //--------------------------------------------------------------
+  `elsif GateLevelCadenceTest
+    initial begin
+      GateLevelStartUp;
+
+      LowSpeedTest;
+
+      for (int i=0;i<30;i++) begin
+        #3s;
+        GateLevelCadenceTask;
+      end
+
+      GateLevelEndSimulation;
+    end
+
   `endif
