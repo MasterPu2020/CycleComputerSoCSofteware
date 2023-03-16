@@ -122,6 +122,9 @@ end
     Fork = 0;
     Mode = 0;
     Trip = 0;
+    ScanEnable = 0;
+    Test = 0;
+    SDI = 0;
     DisplayRefresh_Seg = 0;
     start_up_delay();
     $display("\n Simulation Start.\n");

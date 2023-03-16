@@ -25,13 +25,13 @@
 //  signals
 //   (Test, SDI, SDO)
 //
-`define no_scan_signals
+//`define no_scan_signals
 
 // The following line indicates that the model supports separate scan control
 //  signals
 //   (Test, ScanEnable)
 //
-//`define scan_enable
+`define scan_enable
 
 // The following line indicates that the model does not properly simulate
 //  the pullup behaviour of the pads and an external pullup should be

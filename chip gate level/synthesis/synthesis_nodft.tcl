@@ -17,7 +17,7 @@
     
     set_output_delay 5.0 -max -network_latency_included -clock master_clock \
     [all_outputs]
-    set_output_delay 0.1 -min -netwsork_latency_included -clock master_clock \
+    set_output_delay 0.1 -min -network_latency_included -clock master_clock \
     [all_outputs]
     
     set_load 1.0  -max [all_outputs]
@@ -39,35 +39,35 @@
     current_design computer
     ungroup -all -flatten
     
-    set_dft_signal -view existing_dft -type ScanClock   -port Clock        -timing {45 60}
-    set_dft_signal -view existing_dft -type Reset       -port nReset       -active_state 0
+    #set_dft_signal -view existing_dft -type ScanClock   -port Clock        -timing {45 60}
+    #set_dft_signal -view existing_dft -type Reset       -port nReset       -active_state 0
 
-    set_dft_signal -view spec         -type TestMode    -port Test         -active_state 1
-    set_dft_signal -view spec         -type ScanEnable  -port ScanEnable   -active_state 1
-    set_dft_signal -view spec         -type ScanDataIn  -port SDI 
-    set_dft_signal -view spec         -type ScanDataOut -port SDO
+    #set_dft_signal -view spec         -type TestMode    -port Test         -active_state 1
+    #set_dft_signal -view spec         -type ScanEnable  -port ScanEnable   -active_state 1
+    #set_dft_signal -view spec         -type ScanDataIn  -port SDI 
+    #set_dft_signal -view spec         -type ScanDataOut -port SDO
 
-    create_test_protocol
+    #create_test_protocol
     
-    set_dft_configuration -fix_reset enable
-    set_autofix_configuration -type reset -method mux -control Test -test_data nReset
+    #set_dft_configuration -fix_reset enable
+    #set_autofix_configuration -type reset -method mux -control Test -test_data nReset
 
-    set_dft_configuration -fix_set enable
-    set_autofix_configuration -type set -method mux -control Test -test_data nReset
+    #set_dft_configuration -fix_set enable
+    #set_autofix_configuration -type set -method mux -control Test -test_data nReset
 
     current_design computer 
 
-    set_scan_configuration -style multiplexed_flip_flop -chain_count 1
+    #set_scan_configuration -style multiplexed_flip_flop -chain_count 1
   
-    preview_dft
+    #preview_dft
 
-    insert_dft
+    #insert_dft
 
-    dft_drc
+    #dft_drc
 
     #compile
 
-    compile -scan
+    #compile -scan
 
     compile -map_effort high -incremental_mapping
 
