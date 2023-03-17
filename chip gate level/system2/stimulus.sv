@@ -16,8 +16,8 @@
 //  `define OdometerVerification      // Not Verified
 //  `define TripTimeVerification      // Not Verified
 //  `define SpeedVerification         // Not Verified
-//  `define CadenceVerification       // Not Verified
- `define SimpleVerification        // Not Verified
+//  `define CadenceVerification       // Behavioural Passed
+ `define SimpleVerification        // Behavioural Passed 
 //  `define FullVerification          // Not Verified
 
 // 2. Monitor enable:
@@ -122,9 +122,6 @@ end
     Fork = 0;
     Mode = 0;
     Trip = 0;
-    ScanEnable = 0;
-    Test = 0;
-    SDI = 0;
     DisplayRefresh_Seg = 0;
     start_up_delay();
     $display("\n Simulation Start.\n");
@@ -142,7 +139,6 @@ end
 
   task OdometerTest;
     $display("\n This is odometer:");
-    #3s;
     odometer = (2.136 * fork_times);
     DisplaySegment;
     $display("\n Real Odometer is %fkm. Segment display is %fkm (fork_times = %d). (%t)", odometer/1000.0, seg_value, fork_times, $time);
@@ -177,7 +173,7 @@ end
   task Speed10km_Cadence100rps;
     $display("\n Change to low speed: 10km/h, 100rps. (%t)\n", $time);
     crank_cycle = 600; // ms
-    fork_cycle = 834;  // ms
+    fork_cycle = 769;  // ms
     speed = 10;
     cadence = 100;
   endtask
@@ -334,16 +330,22 @@ end
       PressModeButton;
 
       Speed20km_Cadence150rps;
+      for (int i = 0; i<3; i++)
+        #1s $display("Running at %t", $time);
       for (int i=0;i<3;i++)
-        #3s CadenceTest;
+        #9s CadenceTest;
 
       Speed10km_Cadence100rps;
+      for (int i = 0; i<3; i++)
+        #1s $display("Running at %t", $time);
       for (int i=0;i<3;i++)
-        #3s CadenceTest;
+        #9s CadenceTest;
 
       BicycleStopped;
+      for (int i = 0; i<3; i++)
+        #1s $display("Running at %t", $time);
       for (int i=0;i<3;i++)
-        #3s CadenceTest;
+        #9s CadenceTest;
 
       EndSimulation;
     end
@@ -355,40 +357,74 @@ end
     initial begin
       StartUp;
 
-      // Fast Speed
+      $display(" Fast Speed Test");
       Speed20km_Cadence150rps;
-      #5s OdometerTest;
+      for (int i = 0; i<5; i++)
+        #1s $display("Running at %t", $time);
+      OdometerTest;
       PressModeButton;
       PressModeButton;
-      #5s SpeedTest;
+      for (int i = 0; i<5; i++)
+        #1s $display("Running at %t", $time);
+      SpeedTest;
       PressModeButton;
-      #5s CadenceTest;
+      for (int i = 0; i<5; i++)
+        #1s $display("Running at %t", $time);
+      CadenceTest;
       PressModeButton;
 
-      // Slow Speed
+      $display(" Slow Speed Test");
       Speed10km_Cadence100rps;
-      #5s OdometerTest;
+      for (int i = 0; i<5; i++)
+        #1s $display("Running at %t", $time);
+      OdometerTest;
       PressModeButton;
       PressModeButton;
-      #5s SpeedTest;
+      for (int i = 0; i<5; i++)
+        #1s $display("Running at %t", $time);
+      SpeedTest;
       PressModeButton;
-      #5s CadenceTest;
+      for (int i = 0; i<10; i++)
+        #1s $display("Running at %t", $time);
+      CadenceTest;
       PressModeButton;
 
-      // Time Test
-      #31s TripTimeTest;
+      $display(" Time Test: Wait until 64s");
+      PressModeButton;
+      for (int i = 0; i<20; i++)
+        #1s $display("Running at %t", $time);
+      TripTimeTest;
 
-      // Stop Test
       BicycleStopped;
-      #61s;
+      $display(" Stop Test: Wait until 128s");
+      for (int i = 0; i<66; i++)
+        #1s $display("Running at %t", $time);
       trip_time = trip_time - 61;
       TripTimeTest;
       PressModeButton;
-      #3s SpeedTest;
+      for (int i = 0; i<3; i++)
+        #1s $display("Running at %t", $time);
+      SpeedTest;
       PressModeButton;
-      #3s CadenceTest;
+      for (int i = 0; i<3; i++)
+        #1s $display("Running at %t", $time);
+      CadenceTest;
       PressModeButton;
-      #3s OdometerTest;
+      for (int i = 0; i<3; i++)
+        #1s $display("Running at %t", $time);
+      OdometerTest;
+
+      $display(" Clear Test");
+      PressTripButton;
+      trip_time = 0;
+      for (int i = 0; i<3; i++)
+        #1s $display("Running at %t", $time);
+      OdometerTest;
+      PressModeButton;
+      for (int i = 0; i<3; i++)
+        #1s $display("Running at %t", $time);
+      TripTimeTest;
+
 
       EndSimulation;
     end
