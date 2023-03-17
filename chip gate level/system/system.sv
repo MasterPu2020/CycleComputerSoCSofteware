@@ -363,7 +363,7 @@ always @(press_third_button)
 
   initial
     begin
-      #`sim_time;
+      #`sim_time
       $stop;
       $finish;
     end
