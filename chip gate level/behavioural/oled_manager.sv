@@ -89,7 +89,7 @@ always_comb begin
   DnC  = dnc;
   nCS  = 1;
   SCLK = 0;
-  SDIN = dnc?data[7]:data[15];
+  SDIN = dnc?data[15]:data[7];
   case (state)
     Wait       : begin nCS = 1; SCLK = 0; end
     ChangeData : begin nCS = 0; SCLK = 0; end
