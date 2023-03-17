@@ -47,6 +47,10 @@ logic [15:0] forks, cranks;
 
 enum logic [1:0] {Idle, ReadCrank, ReadFork, WriteFork} control;
 logic last_fork, last_crank;
+
+logic  SYNC_MID_nFork,  SYNC_nFork;
+logic  SYNC_MID_nCrank, SYNC_nCrank;
+
 // Parameters
 localparam
   NoTransfer = 2'b00; // AHB disabled
@@ -72,6 +76,21 @@ always_ff @(posedge HCLK, negedge HRESETn) begin
 end
 
 //------------------------------------------------------------------------------
+// Input Synchronization : nFork, nCrank
+//------------------------------------------------------------------------------
+
+always_ff @(posedge HCLK, negedge HRESETn) begin
+  if (!HRESETn) begin
+    SYNC_MID_nCrank <= '0;  SYNC_nCrank <= '0;
+    SYNC_MID_nFork  <= '0;  SYNC_nFork <= '0;
+  end
+  else begin
+    SYNC_nCrank <= SYNC_MID_nCrank; SYNC_MID_nCrank <= nCrank;
+    SYNC_nFork  <= SYNC_MID_nFork;  SYNC_MID_nFork  <= nFork;
+  end
+end
+
+//------------------------------------------------------------------------------
 // One Cycle Delayed AHB Controled Sensor Manager
 //------------------------------------------------------------------------------
 
@@ -87,13 +106,13 @@ always_ff @(posedge HCLK, negedge HRESETn) begin
     // Sensor Manager
     //--------------------------------------------------------------------------
     // Increase fork and crank
-    if (!nFork)
+    if (!SYNC_nFork)
       last_fork <= 1;
     else if (last_fork) begin
       forks <= forks + 1;
       last_fork <= 0;
     end
-    if (!nCrank)
+    if (!SYNC_nCrank)
       last_crank <= 1;
     else if (last_crank) begin
       cranks <= cranks + 1;

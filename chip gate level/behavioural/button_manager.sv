@@ -48,6 +48,12 @@ module button_manager(
 // Control and Status Signals
 //------------------------------------------------------------------------------
 
+
+  // Input Synchronization
+  logic SYNC_MID_nMode, SYNC_nMode;
+  logic SYNC_MID_nTrip, SYNC_nTrip;
+
+
   // Button debounce
   logic Trip_Last, Mode_Last;
   logic [ 9:0] DebCount_Trip, DebCount_Mode;
@@ -71,6 +77,21 @@ module button_manager(
     Mode_Reg_Addr = 1,
     DayNight_Reg_Addr = 0,
     Stop_Transferring = 2'b0;
+
+//------------------------------------------------------------------------------
+// Input Synchronization : nMode, nTrip
+//------------------------------------------------------------------------------
+
+always_ff @(posedge HCLK, negedge HRESETn) begin
+  if (!HRESETn) begin
+    SYNC_MID_nMode <= '0;  SYNC_nMode <= '0;
+    SYNC_MID_nTrip <= '0;  SYNC_nTrip <= '0;
+  end
+  else begin
+    SYNC_nMode <= SYNC_MID_nMode; SYNC_MID_nMode <= Mode;
+    SYNC_nTrip <= SYNC_MID_nTrip; SYNC_MID_nTrip <= Trip;
+  end
+end
 
 //------------------------------------------------------------------------------
 // Button Debounce
@@ -103,7 +124,7 @@ module button_manager(
           end
         end
         STATE_COUNT_DEBTRIP: begin
-          if ((DebCount_Trip == Time_25MS) || (Trip)) begin
+          if ((DebCount_Trip == Time_25MS) || (SYNC_nTrip)) begin
             state_debtrip <= STATE_IDLE_DEBTRIP;
             DebCount_Trip <= '0;
           end
@@ -135,7 +156,7 @@ module button_manager(
             end
           end
           STATE_COUNT_DEBMODE: begin
-            if ((DebCount_Mode == Time_25MS) || (Mode)) begin
+            if ((DebCount_Mode == Time_25MS) || (SYNC_nMode)) begin
               DebCount_Mode <= '0;
               state_debmode <= STATE_IDLE_DEBMODE;
             end
