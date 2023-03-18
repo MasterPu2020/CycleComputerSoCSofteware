@@ -22,14 +22,14 @@ Explanatory Documentation
 +define+clock_period=30517.6ns \
 +define+scan_enable \
 +define+external_pullup \
-+define+sanitise_input \
 +define+start_up_time=110ms \
 +define+include_oled \
 +define+num_modes=4 \
 +define+Mode0=Distance \
 +define+Mode1=Duration \
 +define+Mode2=Speed \
-+define+Mode3=Cadence
++define+Mode3=Cadence \
++define+stimulus=system2/stimulus.sv
 
 
 [2] Complete Gate Level (with Graphics) Version: +GateLevel +ScanPath +OLED
@@ -38,26 +38,26 @@ Explanatory Documentation
 +define+clock_period=30517.6ns \
 +define+scan_enable \
 +define+external_pullup \
-+define+sanitise_input \
 +define+start_up_time=110ms \
 +define+include_oled \
 +define+num_modes=4 \
 +define+Mode0=Distance \
 +define+Mode1=Duration \
 +define+Mode2=Speed \
-+define+Mode3=Cadence
++define+Mode3=Cadence \
++define+stimulus=system2/stimulus.sv
 
 
-[3] LED only Gate Level (No Graphics) Version: +GateLevel +ScanPath
+[3] LED only Gate Level (No Graphics) Version: +GateLevel +ScanPath +NoGraphics
 
 ./simulate -no_graphics -gate -sdf ./gate_level/computer.sdf ./gate_level \
 +define+clock_period=30517.6ns \
 +define+scan_enable \
 +define+external_pullup \
-+define+sanitise_input \
 +define+start_up_time=110ms \
 +define+num_modes=4 \
 +define+Mode0=Distance \
 +define+Mode1=Duration \
 +define+Mode2=Speed \
-+define+Mode3=Cadence
++define+Mode3=Cadence \
++define+stimulus=system2/stimulus.sv
