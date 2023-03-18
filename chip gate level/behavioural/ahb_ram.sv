@@ -39,16 +39,29 @@ timeprecision 100ps;
 
   localparam No_Transfer = 2'b0;
 
-// Memory Array  
-  logic [31:0] memory[0:(2**(MEMWIDTH-2)-1)];
-
-//control signals are stored in registers
+// control signals are stored in registers
   logic write_enable, read_enable;
   logic [MEMWIDTH-2:0] word_address;
   logic [3:0] byte_select;
-  
 
-//Generate the control signals in the address phase
+// Macro Cell Signals
+  logic [31:0] HWDATA_RAM;
+  wire  [31:0] HRDATA_RAM;
+  
+// Instantiation
+  sram256x32 sram256x32_1 (
+    .NRST(HRESETn),
+    .CS(HCLK),
+    .RD(read_enable),
+    .WR(write_enable),
+    .EN(1'b0),
+    .AD({word_address, 2'b0}),
+    .DI(HWDATA),
+    .DO(HRDATA_RAM)
+  );
+
+
+// Generate the control signals in the address phase
   always_ff @(posedge HCLK, negedge HRESETn)
     if (! HRESETn )
       begin
@@ -74,26 +87,8 @@ timeprecision 100ps;
 
 //Act on control signals in the data phase
 
-  // write
-  always_ff @(posedge HCLK)
-    if ( write_enable )
-      begin
-        if( byte_select[0]) memory[word_address][ 7: 0] <= HWDATA[ 7: 0];
-        if( byte_select[1]) memory[word_address][15: 8] <= HWDATA[15: 8];
-        if( byte_select[2]) memory[word_address][23:16] <= HWDATA[23:16];
-        if( byte_select[3]) memory[word_address][31:24] <= HWDATA[31:24];
-      end
-
-  //read
-  // (output of zero when not enabled for read is not necessary but may help with debugging)
-  assign HRDATA[ 7: 0] = ( read_enable && byte_select[0] ) ? memory[word_address][ 7: 0] : '0;
-  assign HRDATA[15: 8] = ( read_enable && byte_select[1] ) ? memory[word_address][15: 8] : '0;
-  assign HRDATA[23:16] = ( read_enable && byte_select[2] ) ? memory[word_address][23:16] : '0;
-  assign HRDATA[31:24] = ( read_enable && byte_select[3] ) ? memory[word_address][31:24] : '0;
-
 //Transfer Response
   assign HREADYOUT = '1; //Single cycle Write & Read. Zero Wait state operations
-
 
 // decode byte select signals from the size and the lowest two address bits
   function logic [3:0] generate_byte_select( logic [2:0] size, logic [1:0] byte_adress );

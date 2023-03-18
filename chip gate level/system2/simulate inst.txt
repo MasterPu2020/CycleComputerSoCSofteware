@@ -75,3 +75,46 @@ Explanatory Documentation
 +define+Mode2=Speed \
 +define+Mode3=Cadence \
 +define+stimulus=system2/stimulus.sv
+
+[5] LED only Behavioural (No Graphics) Version: +NoGraphics
+
+./simulate ./behavioural 200s\
++define+clock_period=30517.6ns \
++define+no_scan_signals \
++define+external_pullup \
++define+start_up_time=110ms \
++define+num_modes=4 \
++define+Mode0=Distance \
++define+Mode1=Duration \
++define+Mode2=Speed \
++define+Mode3=Cadence \
++define+stimulus=system2/stimulus.sv
+
+[6] LED only Behavioural (with Graphics) Version:
+
+./simulate ./behavioural 200s \
++define+clock_period=30517.6ns \
++define+no_scan_signals \
++define+external_pullup \
++define+start_up_time=110ms \
++define+num_modes=4 \
++define+Mode0=Distance \
++define+Mode1=Duration \
++define+Mode2=Speed \
++define+Mode3=Cadence \
++define+stimulus=system2/stimulus.sv
+
+[7] Macro Cell Version:
+
+./simulate ./behavioural 200s \
++define+clock_period=30517.6ns \
++define+no_scan_signals \
++define+external_pullup \
++define+start_up_time=110ms \
++define+num_modes=4 \
++define+Mode0=Distance \
++define+Mode1=Duration \
++define+Mode2=Speed \
++define+Mode3=Cadence \
++define+stimulus=system2/stimulus.sv
++define+functional

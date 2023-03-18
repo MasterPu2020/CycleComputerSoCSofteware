@@ -17,8 +17,9 @@
 //  `define TripTimeVerification      // Not Verified
 //  `define SpeedVerification         // Not Verified
 //  `define CadenceVerification       // Behavioural Passed
- `define SimpleVerification        // Behavioural Passed 
+  `define SimpleVerification          // Behavioural Passed 
 //  `define FullVerification          // Not Verified
+//  `define MacroCellVerification     // Not Verified
 
 // 2. Monitor enable:
 `include "../system2/display.sv"
@@ -491,6 +492,14 @@ end
         #3s OdometerTest;
 
       EndSimulation;
+    end
+
+  //--------------------------------------------------------------
+  // Gate Level Full Verification
+  //--------------------------------------------------------------
+  `elsif MacroCellVerification
+    initial begin
+      StartUp;
     end
 
   `endif

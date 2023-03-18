@@ -73,7 +73,7 @@ module computer (
   BU8P PAD_nDigit_1 ( .PAD(nDigit[1]), .A(CORE_nDigit[1]) );
   BU8P PAD_nDigit_2 ( .PAD(nDigit[2]), .A(CORE_nDigit[2]) );
   BU8P PAD_nDigit_3 ( .PAD(nDigit[3]), .A(CORE_nDigit[3]) );
-  ICP PAD_Clock ( .PAD(Clock), .Y(CORE_Clock) );
+  ICCP2K PAD_Clock ( .PAD(Clock), .Y(CORE_Clock) );
   BU8P PAD_SegA ( .PAD(SegA), .A(CORE_SegA) );
   BU8P PAD_SegB ( .PAD(SegB), .A(CORE_SegB) );
   BU8P PAD_SegC ( .PAD(SegC), .A(CORE_SegC) );
