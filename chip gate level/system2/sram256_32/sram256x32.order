@@ -1,0 +1,23 @@
+
+         DATA SET FOR ORDERING GDS
+    Please attach this file to your order
+
+ process: 0.35um CMOS process - C35
+ memory type:     spram 
+ nominal supply:  3.3V 
+ metal variation: triple metal 
+
+ Number of words:        256
+ Number of address bits: 8
+ Number of data bits:    32
+ data bus configuration: unidir
+ instance name:          sram256x32
+
+ choosen configuration:  1
+ key feature cycle time: 4.78 [ns]
+ layout option:          cadence
+
+ originator:   wke
+ date:         Mon Mar 14 19:05:51 MET 2016
+ format:       sram256x32_cadence_c35_vdd33.tar
+ compiler rev: NC

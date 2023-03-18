@@ -61,3 +61,17 @@ Explanatory Documentation
 +define+Mode2=Speed \
 +define+Mode3=Cadence \
 +define+stimulus=system2/stimulus.sv
+
+[4] LED only Gate Level (with Graphics) Version: +GateLevel +ScanPath
+
+./simulate -gate -sdf ./gate_level/computer.sdf ./gate_level \
++define+clock_period=30517.6ns \
++define+scan_enable \
++define+external_pullup \
++define+start_up_time=110ms \
++define+num_modes=4 \
++define+Mode0=Distance \
++define+Mode1=Duration \
++define+Mode2=Speed \
++define+Mode3=Cadence \
++define+stimulus=system2/stimulus.sv

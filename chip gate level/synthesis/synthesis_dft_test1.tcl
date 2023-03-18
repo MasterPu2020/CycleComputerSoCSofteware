@@ -1,15 +1,8 @@
   analyze -format sv  "../behavioural/computer.sv ../behavioural/comp_core.sv ../behavioural/CORTEXM0DS.sv ../behavioural/cortexm0ds_logic.sv ../behavioural/ahb_interconnect.sv ../behavioural/ahb_ram.sv ../behavioural/ahb_rom.sv ../behavioural/button_manager.sv  ../behavioural/oled_manager.sv ../behavioural/sensor_manager.sv ../behavioural/seven_segment.sv ../behavioural/timer.sv"
 
   elaborate computer
-
-  link
-
-  set_driving_cell -max -library c35_IOLIB_WC -lib_cell BU24P -pin PAD [all_inputs]
-  set_driving_cell -min -library c35_IOLIB_WC -lib_cell BU1P -pin PAD [all_inputs]
-
-  set_load 1.0  -max [all_outputs]
-  set_load 0.01 -min [all_outputs]
-
+  
+  set_max_area 0
   create_clock -name master_clock  -period 30517.6  [get_ports Clock]
 
   set_clock_latency     2.5 [get_clocks master_clock]
@@ -26,15 +19,17 @@
   set_output_delay 0.1 -min -network_latency_included -clock master_clock \
   [all_outputs]
 
-  set_max_area 0
+  set_load 1.0  -max [all_outputs]
+  set_load 0.01 -min [all_outputs]
+
+  set_driving_cell -max -library c35_IOLIB_WC -lib_cell BU24P -pin PAD [all_inputs]
+  set_driving_cell -min -library c35_IOLIB_WC -lib_cell BU1P -pin PAD [all_inputs]
 
   set_false_path -from [get_ports nReset]
 
-  set_dont_touch [get_cells RESET_SYNC_FF*]
-
-  ungroup -all -flatten
-
   set_fix_hold master_clock
+
+  set_dont_touch [get_cells RESET_SYNC_FF*]
 
   compile -scan
 
@@ -65,6 +60,8 @@
   preview_dft
 
   insert_dft
+
+  ungroup -all -flatten
 
   compile -map_effort high -incremental_mapping -scan
 
