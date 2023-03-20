@@ -1,0 +1,191 @@
+
+Header(
+ Library("sram256x32_lib")
+ Date("14-03-116")
+ TLF_Version("3.0")
+ Generated_By("dolphin2tlf")
+ Environment("3.3V")
+)
+Model(k_procMod
+ (Linear
+  value(-~:0:1.00:0.2600)
+  value(0:~:1.00:0.3600)
+ )
+)
+ 
+Model(k_voltDelayMod
+ (Linear
+  value(-~:~:2.0642:-0.3225)
+ )
+)
+ 
+Model(k_voltSlewMod
+ (Linear
+  value(-~:~:1.8451:-0.2561)
+ )
+)
+ 
+Model(k_tempDelayMod
+ (Linear
+  value(-~:~:0.9300:0.0028)
+ )
+)
+ 
+Model(k_tempSlewMod
+ (Linear
+  value(-~:~:0.9225:0.0031)
+ )
+)
+ 
+Timing_Props(
+ For_Pin(Input Pin_Cap(1.00))
+ For_Pin(Output Pin_Cap(0.00))
+ For_Pin(Bidir Pin_Cap(1.00))
+ Proc_Var(-1:0:1)
+ Voltage(3.6:3.3:3.0)
+ Temperature(-50:25:125)
+ 
+ Proc_Mult(1)
+ Volt_Mult(1)
+ Temp_Mult(1)
+ Proc_Mult_Propagation(k_procMod)
+ Volt_Mult_Propagation(k_voltDelayMod)
+ Temp_Mult_Propagation(k_tempDelayMod)
+ Proc_Mult_Transition(k_procMod)
+ Volt_Mult_Transition(k_voltSlewMod)
+ Temp_Mult_Transition(k_tempSlewMod)
+ Proc_Mult_MPWL(k_procMod)
+ Volt_Mult_MPWL(k_voltDelayMod)
+ Temp_Mult_MPWL(k_tempDelayMod)
+ Proc_Mult_MPWH(k_procMod)
+ Volt_Mult_MPWH(k_voltDelayMod)
+ Temp_Mult_MPWH(k_tempDelayMod)
+ Proc_Mult_Setup(k_procMod)
+ Volt_Mult_Setup(k_voltDelayMod)
+ Temp_Mult_Setup(k_tempDelayMod)
+ Proc_Mult_Hold(k_procMod)
+ Volt_Mult_Hold(k_voltDelayMod)
+ Temp_Mult_Hold(k_tempDelayMod)
+ Proc_Mult_Recovery(k_procMod)
+ Volt_Mult_Recovery(k_voltDelayMod)
+ Temp_Mult_Recovery(k_tempDelayMod)
+ Proc_Mult_Removal(k_procMod)
+ Volt_Mult_Removal(k_voltDelayMod)
+ Temp_Mult_Removal(k_tempDelayMod)
+)
+Model(_10kCapModel
+ (Spline
+ (Load_Axis 1 2 10001)
+ data(0.00000 0.00816 81.6))
+)
+ 
+Model(_10kResModel
+ (Spline
+ (Load_Axis 1 2 10001)
+ data(0.00000 0.007 0.007))
+)
+ 
+Model(_30kCapModel
+ (Spline
+ (Load_Axis 1 2 10001)
+ data(0.00000 0.009798 97.98))
+)
+ 
+Model(_30kResModel
+ (Spline
+ (Load_Axis 1 2 10001)
+ data(0.00000 0.0084 0.0084))
+)
+ 
+Model(_100kCapModel
+ (Spline
+ (Load_Axis 1 2 10001)
+ data(0.00000 0.013064 130.64))
+)
+ 
+Model(_100kResModel
+ (Spline
+ (Load_Axis 1 2 10001)
+ data(0.00000 0.0112 0.0112))
+)
+ 
+Model(pad_wire_loadCapModel
+ (Spline
+ (Load_Axis 1 2 10001)
+ data( 0 0.02495 249.5))
+)
+ 
+Model(pad_wire_loadResModel
+ (Spline
+ (Load_Axis 1 2 10001)
+ data( 0 0.0210 0.0210))
+)
+
+ 
+Timing_Props(
+ Net_Cap(_10kCapModel) Net_Res(_10kResModel)
+ Wireload("10k" Net_Cap(_10kCapModel) Net_Res(_10kResModel))
+ Wireload("30k" Net_Cap(_30kCapModel) Net_Res(_30kResModel))
+ Wireload("100k" Net_Cap(_100kCapModel) Net_Res(_100kResModel))
+ Wireload("pad_wire_load" Net_Cap(pad_wire_loadCapModel) Net_Res(pad_wire_loadResModel))
+)
+
+
+
+CELL (sram256x32
+    CELLTYPE ( SEQ )  
+
+    Pin(AD[7:0] Pintype(Data) Pindir(Input) Timing_Props(Pin_Cap( 0.06) Slew_limit( 4.00)))
+    Pin(CS Pintype(Clock posedge) Pindir(Input) Timing_Props(Pin_Cap( 0.09) Slew_limit( 2.00)))
+    Pin(DI[31:0] Pintype(Data) Pindir(Input) Timing_Props(Pin_Cap( 0.05) Slew_limit( 4.00)))
+    Pin(DO[31:0] Pintype(Tristate) Pindir(Output) Timing_Props(Pin_Cap( 0.08) Load_Limit(10.39)))
+    Pin(EN Pintype(Control) Pindir(Input) Timing_Props(Pin_Cap( 0.01) Slew_limit( 4.00)))
+    Pin(NRST Pintype(Data) Pindir(Input) Timing_Props(Pin_Cap( 0.02) Slew_limit( 4.00)))
+    Pin(RD Pintype(Data) Pindir(Input) Timing_Props(Pin_Cap( 0.02) Slew_limit( 4.00)))
+    Pin(WR Pintype(Data) Pindir(Input) Timing_Props(Pin_Cap( 0.03) Slew_limit( 4.00)))
+
+    Model(AD_SETUP_TIME (Const( 0.79)))
+    Model(AD_HOLD_TIME (Const( 1.29)))
+    Model(DATA_SETUP_TIME (Const( 0.44)))
+    Model(DATA_HOLD_TIME (Const( 1.10)))
+    Model(RD_SETUP_TIME (Const( 0.92)))
+    Model(RD_HOLD_TIME (Const( 0.20)))
+    Model(WR_SETUP_TIME (Const( 0.91)))
+    Model(WR_HOLD_TIME (Const( 0.20)))
+    Model(NRST_SETUP_TIME (Const( 0.41)))
+    Model(NRST_HOLD_TIME (Const( 2.60)))
+    Model(CYCLE_TIME (Const( 4.78)))
+    Model(CS_HIGH_TIME (Const( 0.79)))
+    Model(CS_LOW_TIME (Const( 1.75)))
+    Model(HIGH_Z_TIME (Const( 1.34)))
+    Model(LOW_Z_TIME (Spline (Load_Axis 0 1) data ( 1.26  1.38)))
+    Model(ACCESS_TIME_LEC (Spline (Load_Axis 0 1) data ( 3.12  3.28)))
+    Model(RISE_DOUT (Spline (Load_Axis 0 1) data ( 0.56  0.95)))
+    Model(FALL_DOUT (Spline (Load_Axis 0 1) data ( 0.42  0.71)))
+
+    Path(EN *> DO 10 Z0 Delay(LOW_Z_TIME) Slope(FALL_DOUT))
+    Path(EN *> DO 10 Z1 Delay(LOW_Z_TIME) Slope(RISE_DOUT))
+    Path(EN *> DO 10 10 Delay(LOW_Z_TIME) Slope(FALL_DOUT))
+    Path(EN *> DO 10 01 Delay(LOW_Z_TIME) Slope(RISE_DOUT))
+    Path(EN *> DO 01 0Z Delay(HIGH_Z_TIME) Slope((Const(0))))
+    Path(EN *> DO 01 1Z Delay(HIGH_Z_TIME) Slope((Const(0))))
+    Path(CS *> DO 01 01 Delay(ACCESS_TIME_LEC) Slope(RISE_DOUT))
+    Path(CS *> DO 01 10 Delay(ACCESS_TIME_LEC) Slope(FALL_DOUT))
+
+    Setup(AD *> CS posEdge AD_SETUP_TIME)
+    Hold(AD *> CS posEdge AD_HOLD_TIME)
+    Setup(DI *> CS posEdge DATA_SETUP_TIME)
+    Hold(DI *> CS posEdge DATA_HOLD_TIME)
+    Setup(RD => CS posEdge RD_SETUP_TIME)
+    Hold(RD => CS posEdge RD_HOLD_TIME)
+    Setup(WR => CS posEdge WR_SETUP_TIME)
+    Hold(WR => CS posEdge WR_HOLD_TIME)
+    Setup(NRST => CS posEdge NRST_SETUP_TIME)
+    Hold(NRST => CS posEdge NRST_HOLD_TIME)
+    MPWH(CS CS_HIGH_TIME)
+    MPWL(CS CS_LOW_TIME)
+    Period(CS CYCLE_TIME)
+);
+
+
+
