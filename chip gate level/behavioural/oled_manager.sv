@@ -3,12 +3,9 @@
 // Titile:  OLED Manager Behavioural
 // Author:  Clark Pu
 // Team:    C4 Chip Designed
-// Version: 4.1
+// Version: 4.2
 // Verification: Verified with testbench
-// Comment: 1 package for 8 or 16 bit data.
-//          Redesigned oled manager will have a 1bit command register,
-//          16bit data register, and 1bit ready. If ready set to 0 by software, 
-//          and if command reg == 0, only send data[7:0], else send all 16 bits.
+// Comment: 1 package for 8 bit data.
 //------------------------------------------------------------------------------
 
 module oled_manager(
@@ -42,12 +39,12 @@ timeunit 1ns; timeprecision 100ps;
 // Memory Map:
 // C000_0000: 32bit | Data(1) or Command(0) Select : DnC . Write Only
 // C000_0004: 32bit | Ready flag. Read and Write
-// C000_0008: 32bit | 16 bit data. Write Only
+// C000_0008: 32bit | 8 bit data. Write Only
 //------------------------------------------------------------------------------
 
 logic ready;
 logic dnc;
-logic [15:0] data;
+logic [7:0] data;
 
 //------------------------------------------------------------------------------
 // Control and Status registers
@@ -55,7 +52,7 @@ logic [15:0] data;
 
 enum logic [2:0] {Idle, ReadReady, WriteReady, WriteDnC, WriteData} control;
 enum logic [1:0] {Wait, ChangeData, SendData} state;
-logic [3:0] counter;
+logic [2:0] counter;
 // Parameters
 localparam NoTransfer = 2'b00;
 
@@ -89,7 +86,7 @@ always_comb begin
   DnC  = dnc;
   nCS  = 1;
   SCLK = 0;
-  SDIN = dnc?data[15]:data[7];
+  SDIN = data[7];
   case (state)
     Wait       : begin nCS = 1; SCLK = 0; end
     ChangeData : begin nCS = 0; SCLK = 0; end
@@ -111,17 +108,14 @@ always_ff @(posedge HCLK, negedge HRESETn) begin
     //--------------------------------------------------------------------------
     case (state)
       Wait: begin
-        if (ready == 0) begin
+        if (ready == 0) 
           state <= ChangeData;
-          if (dnc)
-            counter <= 8;
-        end
       end
       ChangeData: begin
         state <= SendData;
       end
       SendData: begin
-        if (counter == 15) begin
+        if (counter == 7) begin
           counter <= 0;
           ready   <= 1;
           state   <= Wait;
