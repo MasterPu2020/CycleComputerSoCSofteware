@@ -7,11 +7,6 @@
 //
 ///////////////////////////////////////////////////////////////////////
 
-// The following lines indicates that a file "stimulus.sv" exists and contains
-// custom stimulus information
-//
-//`define stimulus ../system2/stimulus.sv
-
 // The following lines indicates that a stimulus time exists and contains
 // custom simulation time information
 //
@@ -19,7 +14,7 @@
 
 // The following line specifies the clock period
 //
-//`define clock_period 30517.6ns
+`define clock_period 30517.6ns
 
 // The following line indicates that the model does not support scan path
 //  signals
@@ -31,21 +26,21 @@
 //  signals
 //   (Test, ScanEnable)
 //
-//`define scan_enable
+`define scan_enable
 
 // The following line indicates that the model does not properly simulate
 //  the pullup behaviour of the pads and an external pullup should be
 //  simulated.
 //  (this overcomes a problem with the simulation of the ICUP pad cell) 
 //
-//`define external_pullup
+`define external_pullup
 
 // The following line indicates that synchronisation of inputs is a function
 //  of the wrapper file: "computer.sv". This is a good place to do the
 //  synchronisation if you wish to control the choice of gates used in the
 //  synchroniser. 
 //
-//`define synchronise_inputs_within_wrapper
+`define synchronise_inputs_within_wrapper
 
 // The following line indicates that synchronisation of reset is a function
 //  of the wrapper file: "computer.sv". This is a good place to do the
@@ -64,7 +59,7 @@
 // After reset, the testbench should wait for this time before expecting
 // the computer to work
 //
-//`define start_up_time 110ms
+`define start_up_time 110ms
 
 // Uncomment the following line to indicate that your bicycle computer
 //  supports an OLED display
@@ -73,11 +68,11 @@
 
 // The following line specifies the number of operating modes
 //
-//`define num_modes 4
+`define num_modes 4
 
 // The following lines specify the sequence of operating modes after reset
 //
-//`define Mode0 Distance
-//`define Mode1 Duration
-//`define Mode2 Speed
-//`define Mode3 Cadence
+`define Mode0 Distance
+`define Mode1 Duration
+`define Mode2 Speed
+`define Mode3 Cadence

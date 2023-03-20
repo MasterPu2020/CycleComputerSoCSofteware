@@ -14,7 +14,7 @@
 
 // The following line specifies the clock period
 //
-//`define clock_period 30517.6ns
+`define clock_period 30517.6ns
 
 // The following line indicates that the model does not support scan path
 //  signals
@@ -26,14 +26,14 @@
 //  signals
 //   (Test, ScanEnable)
 //
-//`define scan_enable
+`define scan_enable
 
 // The following line indicates that the model does not properly simulate
 //  the pullup behaviour of the pads and an external pullup should be
 //  simulated.
 //  (this overcomes a problem with the simulation of the ICUP pad cell) 
 //
-//`define external_pullup
+`define external_pullup
 
 // The following line indicates that synchronisation of inputs is a function
 //  of the wrapper file: "computer.sv". This is a good place to do the
