@@ -61,7 +61,7 @@ uint32_t      read_crank(void){return SENSOR[1];}
 uint32_t       read_fork(void){return SENSOR[0];}
 void          clear_fork(void){SENSOR[0] = 0; return;}
 void    clear_timer_long(void){TIMER[0]  = 0; return;}
-void           oled_send(uint32_t Data, bool DnC){while(!oled_ready()); OLED[0] = DnC?1:0; OLED[2] = Data; OLED[1] = 0; return;}
+void           oled_send(uint32_t Data, bool DnC){while(OLED[1]==0); OLED[0] = DnC?1:0; OLED[2] = Data; OLED[1] = 0; return;}
 void     display_segment(uint32_t Mode, uint32_t Integer, uint32_t Fraction){SEGMENT[0] = Fraction; SEGMENT[1] = Integer; SEGMENT[2] = Mode; return;}
 
 //------------------------------------------------------------------------------
@@ -136,7 +136,7 @@ uint32_t wait_for_wheel_girth(uint32_t wheel_girth) {
         // display_oled();
       }
     }
-  }  
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -288,7 +288,7 @@ int main(void) {
 
     display_segment(mode, int2bcd(display_int), int2bcd(display_frac));
 
-    // 4. OLED test 50 pixels
+    // 4. OLED test 50 pixels: Speed is 50 pixels/second
     oled_fill_area(5,5,10,10,true);  // clear square
     oled_fill_area(5,5,10,10,false); // fill a blue square
 
