@@ -34,10 +34,15 @@ fi
 echo "------------------------------------------"
 echo " > Select Command:"
 echo "1.Compile Software."
-echo "2.Simulation (Gate Level)."
-echo "3.Simulation without Graphic (Gate Level)."
-echo "4.Synthesis."
-echo "5.DOS Format Check."
+echo "2.Complete Gate Level (No Graphics) Version: +GateLevel +ScanPath +OLED +NoGraphics."
+echo "3.Complete Gate Level (with Graphics) Version: +GateLevel +ScanPath +OLED."
+echo "4.LED only Gate Level (No Graphics) Version: +GateLevel +ScanPath +NoGraphics."
+echo "5.LED only Gate Level (with Graphics) Version: +GateLevel +ScanPath."
+echo "6.LED only Behavioural (No Graphics) Version: +NoGraphics."
+echo "7.LED only Behavioural (with Graphics) Version."
+echo "8.Macro Cell Version."
+echo "s.Synthesis."
+echo "d.DOS Format Check."
 echo "------------------------------------------"
 echo " Enter Number to Run. Enter Any Key Else to Quit."
 read -p "Enter: " choice
@@ -49,11 +54,99 @@ if [ "$choice" = "1" ]; then
 	cp ./software/code.vmem ./behavioural/code.vmem
 elif [ "$choice" = "2" ]; then
 	echo -e "\n------------------------------------------\n Processing...\n"
-	./simulate -gate gate_level -sdf computer.sdf 
+./simulate -no_graphics -gate -sdf ./gate_level/computer.sdf ./gate_level \
++define+clock_period=30517.6ns \
++define+scan_enable \
++define+external_pullup \
++define+start_up_time=1s \
++define+include_oled \
++define+num_modes=4 \
++define+Mode0=Distance \
++define+Mode1=Duration \
++define+Mode2=Speed \
++define+Mode3=Cadence \
++define+stimulus=system2/stimulus.sv
 elif [ "$choice" = "3" ]; then
 	echo -e "\n------------------------------------------\n Processing...\n"
-	./simulate -no_graphics -gate gate_level
+./simulate -no_graphics -gate -sdf ./gate_level/computer.sdf ./gate_level \
++define+clock_period=30517.6ns \
++define+scan_enable \
++define+external_pullup \
++define+start_up_time=1s \
++define+include_oled \
++define+num_modes=4 \
++define+Mode0=Distance \
++define+Mode1=Duration \
++define+Mode2=Speed \
++define+Mode3=Cadence \
++define+stimulus=system2/stimulus.sv
 elif [ "$choice" = "4" ]; then
+	echo -e "\n------------------------------------------\n Processing...\n"
+./simulate -no_graphics -gate -sdf ./gate_level/computer.sdf ./gate_level \
++define+clock_period=30517.6ns \
++define+scan_enable \
++define+external_pullup \
++define+start_up_time=1s \
++define+num_modes=4 \
++define+Mode0=Distance \
++define+Mode1=Duration \
++define+Mode2=Speed \
++define+Mode3=Cadence \
++define+stimulus=system2/stimulus.sv
+elif [ "$choice" = "5" ]; then
+	echo -e "\n------------------------------------------\n Processing...\n"
+./simulate -gate -sdf ./gate_level/computer.sdf ./gate_level \
++define+clock_period=30517.6ns \
++define+scan_enable \
++define+external_pullup \
++define+start_up_time=1s \
++define+num_modes=4 \
++define+Mode0=Distance \
++define+Mode1=Duration \
++define+Mode2=Speed \
++define+Mode3=Cadence \
++define+stimulus=system2/stimulus.sv
+elif [ "$choice" = "6" ]; then
+	echo -e "\n------------------------------------------\n Processing...\n"
+./simulate -no_graphics ./behavioural 200s \
++define+clock_period=30517.6ns \
++define+no_scan_signals \
++define+external_pullup \
++define+start_up_time=1s \
++define+num_modes=4 \
++define+Mode0=Distance \
++define+Mode1=Duration \
++define+Mode2=Speed \
++define+Mode3=Cadence \
++define+stimulus=system2/stimulus.sv
+elif [ "$choice" = "7" ]; then
+	echo -e "\n------------------------------------------\n Processing...\n"
+./simulate ./behavioural 200s \
++define+clock_period=30517.6ns \
++define+no_scan_signals \
++define+external_pullup \
++define+start_up_time=1s \
++define+num_modes=4 \
++define+Mode0=Distance \
++define+Mode1=Duration \
++define+Mode2=Speed \
++define+Mode3=Cadence \
++define+stimulus=system2/stimulus.sv
+elif [ "$choice" = "8" ]; then
+	echo -e "\n------------------------------------------\n Processing...\n"
+./simulate ./behavioural 200s \
++define+clock_period=30517.6ns \
++define+no_scan_signals \
++define+external_pullup \
++define+start_up_time=1s \
++define+num_modes=4 \
++define+Mode0=Distance \
++define+Mode1=Duration \
++define+Mode2=Speed \
++define+Mode3=Cadence \
++define+stimulus=system2/stimulus.sv
++define+functional
+elif [ "$choice" = "s" ]; then
 	echo -e "\n------------------------------------------\n Processing...\n"
 	cd ./synthesis
 	init=0
@@ -73,7 +166,7 @@ elif [ "$choice" = "4" ]; then
 	fi
 	dc_shell -gui
 	cd ..
-elif [ "$choice" = "5" ]; then
+elif [ "$choice" = "d" ]; then
 	echo -e "\n------------------------------------------\n Processing...\n"
 	echo "Check folder chip"
 	format
