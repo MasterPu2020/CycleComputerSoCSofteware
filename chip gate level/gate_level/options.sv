@@ -40,7 +40,7 @@
 //  synchronisation if you wish to control the choice of gates used in the
 //  synchroniser. 
 //
-`define synchronise_inputs_within_wrapper
+//`define synchronise_inputs_within_wrapper
 
 // The following line indicates that synchronisation of reset is a function
 //  of the wrapper file: "computer.sv". This is a good place to do the
@@ -53,7 +53,7 @@
 //  hall effect inputs and button signals are well behaved to avoid setup
 //  and hold violations during simulation.
 //
-// `define sanitise_input
+`define sanitise_input
 
 // The following line specifies a start-up time for the cycle computer
 // After reset, the testbench should wait for this time before expecting
@@ -64,7 +64,7 @@
 // Uncomment the following line to indicate that your bicycle computer
 //  supports an OLED display
 //
- `define include_oled
+`define include_oled
 
 // The following line specifies the number of operating modes
 //
