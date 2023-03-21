@@ -53,26 +53,26 @@
 //  hall effect inputs and button signals are well behaved to avoid setup
 //  and hold violations during simulation.
 //
-// `define sanitise_input
+ `define sanitise_input
 
 // The following line specifies a start-up time for the cycle computer
 // After reset, the testbench should wait for this time before expecting
 // the computer to work
 //
-//`define start_up_time 110ms
+`define start_up_time 1s
 
 // Uncomment the following line to indicate that your bicycle computer
 //  supports an OLED display
 //
-//`define include_oled
+`define include_oled
 
 // The following line specifies the number of operating modes
 //
-//`define num_modes 4
+`define num_modes 4
 
 // The following lines specify the sequence of operating modes after reset
 //
-//`define Mode0 Distance
-//`define Mode1 Duration
-//`define Mode3 Speed
-//`define Mode2 Cadence
+`define Mode0 Distance
+`define Mode1 Duration
+`define Mode3 Speed
+`define Mode2 Cadence
