@@ -41,6 +41,7 @@
 
 1. Complete Gate Level (No Graphics) Version: +GateLevel +ScanPath +OLED +NoGraphics
 
+```shell
     ./simulate -no_graphics -gate -sdf ./gate_level/computer.sdf ./gate_level \
     +define+clock_period=30517.6ns \
     +define+scan_enable \
@@ -53,10 +54,11 @@
     +define+Mode2=Speed \
     +define+Mode3=Cadence \
     +define+stimulus=system2/stimulus.sv
-
+```
 
 2. Complete Gate Level (with Graphics) Version: +GateLevel +ScanPath +OLED
 
+```shell
     ./simulate -no_graphics -gate -sdf ./gate_level/computer.sdf ./gate_level \
     +define+clock_period=30517.6ns \
     +define+scan_enable \
@@ -69,10 +71,11 @@
     +define+Mode2=Speed \
     +define+Mode3=Cadence \
     +define+stimulus=system2/stimulus.sv
-
+```
 
 3. LED only Gate Level (No Graphics) Version: +GateLevel +ScanPath +NoGraphics
 
+```shell
     ./simulate -no_graphics -gate -sdf ./gate_level/computer.sdf ./gate_level \
     +define+clock_period=30517.6ns \
     +define+scan_enable \
@@ -84,10 +87,11 @@
     +define+Mode2=Speed \
     +define+Mode3=Cadence \
     +define+stimulus=system2/stimulus.sv
-
+```
 
 4. LED only Gate Level (with Graphics) Version: +GateLevel +ScanPath
 
+```shell
     ./simulate -gate -sdf ./gate_level/computer.sdf ./gate_level \
     +define+clock_period=30517.6ns \
     +define+scan_enable \
@@ -99,10 +103,11 @@
     +define+Mode2=Speed \
     +define+Mode3=Cadence \
     +define+stimulus=system2/stimulus.sv
-
+```
 
 5. LED only Behavioural (No Graphics) Version: +NoGraphics
 
+```shell
     ./simulate -no_graphics ./behavioural 200s \
     +define+clock_period=30517.6ns \
     +define+no_scan_signals \
@@ -114,10 +119,11 @@
     +define+Mode2=Speed \
     +define+Mode3=Cadence \
     +define+stimulus=system2/stimulus.sv
-
+```
 
 6. LED only Behavioural (with Graphics) Version:
 
+```shell
     ./simulate ./behavioural 200s \
     +define+clock_period=30517.6ns \
     +define+no_scan_signals \
@@ -129,10 +135,11 @@
     +define+Mode2=Speed \
     +define+Mode3=Cadence \
     +define+stimulus=system2/stimulus.sv
-
+```
 
 7. Macro Cell Version:
 
+```shell
     ./simulate ./behavioural 200s \
     +define+clock_period=30517.6ns \
     +define+no_scan_signals \
@@ -145,6 +152,7 @@
     +define+Mode3=Cadence \
     +define+stimulus=system2/stimulus.sv
     +define+functional
+```
 
 ***
 
