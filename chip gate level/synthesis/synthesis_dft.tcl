@@ -11,7 +11,7 @@
   set_load 1.0  -max [all_outputs]
   set_load 0.01 -min [all_outputs]
 
-  create_clock -name master_clock  -period 30517.6  [get_ports Clock]
+  create_clock -name master_clock  -period 30000  [get_ports Clock]
 
   set_clock_latency     2.5 [get_clocks master_clock]
   set_clock_transition  0.5 [get_clocks master_clock]
@@ -33,7 +33,7 @@
 
   set_dont_touch [get_cells RESET_SYNC_FF*]
 
-  #ungroup -all -flatten
+  ungroup -all -flatten
 
   set_fix_hold master_clock
 
