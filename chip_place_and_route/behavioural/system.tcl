@@ -11,20 +11,10 @@ simvision {
   ecsWaves  {
     system.Clock
     system.nReset
-    system.mode_index
-    system.ahb_addr
-    system.write_data
-    system.write
-    system.sel_timer
-    system.data_timer
-    system.sel_segment
-    system.data_segment
-    system.sel_sensor
-    system.data_sensor
-    system.sel_button
-    system.data_button
-    system.sel_oled
-    system.data_oled
+    system.nCS
+    system.DnC
+    system.SDIN
+    system.SCLK
     system.nMode
     system.nTrip
     system.nFork
