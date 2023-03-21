@@ -20,6 +20,13 @@
 - [SoC软件代码](./chip%20gate%20level/software/code/main.c)
 - [SoC仿真文件](./chip%20gate%20level/system2/stimulus.sv)
 
+### chip_palce_and_route 文件夹下是 "Palce And Route milestone (DDL)" 的工作文件夹
+
+- [SoC综合脚本(有scan path)](./chip_place_and_route/synthesis/synthesis_dft.tcl)
+- [SoC硬件代码](./chip_place_and_route/behavioural/)
+- [SoC软件代码](./chip_place_and_route/software/code/main.c)
+- [SoC仿真文件](./chip_place_and_route/system2/stimulus.sv)
+
 ***
 
 ## Gate level Simulation Command Explanatory Documentation
