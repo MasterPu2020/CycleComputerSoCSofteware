@@ -68,7 +68,7 @@ elif [ "$choice" = "2" ]; then
 +define+stimulus=system2/stimulus.sv
 elif [ "$choice" = "3" ]; then
 	echo -e "\n------------------------------------------\n Processing...\n"
-./simulate -no_graphics -gate -sdf ./gate_level/computer.sdf ./gate_level \
+./simulate -gate -sdf ./gate_level/computer.sdf ./gate_level \
 +define+clock_period=30517.6ns \
 +define+scan_enable \
 +define+external_pullup \
