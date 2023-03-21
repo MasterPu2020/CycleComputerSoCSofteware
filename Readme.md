@@ -20,6 +20,147 @@
 - [SoC软件代码](./chip%20gate%20level/software/code/main.c)
 - [SoC仿真文件](./chip%20gate%20level/system2/stimulus.sv)
 
+### chip_palce_and_route 文件夹下是 "Palce And Route milestone (DDL)" 的工作文件夹
+
+- [SoC综合脚本(有scan path)](./chip_place_and_route/synthesis/synthesis_dft.tcl)
+- [SoC硬件代码](./chip_place_and_route/behavioural/)
+- [SoC软件代码](./chip_place_and_route/software/code/main.c)
+- [SoC仿真文件](./chip_place_and_route/system2/stimulus.sv)
+
+***
+
+## Gate level Simulation Command Explanatory Documentation
+
+### 1. Some Explanations
+
+1. +GateLevel  : Use computer.v, options.sv, system.sv, and include sdf file in the gate_level directory.
+            Without this command, simulation will use all the files in the behavioural directory instead.
+2. +ScanPath   : Enable scan_enable macro and disable no_scan_signals macro.
+            If you don't want to simulate scanpath, use no_scan_signals macro instead.
+3. +OLED       : Enable include_oled macro.
+            Without this command, simulation will use LED only.
+4. -no_graphics: No graphics simulation.
+            Without this command, simulation will create graphic user interface instead.
+5. Notice      : The sequence of the arguments should be in the reverse sequence of the options.
+                  (说人话：选项的顺序和后面给的参数的顺序应当相反。例子见下面指令。)
+
+### 2. Simulation Instructions for different versions
+
+1. Complete Gate Level (No Graphics) Version: +GateLevel +ScanPath +OLED +NoGraphics
+
+```shell
+    ./simulate -no_graphics -gate -sdf ./gate_level/computer.sdf ./gate_level \
+    +define+clock_period=30517.6ns \
+    +define+scan_enable \
+    +define+external_pullup \
+    +define+start_up_time=110ms \
+    +define+include_oled \
+    +define+num_modes=4 \
+    +define+Mode0=Distance \
+    +define+Mode1=Duration \
+    +define+Mode2=Speed \
+    +define+Mode3=Cadence \
+    +define+stimulus=system2/stimulus.sv
+```
+
+2. Complete Gate Level (with Graphics) Version: +GateLevel +ScanPath +OLED
+
+```shell
+    ./simulate -no_graphics -gate -sdf ./gate_level/computer.sdf ./gate_level \
+    +define+clock_period=30517.6ns \
+    +define+scan_enable \
+    +define+external_pullup \
+    +define+start_up_time=110ms \
+    +define+include_oled \
+    +define+num_modes=4 \
+    +define+Mode0=Distance \
+    +define+Mode1=Duration \
+    +define+Mode2=Speed \
+    +define+Mode3=Cadence \
+    +define+stimulus=system2/stimulus.sv
+```
+
+3. LED only Gate Level (No Graphics) Version: +GateLevel +ScanPath +NoGraphics
+
+```shell
+    ./simulate -no_graphics -gate -sdf ./gate_level/computer.sdf ./gate_level \
+    +define+clock_period=30517.6ns \
+    +define+scan_enable \
+    +define+external_pullup \
+    +define+start_up_time=110ms \
+    +define+num_modes=4 \
+    +define+Mode0=Distance \
+    +define+Mode1=Duration \
+    +define+Mode2=Speed \
+    +define+Mode3=Cadence \
+    +define+stimulus=system2/stimulus.sv
+```
+
+4. LED only Gate Level (with Graphics) Version: +GateLevel +ScanPath
+
+```shell
+    ./simulate -gate -sdf ./gate_level/computer.sdf ./gate_level \
+    +define+clock_period=30517.6ns \
+    +define+scan_enable \
+    +define+external_pullup \
+    +define+start_up_time=110ms \
+    +define+num_modes=4 \
+    +define+Mode0=Distance \
+    +define+Mode1=Duration \
+    +define+Mode2=Speed \
+    +define+Mode3=Cadence \
+    +define+stimulus=system2/stimulus.sv
+```
+
+5. LED only Behavioural (No Graphics) Version: +NoGraphics
+
+```shell
+    ./simulate -no_graphics ./behavioural 200s \
+    +define+clock_period=30517.6ns \
+    +define+no_scan_signals \
+    +define+external_pullup \
+    +define+start_up_time=110ms \
+    +define+num_modes=4 \
+    +define+Mode0=Distance \
+    +define+Mode1=Duration \
+    +define+Mode2=Speed \
+    +define+Mode3=Cadence \
+    +define+stimulus=system2/stimulus.sv
+```
+
+6. LED only Behavioural (with Graphics) Version:
+
+```shell
+    ./simulate ./behavioural 200s \
+    +define+clock_period=30517.6ns \
+    +define+no_scan_signals \
+    +define+external_pullup \
+    +define+start_up_time=110ms \
+    +define+num_modes=4 \
+    +define+Mode0=Distance \
+    +define+Mode1=Duration \
+    +define+Mode2=Speed \
+    +define+Mode3=Cadence \
+    +define+stimulus=system2/stimulus.sv
+```
+
+7. Macro Cell Version:
+
+```shell
+    ./simulate ./behavioural 200s \
+    +define+clock_period=30517.6ns \
+    +define+no_scan_signals \
+    +define+external_pullup \
+    +define+start_up_time=110ms \
+    +define+num_modes=4 \
+    +define+Mode0=Distance \
+    +define+Mode1=Duration \
+    +define+Mode2=Speed \
+    +define+Mode3=Cadence \
+    +define+stimulus=system2/stimulus.sv
+    +define+functional
+```
+
 ***
 
 ## Git使用说明
