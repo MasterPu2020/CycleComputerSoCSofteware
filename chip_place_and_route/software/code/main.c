@@ -2,9 +2,11 @@
 // Titile:  Cortex M0 Software Main C File
 // Author:  ChangXin Shen & Clark Pu
 // Team:    C4 Chip Designed
-// Version: 5.5
+// Version: 5.6
 // Verification: Not Verified
-// Comment: Optimizition on code writing and ROM comsuption by Clark. Using UTF-8
+// Comment: Initial OLED version by Clark.
+// Furture Suggestion: Add simple GPU functino to oled manager
+// Using UTF-8
 //------------------------------------------------------------------------------
 
 #define __MAIN_C__
@@ -21,10 +23,9 @@
 #define AHB_SENSOR_MANAGER_BASE  0x60000000
 #define AHB_BUTTON_MANAGER_BASE  0x40000000
 volatile uint32_t* OLED    = (volatile uint32_t*) AHB_OLEDR_MANAGER_BASE;
-// OLED[0]        X              0xC0000000
-// OLED[1]        Y              0xC0000004
-// OLED[2]        Colour         0xC0000008
-// OLED[3]        Flag           0xC000000A
+// OLED[0]        DnC            0xC0000000
+// OLED[1]        Ready flag     0xC0000004
+// OLED[2]        8 bit data     0xC0000008
 volatile uint32_t* SEGMENT = (volatile uint32_t*) AHB_SEGMENT_MANAGER_BASE;
 // SEGMENT[0]     Fraction       0xA0000000
 // SEGMENT[1]     Integer        0xA0000004
@@ -53,17 +54,43 @@ bool          press_mode(void){return BUTTON[1]?true:false;}
 bool        press_d_mode(void){return BUTTON[0]?true:false;}
 bool        check_button(void){return BUTTON[4]?true:false;}
 bool             time_up(void){return  TIMER[2]?true:false;}
+bool          oled_ready(void){return   OLED[1]?true:false;}
 uint32_t read_time_short(void){return  TIMER[1];}
 uint32_t  read_time_long(void){return  TIMER[0];}
 uint32_t      read_crank(void){return SENSOR[1];}
 uint32_t       read_fork(void){return SENSOR[0];}
 void          clear_fork(void){SENSOR[0] = 0; return;}
-void    clear_timer_long(void){TIMER[0] = 0; return;}
+void    clear_timer_long(void){TIMER[0]  = 0; return;}
+void           oled_send(uint32_t Data, bool DnC){while(!oled_ready()); OLED[0] = DnC?1:0; OLED[2] = Data; OLED[1] = 0; return;}
 void     display_segment(uint32_t Mode, uint32_t Integer, uint32_t Fraction){SEGMENT[0] = Fraction; SEGMENT[1] = Integer; SEGMENT[2] = Mode; return;}
 
 //------------------------------------------------------------------------------
 // Compound Functions
 //------------------------------------------------------------------------------
+
+// start value must less than end value!
+void oled_fill_area(uint8_t x_start, uint8_t y_start, uint8_t x_end, uint8_t y_end, bool clear){
+  uint8_t colour_0 = 0x06, colour_1 = 0x3C;
+  if (clear){
+    colour_0 = 0xFF;
+    colour_1 = 0xFF;
+  }
+  oled_send(0x15,  false); // setting column
+  oled_send(x_start,true);
+  oled_send(x_end,  true);
+  oled_send(0x75,  false); // setting row
+  oled_send(y_start,true);
+  oled_send(y_end,  true);
+  // Fill the area with blue colour
+  oled_send(0x5C,  false); // setting pixels
+  for (int i = x_start; i <= x_end; i++){
+    for (int j = y_start; j <= y_end; j++){
+      oled_send(colour_0, true);
+      oled_send(colour_1, true);
+    }
+  }
+  return;
+}
 
 uint32_t int2bcd(uint32_t value){
     uint32_t bcd = 0, shift = 0;
@@ -132,7 +159,7 @@ int main(void) {
     delta_time, long_delta_time,
     present_speed, last_speed_1, last_speed_2;
 
-  // initiate
+  // general initiate
   wheel_girth = 2136; // setting
   is_night = false;
   long_delta_time = 0;
@@ -146,7 +173,11 @@ int main(void) {
   present_cadence = 0;
   mode = 0xA;
   display_segment(mode, 0, 0);
-  // display_oled();
+
+  // oled initiate
+  oled_send(0xAE,false); // fill white
+  oled_send(0xAF,false); // light up
+  oled_fill_area(10,10,20,20,false); // fill a blue square
 
   // process start
   while(1) {
@@ -257,11 +288,9 @@ int main(void) {
 
     display_segment(mode, int2bcd(display_int), int2bcd(display_frac));
 
-    // 4. Furture Design
-
-    // check_speed();
-    // get_oled_image(delta_distance, present_speed, ave_speed, energe, max_speed, delta_time, delta_crank, switchDisplay, is_night);
-    // display_oled();
+    // 4. OLED test 50 pixels
+    oled_fill_area(5,5,10,10,true);  // clear square
+    oled_fill_area(5,5,10,10,false); // fill a blue square
 
   }
 }

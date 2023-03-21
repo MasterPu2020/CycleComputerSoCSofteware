@@ -3,7 +3,7 @@
 // Titile:  OLED Manager Behavioural
 // Author:  Clark Pu
 // Team:    C4 Chip Designed
-// Version: 4.2
+// Version: 4.3
 // Verification: Verified with testbench
 // Comment: 1 package for 8 bit data.
 //------------------------------------------------------------------------------
@@ -133,7 +133,7 @@ always_ff @(posedge HCLK, negedge HRESETn) begin
     case (control)
       WriteReady : ready <= HWDATA[0];
       WriteDnC   : dnc   <= HWDATA[0];
-      WriteData  : data  <= HWDATA[15:0];
+      WriteData  : data  <= HWDATA[7:0];
     endcase
   end
 end
