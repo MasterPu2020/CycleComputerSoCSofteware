@@ -59,7 +59,7 @@ module seven_segment(
   logic Write;
 
   // Seven segment display
-  logic [ 1:0] Display_Counter;
+  logic [ 2:0] Display_Counter;
   logic [ 3:0] Disp_Data;
 
   localparam 
@@ -95,7 +95,7 @@ module seven_segment(
   always_ff @ (posedge HCLK, negedge HRESETn) begin
     if (!HRESETn)
       Display_Counter <= '0;
-    else if (Display_Counter == 3)
+    else if (Display_Counter == 7)
       Display_Counter <= '0;
     else
       Display_Counter <= Display_Counter + 1;
@@ -103,11 +103,15 @@ module seven_segment(
 
   always_comb begin
     nDigit = 4'b0;
-    unique case (Display_Counter)
+    case (Display_Counter)
       0: nDigit = 4'b1110;
-      1: nDigit = 4'b1101;
-      2: nDigit = 4'b1011;
-      3: nDigit = 4'b0111;
+      1: nDigit = 4'b1110;
+      2: nDigit = 4'b1101;
+      3: nDigit = 4'b1101;
+      4: nDigit = 4'b1011;
+      5: nDigit = 4'b1011;
+      6: nDigit = 4'b0111;
+      7: nDigit = 4'b0111;
     endcase
   end
 
@@ -115,50 +119,62 @@ module seven_segment(
   always_comb begin
     Disp_Data = '0; DP = '0;
     if (Store_Mode == 4'hd) begin
-      unique case (Display_Counter)
+      case (Display_Counter)
         0:  begin Disp_Data = Store_Int[3:0];   DP = '1; end
-        1:  begin Disp_Data = Store_Int[7:4];   DP = '0; end
-        2:  begin Disp_Data = Store_Int[11:8];  DP = '0; end
-        3:  begin Disp_Data = Store_Mode;       DP = '0; end
+        1:  begin Disp_Data = Store_Int[3:0];   DP = '1; end
+        2:  begin Disp_Data = Store_Int[7:4];   DP = '0; end
+        3:  begin Disp_Data = Store_Int[7:4];   DP = '0; end
+        4:  begin Disp_Data = Store_Int[11:8];  DP = '0; end
+        5:  begin Disp_Data = Store_Int[11:8];  DP = '0; end
+        6:  begin Disp_Data = Store_Mode;       DP = '0; end
+        7:  begin Disp_Data = Store_Mode;       DP = '0; end
       endcase
     end
     else if (Store_Mode == 4'he) begin
-      unique case (Display_Counter)
+      case (Display_Counter)
         0:  begin Disp_Data = Store_Int[3:0];   DP = '1; end
-        1:  begin Disp_Data = Store_Int[7:4];   DP = '0; end
-        2:  begin Disp_Data = Store_Int[11:8];  DP = '0; end
-        3:  begin Disp_Data = 4'h2;             DP = '0; end
-      endcase
-    end
-    else if (Store_Mode == 4'he) begin
-      unique case (Display_Counter)
-        0:  begin Disp_Data = Store_Int[ 3:0]; DP = '1; end
-        1:  begin Disp_Data = Store_Int[ 7:4]; DP = '0; end
-        2:  begin Disp_Data = Store_Int[11:8]; DP = '0; end
-        3:  begin Disp_Data = 4'h2;            DP = '0; end
+        1:  begin Disp_Data = Store_Int[3:0];   DP = '1; end
+        2:  begin Disp_Data = Store_Int[7:4];   DP = '0; end
+        3:  begin Disp_Data = Store_Int[7:4];   DP = '0; end
+        4:  begin Disp_Data = Store_Int[11:8];  DP = '0; end
+        5:  begin Disp_Data = Store_Int[11:8];  DP = '0; end
+        6:  begin Disp_Data = 4'h2;             DP = '0; end
+        7:  begin Disp_Data = 4'h2;             DP = '0; end
       endcase
     end
     else begin
       if (Store_Int[11:8] != '0)
-        unique case (Display_Counter)
+        case (Display_Counter)
           0:  begin Disp_Data = Store_Int[ 3:0];  DP = '1; end
-          1:  begin Disp_Data = Store_Int[ 7:4];  DP = '0; end
-          2:  begin Disp_Data = Store_Int[11:8];  DP = '0; end
-          3:  begin Disp_Data = Store_Mode;       DP = '0; end
+          1:  begin Disp_Data = Store_Int[ 3:0];  DP = '1; end
+          2:  begin Disp_Data = Store_Int[ 7:4];  DP = '0; end
+          3:  begin Disp_Data = Store_Int[ 7:4];  DP = '0; end
+          4:  begin Disp_Data = Store_Int[11:8];  DP = '0; end
+          5:  begin Disp_Data = Store_Int[11:8];  DP = '0; end
+          6:  begin Disp_Data = Store_Mode;       DP = '0; end
+          7:  begin Disp_Data = Store_Mode;       DP = '0; end
         endcase
       else if (Store_Int[7:4] != '0)
-        unique case (Display_Counter)
+        case (Display_Counter)
           0:  begin Disp_Data = Store_Frac[7:4];  DP = '0; end
-          1:  begin Disp_Data = Store_Int[3:0];   DP = '1; end
-          2:  begin Disp_Data = Store_Int[7:4];   DP = '0; end
-          3:  begin Disp_Data = Store_Mode;       DP = '0; end
-        endcase
-      else
-        unique case (Display_Counter)
-          0:  begin Disp_Data = Store_Frac[3:0];  DP = '0; end
           1:  begin Disp_Data = Store_Frac[7:4];  DP = '0; end
           2:  begin Disp_Data = Store_Int[3:0];   DP = '1; end
-          3:  begin Disp_Data = Store_Mode;       DP = '0; end
+          3:  begin Disp_Data = Store_Int[3:0];   DP = '1; end
+          4:  begin Disp_Data = Store_Int[7:4];   DP = '0; end
+          5:  begin Disp_Data = Store_Int[7:4];   DP = '0; end
+          6:  begin Disp_Data = Store_Mode;       DP = '0; end
+          7:  begin Disp_Data = Store_Mode;       DP = '0; end
+        endcase
+      else
+        case (Display_Counter)
+          0:  begin Disp_Data = Store_Frac[3:0];  DP = '0; end
+          1:  begin Disp_Data = Store_Frac[3:0];  DP = '0; end
+          2:  begin Disp_Data = Store_Frac[7:4];  DP = '0; end
+          3:  begin Disp_Data = Store_Frac[7:4];  DP = '0; end
+          4:  begin Disp_Data = Store_Int[3:0];   DP = '1; end
+          5:  begin Disp_Data = Store_Int[3:0];   DP = '1; end
+          6:  begin Disp_Data = Store_Mode;       DP = '0; end
+          7:  begin Disp_Data = Store_Mode;       DP = '0; end
         endcase
     end
   end

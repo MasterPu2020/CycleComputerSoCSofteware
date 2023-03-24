@@ -77,11 +77,11 @@ initial begin
           oled_counter = 0;
           if (oled_real_colour == 0) begin
             oled_ram[oled_x][oled_y] = 0;
-            $display(" Pixel(%d, %d) 0 is written into OLED RAM (%t)", oled_x, oled_y, $time);
+            //$display(" Pixel(%d, %d) 0 is written into OLED RAM (%t)", oled_x, oled_y, $time);
           end
           else begin
             oled_ram[oled_x][oled_y] = 1;
-            $display(" Pixel(%d, %d) 1 is written into OLED RAM (%t)", oled_x, oled_y, $time);
+            //$display(" Pixel(%d, %d) 1 is written into OLED RAM (%t)", oled_x, oled_y, $time);
           end
           if (oled_x == oled_X[7:0]) begin
             oled_x = oled_X[15:8];
@@ -111,8 +111,8 @@ initial begin
         //   $display("CMD: oled_Y location. Accepted.");
         // else if (oled_command == 8'b0101_1100)
         //   $display("CMD: Colour. Accepted.");
-        if (oled_command != 8'b0001_0101 && oled_command != 8'b0111_0101 && oled_command != 8'b0101_1100)
-          $display("CMD: Unknown: %b.", oled_command, " Rejected.");
+        //if (oled_command != 8'b0001_0101 && oled_command != 8'b0111_0101 && oled_command != 8'b0101_1100)
+          //$display("CMD: Unknown: %b.", oled_command, " Rejected.");
       end
       else begin
         oled_counter ++;

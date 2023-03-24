@@ -19,8 +19,8 @@
 //  `define CadenceVerification       // Behavioural Passed
 //  `define ModeSwitchVerification    // Gate Level Passed
 //  `define SettingVerification       // Not verified
-  `define ScanPathVerification
-//  `define SimpleVerification        // Behavioural Passed 
+//  `define ScanPathVerification
+  `define SimpleVerification        // Behavioural Passed 
 //  `define FullVerification          // Not Verified
 //  `define MacroCellVerification     // Not Verified
 

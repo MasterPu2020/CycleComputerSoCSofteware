@@ -59,7 +59,7 @@
 // After reset, the testbench should wait for this time before expecting
 // the computer to work
 //
-//`define start_up_time 110ms
+//`define start_up_time 1s
 
 // Uncomment the following line to indicate that your bicycle computer
 //  supports an OLED display
