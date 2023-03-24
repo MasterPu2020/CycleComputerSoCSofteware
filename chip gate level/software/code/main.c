@@ -139,6 +139,30 @@ uint32_t wait_for_wheel_girth(uint32_t wheel_girth) {
   }
 }
 
+void send_command(uint8_t command) {
+  OLED[0] = 0;
+  OLED[2] = command;
+  OLED[1] = 0;
+}
+
+void send_data(uint8_t data) {
+  OLED[0] = 1;
+  OLED[2] = data;
+  OLED[1] = 0;
+}
+
+void set_column(uint8_t start, uint8_t end) {
+  send_command(0x15);
+  send_data(start);
+  send_data(end);
+}
+
+void set_row(uint8_t start, uint8_t end) {
+  send_command(0x75);
+  send_data(start);
+  send_data(end);
+}
+
 //------------------------------------------------------------------------------
 // Main Function
 //------------------------------------------------------------------------------
@@ -173,6 +197,56 @@ int main(void) {
   present_cadence = 0;
   mode = 0xA;
   display_segment(mode, 0, 0);
+  send_command(0xFD);
+  send_data(0x12);
+
+  send_command(0xFD);
+  send_data(0xB1);
+
+  send_command(0xAE);
+
+  send_command(0xB3);
+  send_data(0xF1);
+
+  send_command(0xCA);
+  send_data(0x5F);
+
+  send_command(0xA2);
+  send_data(0x00);
+
+  send_command(0xA0);
+  send_data(0x74);
+
+  send_command(0xB5);
+  send_data(0x00);
+
+  send_command(0xC1);
+  send_data(0xC8);
+  send_data(0x80);
+  send_data(0xC8);
+
+  send_command(0xB1);
+  send_data(0x32);
+
+  send_command(0xB2);
+  send_data(0xA4);
+  send_data(0x00);
+  send_data(0x00);
+
+  send_command(0xB6);
+  send_data(0x01);
+
+  send_command(0xAF);
+
+  set_column(0x00, 0x7F);
+  set_row(0x00, 0x5F);
+  send_command(0x5C);
+  for (int i=0; i<24576; i++) {    
+    send_data(0xFF);
+  }
+
+
+  send_command(0xAF);
 
   // oled initiate
   oled_send(0xAE,false); // fill white
