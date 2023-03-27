@@ -1,0 +1,64 @@
+Dear customer,
+
+
+Please read the following notices concerning the memory Synopsys model
+you have received.
+
+
+INSTALLATION:
+=============
+
+The Synopsys memory model is a black box model with no functionality
+in the Synopsys ".lib" format. But it contains full timing informations.
+This model enables to perform timing calculations for a design containing
+memories.
+
+The std.cell libraries for 0.35um CMOS "csd" contain nonlinear
+table look-up timing models, this Synopsys memory models contain linear
+timing models. Therefore it is NOT possible to mix digital std. cell
+models and memory models in ONE library.
+
+Please keep memory models in a seperated library (e.g. memlib).
+
+This shipment contains the Synopsys source code and a compiled version
+of the library. The compilation was done with Synopsys release 99.10.
+If the compilation does not work with your Synopsys release, the source
+code can be compiled in Design Analyzer with the commands "read_lib"
+and "write_lib". For the compilation the library compiler license
+is necessary.
+
+At compilation of memory models there will be "Warnings", since the delay
+path EN --> Q is modelled as a tri-state path in a black box model.
+
+A "SDF" file generated from Design compiler can be annotated into
+the Verilog or the VHDL simulation model.
+
+NOTE:
+-----
+
+For Synopsys Release 99.05 the following switch must be set for
+SDF file generation:
+                   sdfout_no_edge = true
+
+
+TIMING MODELS:
+==============
+
+The timing data in the Synopsys model file are vaild only for
+one nominal supply voltage 3.3V !
+
+3.3V models can be combined with the dig. Std. cell library "csd"
+or "csi".
+
+
+In case of any questions, please contact the "Design Support Group",
+Attn. Peter Boesmueller.
+
+-------------------------------------------------------------------
+Peter Boesmueller                   phone:  ++43 3136 500-5339
+Design Support Group                fax:    ++43 3136 500-5755
+AUSTRIA MIKRO SYSTEME INT. AG       http://www.amsint.com
+Schloss Premstaetten                http://asic.amsint.com
+A-8141 Unterpremstaetten, AUSTRIA     
+              mailto:peter.boesmueller@amsint.com
+-------------------------------------------------------------------

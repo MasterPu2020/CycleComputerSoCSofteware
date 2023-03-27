@@ -1,0 +1,10 @@
+xmverilog(64): 21.03-s009: (c) Copyright 1995-2021 Cadence Design Systems, Inc.
+TOOL:	xmverilog	21.03-s009: Started on Mar 18, 2023 at 14:32:25 GMT
+xmverilog
+	+gui
+	+access+r
+	sram256x32.v
+	macro_stim.sv
+xmverilog: *E,FILEMIS: Cannot find the provided file sram256x32.v.
+xmverilog: *E,FILEMIS: Cannot find the provided file macro_stim.sv.
+TOOL:	xmverilog	21.03-s009: Exiting on Mar 18, 2023 at 14:32:25 GMT  (total: 00:00:00)

@@ -1,0 +1,1109 @@
+
+Header(
+ Library("sram256x32_lib")
+ Date("14-03-116")
+ TLF_Version("4.3")
+ Generated_By("dolphin2tlf")
+   Environment("Nominal")
+)
+// User properties section 
+   DEFINE_ATTRIBUTE(state_variable_map (PIN) (STRING))
+   DEFINE_ATTRIBUTE(EDGE_TRIGGERED (PIN) (BOOLEAN))
+   DEFINE_ATTRIBUTE(clock_gating_integrated_cell (CELL) (STRING))
+   DEFINE_ATTRIBUTE(clock_gate_clock_pin (PIN) (BOOLEAN))
+   DEFINE_ATTRIBUTE(clock_gate_enable_pin (PIN) (BOOLEAN))
+   DEFINE_ATTRIBUTE(clock_gate_test_pin (PIN) (BOOLEAN))
+   DEFINE_ATTRIBUTE(internal_node (PIN) (STRING))
+   DEFINE_ATTRIBUTE(clock_gate_out_pin (PIN) (BOOLEAN))
+// model section 
+PROCESS_MULT_Model(k_process_fall_transitionMod 
+   (Linear
+      (-~ :~ :0:1 )
+   )
+)
+PROCESS_MULT_Model(k_process_rise_transitionMod 
+   (Linear
+      (-~ :~ :0:1 )
+   )
+)
+PROCESS_MULT_Model(k_process_cell_fallMod 
+   (Linear
+      (-~ :~ :0:1 )
+   )
+)
+PROCESS_MULT_Model(k_process_cell_riseMod 
+   (Linear
+      (-~ :~ :0:1 )
+   )
+)
+VOLTAGE_MULT_Model(k_volt_fall_transitionMod 
+   (Linear
+      (-~ :~ :1.657:-0.199 )
+   )
+)
+VOLTAGE_MULT_Model(k_volt_rise_transitionMod 
+   (Linear
+      (-~ :~ :1.657:-0.199 )
+   )
+)
+VOLTAGE_MULT_Model(k_volt_cell_fallMod 
+   (Linear
+      (-~ :~ :1.802:-0.243 )
+   )
+)
+VOLTAGE_MULT_Model(k_volt_cell_riseMod 
+   (Linear
+      (-~ :~ :1.802:-0.243 )
+   )
+)
+VOLTAGE_MULT_Model(k_volt_setup_riseMod 
+   (Linear
+      (-~ :~ :1.657:-0.199 )
+   )
+)
+VOLTAGE_MULT_Model(k_volt_setup_fallMod 
+   (Linear
+      (-~ :~ :1.657:-0.199 )
+   )
+)
+VOLTAGE_MULT_Model(k_volt_hold_riseMod 
+   (Linear
+      (-~ :~ :1.657:-0.199 )
+   )
+)
+VOLTAGE_MULT_Model(k_volt_hold_fallMod 
+   (Linear
+      (-~ :~ :1.657:-0.199 )
+   )
+)
+VOLTAGE_MULT_Model(k_volt_recovery_riseMod 
+   (Linear
+      (-~ :~ :1.657:-0.199 )
+   )
+)
+VOLTAGE_MULT_Model(k_volt_recovery_fallMod 
+   (Linear
+      (-~ :~ :1.657:-0.199 )
+   )
+)
+VOLTAGE_MULT_Model(k_volt_removal_riseMod 
+   (Linear
+      (-~ :~ :1.657:-0.199 )
+   )
+)
+VOLTAGE_MULT_Model(k_volt_removal_fallMod 
+   (Linear
+      (-~ :~ :1.657:-0.199 )
+   )
+)
+VOLTAGE_MULT_Model(k_volt_min_pulse_width_lowMod 
+   (Linear
+      (-~ :~ :1.657:-0.199 )
+   )
+)
+VOLTAGE_MULT_Model(k_volt_min_pulse_width_highMod 
+   (Linear
+      (-~ :~ :1.657:-0.199 )
+   )
+)
+VOLTAGE_MULT_Model(k_volt_min_periodMod 
+   (Linear
+      (-~ :~ :1.657:-0.199 )
+   )
+)
+TEMPERATURE_MULT_Model(k_temp_fall_transitionMod 
+   (Linear
+      (-~ :~ :0.945:0.002 )
+   )
+)
+TEMPERATURE_MULT_Model(k_temp_rise_transitionMod 
+   (Linear
+      (-~ :~ :0.945:0.002 )
+   )
+)
+TEMPERATURE_MULT_Model(k_temp_cell_fallMod 
+   (Linear
+      (-~ :~ :0.957:0.002 )
+   )
+)
+TEMPERATURE_MULT_Model(k_temp_cell_riseMod 
+   (Linear
+      (-~ :~ :0.957:0.002 )
+   )
+)
+TEMPERATURE_MULT_Model(k_temp_setup_riseMod 
+   (Linear
+      (-~ :~ :0.945:0.002 )
+   )
+)
+TEMPERATURE_MULT_Model(k_temp_setup_fallMod 
+   (Linear
+      (-~ :~ :0.945:0.002 )
+   )
+)
+TEMPERATURE_MULT_Model(k_temp_hold_riseMod 
+   (Linear
+      (-~ :~ :0.945:0.002 )
+   )
+)
+TEMPERATURE_MULT_Model(k_temp_hold_fallMod 
+   (Linear
+      (-~ :~ :0.945:0.002 )
+   )
+)
+TEMPERATURE_MULT_Model(k_temp_recovery_riseMod 
+   (Linear
+      (-~ :~ :0.945:0.002 )
+   )
+)
+TEMPERATURE_MULT_Model(k_temp_recovery_fallMod 
+   (Linear
+      (-~ :~ :0.945:0.002 )
+   )
+)
+TEMPERATURE_MULT_Model(k_temp_removal_riseMod 
+   (Linear
+      (-~ :~ :0.945:0.002 )
+   )
+)
+TEMPERATURE_MULT_Model(k_temp_removal_fallMod 
+   (Linear
+      (-~ :~ :0.945:0.002 )
+   )
+)
+TEMPERATURE_MULT_Model(k_temp_min_pulse_width_lowMod 
+   (Linear
+      (-~ :~ :0.945:0.002 )
+   )
+)
+TEMPERATURE_MULT_Model(k_temp_min_pulse_width_highMod 
+   (Linear
+      (-~ :~ :0.945:0.002 )
+   )
+)
+TEMPERATURE_MULT_Model(k_temp_min_periodMod 
+   (Linear
+      (-~ :~ :0.945:0.002 )
+   )
+)
+NET_CAP_Model("10kCapModel" 
+   (Spline
+      (LOAD_AXIS 2 10002)
+         data
+            (0.008 81.658)
+   )
+)
+NET_RES_Model("10kResModel" 
+   (Spline
+      (LOAD_AXIS 2 10002)
+         data
+            (0.007 70.007)
+   )
+)
+NET_CAP_Model("30kCapModel" 
+   (Spline
+      (LOAD_AXIS 2 10002)
+         data
+            (0.01 97.99)
+   )
+)
+NET_RES_Model("30kResModel" 
+   (Spline
+      (LOAD_AXIS 2 10002)
+         data
+            (0.008 84.008)
+   )
+)
+NET_CAP_Model("100kCapModel" 
+   (Spline
+      (LOAD_AXIS 2 10002)
+         data
+            (0.013 130.653)
+   )
+)
+NET_RES_Model("100kResModel" 
+   (Spline
+      (LOAD_AXIS 2 10002)
+         data
+            (0.011 112.011)
+   )
+)
+NET_CAP_Model(pad_wire_loadCapModel 
+   (Spline
+      (LOAD_AXIS 2 10002)
+         data
+            (0.024 244.975)
+   )
+)
+NET_RES_Model(pad_wire_loadResModel 
+   (Spline
+      (LOAD_AXIS 2 10002)
+         data
+            (0.021 210.021)
+   )
+)
+TIMING_Model(del_0_4_5Mod 
+   (Spline
+      (INPUT_SLEW_AXIS 0.05 0.5 1 2)
+      (LOAD_AXIS 0.001 0.005 0.02 0.08 0.16)
+         data()
+   )
+)
+TIMING_Model(del_1_4_5Mod 
+   (Spline
+      (INPUT_SLEW_AXIS 0.05 0.5 1 2)
+      (LOAD_AXIS 0.002 0.01 0.04 0.16 0.32)
+         data()
+   )
+)
+TIMING_Model(del_2_4_5Mod 
+   (Spline
+      (INPUT_SLEW_AXIS 0.05 0.5 1 2)
+      (LOAD_AXIS 0.001 0.003 0.01 0.04 0.08)
+         data()
+   )
+)
+TIMING_Model(del_3_4_5Mod 
+   (Spline
+      (INPUT_SLEW_AXIS 0.05 0.5 1 2)
+      (LOAD_AXIS 0.012 0.06 0.24 0.96 1.92)
+         data()
+   )
+)
+TIMING_Model(del_4_4_5Mod 
+   (Spline
+      (INPUT_SLEW_AXIS 0.05 0.5 1 2)
+      (LOAD_AXIS 0.015 0.075 0.3 1.2 2.4)
+         data()
+   )
+)
+TIMING_Model(del_5_4_5Mod 
+   (Spline
+      (INPUT_SLEW_AXIS 0.05 0.5 1 2)
+      (LOAD_AXIS 0.004 0.02 0.08 0.32 0.64)
+         data()
+   )
+)
+TIMING_Model(del_6_4_5Mod 
+   (Spline
+      (INPUT_SLEW_AXIS 0.05 0.5 1 2)
+      (LOAD_AXIS 0.006 0.03 0.12 0.48 0.96)
+         data()
+   )
+)
+TIMING_Model(del_7_4_5Mod 
+   (Spline
+      (INPUT_SLEW_AXIS 0.05 0.5 1 2)
+      (LOAD_AXIS 0.008 0.04 0.16 0.64 1.28)
+         data()
+   )
+)
+TIMING_Model(del_8_4_5Mod 
+   (Spline
+      (INPUT_SLEW_AXIS 0.05 0.5 1 2)
+      (LOAD_AXIS 0.033 0.073 0.223 0.823 1.623)
+         data()
+   )
+)
+TIMING_Model(del_9_4_5Mod 
+   (Spline
+      (INPUT_SLEW_AXIS 0.05 0.5 1 2)
+      (LOAD_AXIS 0.037 0.085 0.265 0.985 1.945)
+         data()
+   )
+)
+TIMING_Model(del_10_4_5Mod 
+   (Spline
+      (INPUT_SLEW_AXIS 0.05 0.5 1 2)
+      (LOAD_AXIS 0.049 0.109 0.334 1.234 2.434)
+         data()
+   )
+)
+TIMING_Model(del_11_4_5Mod 
+   (Spline
+      (INPUT_SLEW_AXIS 0.05 0.5 1 2)
+      (LOAD_AXIS 0.01 0.018 0.048 0.168 0.328)
+         data()
+   )
+)
+TIMING_Model(del_12_4_5Mod 
+   (Spline
+      (INPUT_SLEW_AXIS 0.05 0.5 1 2)
+      (LOAD_AXIS 0.013 0.029 0.089 0.329 0.649)
+         data()
+   )
+)
+TIMING_Model(del_13_4_5Mod 
+   (Spline
+      (INPUT_SLEW_AXIS 0.05 0.5 1 2)
+      (LOAD_AXIS 0.017 0.041 0.131 0.491 0.971)
+         data()
+   )
+)
+TIMING_Model(del_14_4_5Mod 
+   (Spline
+      (INPUT_SLEW_AXIS 0.05 0.5 1 2)
+      (LOAD_AXIS 0.031 0.063 0.183 0.663 1.303)
+         data()
+   )
+)
+TIMING_Model(del_15_4_5Mod 
+   (Spline
+      (INPUT_SLEW_AXIS 0.05 0.5 1 2)
+      (LOAD_AXIS 0.01 0.05 0.2 0.8 1.6)
+         data()
+   )
+)
+TIMING_Model(del_16_4_5Mod 
+   (Spline
+      (INPUT_SLEW_AXIS 0.05 0.5 1 2)
+      (LOAD_AXIS 0.003 0.015 0.06 0.24 0.48)
+         data()
+   )
+)
+TIMING_Model(del_0_4_g5Mod 
+   (Spline
+      (INPUT_SLEW_AXIS 0.05 0.5 1 2)
+      (LOAD_AXIS 0.001 0.005 0.02 0.08 0.16)
+         data()
+   )
+)
+ENERGY_Model(power_outputs_0Mod 
+   (Spline
+      (INPUT_SLEW_AXIS 0.05 0.5 1 2)
+      (LOAD_AXIS 0.001 0.005 0.02 0.08 0.16)
+         data()
+   )
+)
+ENERGY_Model(power_outputs_1Mod 
+   (Spline
+      (INPUT_SLEW_AXIS 0.05 0.5 1 2)
+      (LOAD_AXIS 0.002 0.01 0.04 0.16 0.32)
+         data()
+   )
+)
+ENERGY_Model(power_inputs_0Mod 
+   (Spline
+      (INPUT_SLEW_AXIS 0.05 0.5 1 2)
+         data()
+   )
+)
+ENERGY_Model(power_outputs_2Mod 
+   (Spline
+      (INPUT_SLEW_AXIS 0.05 0.5 1 2)
+      (LOAD_AXIS 0.001 0.003 0.01 0.04 0.08)
+         data()
+   )
+)
+ENERGY_Model(power_outputs_3Mod 
+   (Spline
+      (INPUT_SLEW_AXIS 0.05 0.5 1 2)
+      (LOAD_AXIS 0.012 0.06 0.24 0.96 1.92)
+         data()
+   )
+)
+ENERGY_Model(power_outputs_4Mod 
+   (Spline
+      (INPUT_SLEW_AXIS 0.05 0.5 1 2)
+      (LOAD_AXIS 0.015 0.075 0.3 1.2 2.4)
+         data()
+   )
+)
+ENERGY_Model(power_outputs_5Mod 
+   (Spline
+      (INPUT_SLEW_AXIS 0.05 0.5 1 2)
+      (LOAD_AXIS 0.004 0.02 0.08 0.32 0.64)
+         data()
+   )
+)
+ENERGY_Model(power_outputs_6Mod 
+   (Spline
+      (INPUT_SLEW_AXIS 0.05 0.5 1 2)
+      (LOAD_AXIS 0.006 0.03 0.12 0.48 0.96)
+         data()
+   )
+)
+ENERGY_Model(power_outputs_7Mod 
+   (Spline
+      (INPUT_SLEW_AXIS 0.05 0.5 1 2)
+      (LOAD_AXIS 0.008 0.04 0.16 0.64 1.28)
+         data()
+   )
+)
+ENERGY_Model(power_outputs_8Mod 
+   (Spline
+      (INPUT_SLEW_AXIS 0.05 0.5 1 2)
+      (LOAD_AXIS 0.033 0.073 0.223 0.823 1.623)
+         data()
+   )
+)
+ENERGY_Model(power_outputs_9Mod 
+   (Spline
+      (INPUT_SLEW_AXIS 0.05 0.5 1 2)
+      (LOAD_AXIS 0.037 0.085 0.265 0.985 1.945)
+         data()
+   )
+)
+ENERGY_Model(power_outputs_10Mod 
+   (Spline
+      (INPUT_SLEW_AXIS 0.05 0.5 1 2)
+      (LOAD_AXIS 0.049 0.109 0.334 1.234 2.434)
+         data()
+   )
+)
+ENERGY_Model(power_outputs_11Mod 
+   (Spline
+      (INPUT_SLEW_AXIS 0.05 0.5 1 2)
+      (LOAD_AXIS 0.01 0.018 0.048 0.168 0.328)
+         data()
+   )
+)
+ENERGY_Model(power_outputs_12Mod 
+   (Spline
+      (INPUT_SLEW_AXIS 0.05 0.5 1 2)
+      (LOAD_AXIS 0.013 0.029 0.089 0.329 0.649)
+         data()
+   )
+)
+ENERGY_Model(power_outputs_13Mod 
+   (Spline
+      (INPUT_SLEW_AXIS 0.05 0.5 1 2)
+      (LOAD_AXIS 0.017 0.041 0.131 0.491 0.971)
+         data()
+   )
+)
+ENERGY_Model(power_outputs_14Mod 
+   (Spline
+      (INPUT_SLEW_AXIS 0.05 0.5 1 2)
+      (LOAD_AXIS 0.031 0.063 0.183 0.663 1.303)
+         data()
+   )
+)
+ENERGY_Model(power_outputs_15Mod 
+   (Spline
+      (INPUT_SLEW_AXIS 0.05 0.5 1 2)
+      (LOAD_AXIS 0.01 0.05 0.2 0.8 1.6)
+         data()
+   )
+)
+ENERGY_Model(power_outputs_16Mod 
+   (Spline
+      (INPUT_SLEW_AXIS 0.05 0.5 1 2)
+      (LOAD_AXIS 0.003 0.015 0.06 0.24 0.48)
+         data()
+   )
+)
+ENERGY_Model(power_inputs_g0Mod 
+   (Spline
+      (INPUT_SLEW_AXIS 0.05 0.5 1 2)
+         data()
+   )
+)
+ENERGY_Model(power_outputs_g0Mod 
+   (Spline
+      (INPUT_SLEW_AXIS 0.05 0.5 1 2)
+      (LOAD_AXIS 0.001 0.005 0.02 0.08 0.16)
+         data()
+   )
+)
+// properties section
+PROPERTIES(
+UNIT(
+   AREA_UNIT(1squ)
+   CAP_UNIT(1pF)
+   CONDUCTANCE_UNIT(1mS)
+   CURRENT_UNIT(1uA)
+   INDUCTANCE_UNIT(1pH)
+   RES_UNIT(1kohm)
+   TIME_UNIT(1ns)
+   TEMPERATURE_UNIT(1C)
+   VOLT_UNIT(1V)
+   POWER_UNIT(1pW)
+)
+   Proc_Var(1)
+   Voltage(3.3)
+   Temperature(25)
+   Proc_Mult(1)
+   Volt_Mult(1)
+   Temp_Mult(1)
+   For_Pin(BIDIR 
+      INPUT_FANLOAD(1)
+      Capacitance(0)
+   )
+   For_Pin(INPUT 
+      INPUT_FANLOAD(1)
+      Capacitance(0)
+   )
+   For_Pin(OUTPUT 
+      Capacitance(0)
+   )
+   Volt_Mult_Mpwl(k_volt_min_pulse_width_lowMod)
+   Temp_Mult_Mpwl(k_temp_min_pulse_width_lowMod)
+   Volt_Mult_Mpwh(k_volt_min_pulse_width_highMod)
+   Temp_Mult_Mpwh(k_temp_min_pulse_width_highMod)
+   Volt_Mult_Period(k_volt_min_periodMod)
+   Temp_Mult_Period(k_temp_min_periodMod)
+   Volt_Mult_Setup(RISE(k_volt_setup_riseMod) FALL(k_volt_setup_fallMod))
+   Temp_Mult_Setup(RISE(k_temp_setup_riseMod) FALL(k_temp_setup_fallMod))
+   Volt_Mult_Hold(RISE(k_volt_hold_riseMod) FALL(k_volt_hold_fallMod))
+   Temp_Mult_Hold(RISE(k_temp_hold_riseMod) FALL(k_temp_hold_fallMod))
+   Volt_Mult_Recovery(RISE(k_volt_recovery_riseMod) FALL(k_volt_recovery_fallMod))
+   Temp_Mult_Recovery(RISE(k_temp_recovery_riseMod) FALL(k_temp_recovery_fallMod))
+   Volt_Mult_Removal(RISE(k_volt_removal_riseMod) FALL(k_volt_removal_fallMod))
+   Temp_Mult_Removal(RISE(k_temp_removal_riseMod) FALL(k_temp_removal_fallMod))
+   Proc_Mult_Propagation(RISE(k_process_cell_riseMod) FALL(k_process_cell_fallMod))
+   Volt_Mult_Propagation(RISE(k_volt_cell_riseMod) FALL(k_volt_cell_fallMod))
+   Temp_Mult_Propagation(RISE(k_temp_cell_riseMod) FALL(k_temp_cell_fallMod))
+   Proc_Mult_Transition(RISE(k_process_rise_transitionMod) FALL(k_process_fall_transitionMod))
+   Volt_Mult_Transition(RISE(k_volt_rise_transitionMod) FALL(k_volt_fall_transitionMod))
+   Temp_Mult_Transition(RISE(k_temp_rise_transitionMod) FALL(k_temp_fall_transitionMod))
+   Input_Threshold_Pct(RISE(50) FALL(50))
+   Output_Threshold_Pct(RISE(50) FALL(50))
+   Slew_Lower_Threshold_Pct(RISE(10) FALL(10))
+   Slew_Upper_Threshold_Pct(RISE(90) FALL(90))
+   Slew_Measure_Lower_Threshold_Pct(RISE(10) FALL(10))
+   Slew_Measure_Upper_Threshold_Pct(RISE(90) FALL(90))
+//PVT Conditions
+   PVT_CONDS("WORST-MIL"
+      VOLTAGE(3)
+      PROC_VAR(1.4)
+      TEMPERATURE(150)
+      TREE_TYPE(balanced_tree)
+   )
+   PVT_CONDS("WORST-IND"
+      VOLTAGE(3)
+      PROC_VAR(1.4)
+      TEMPERATURE(85)
+      TREE_TYPE(balanced_tree)
+   )
+   PVT_CONDS(WORST
+      VOLTAGE(3)
+      PROC_VAR(1.4)
+      TEMPERATURE(75)
+      TREE_TYPE(balanced_tree)
+   )
+   PVT_CONDS(TYPICAL
+      VOLTAGE(3.3)
+      PROC_VAR(1)
+      TEMPERATURE(25)
+      TREE_TYPE(balanced_tree)
+   )
+   PVT_CONDS(BEST
+      VOLTAGE(3.6)
+      PROC_VAR(0.64)
+      TEMPERATURE(0)
+      TREE_TYPE(balanced_tree)
+   )
+   PVT_CONDS("BEST-IND"
+      VOLTAGE(3.6)
+      PROC_VAR(0.64)
+      TEMPERATURE(-40)
+      TREE_TYPE(balanced_tree)
+   )
+   PVT_CONDS("BEST-MIL"
+      VOLTAGE(3.6)
+      PROC_VAR(0.64)
+      TEMPERATURE(-50)
+      TREE_TYPE(balanced_tree)
+   )
+// WireLoad  Models 
+   WIRELOAD(pad_wire_load Net_Cap(pad_wire_loadCapModel) Net_Res(pad_wire_loadResModel))
+   WireLoad_By_Area("sub_micron" 
+      ("10k" 1.42709e+06 Net_Cap("10kCapModel") Net_Res("10kResModel"))
+      ("30k" 4.28064e+06 Net_Cap("30kCapModel") Net_Res("30kResModel"))
+      ("100k" 2.19534e+08 Net_Cap("100kCapModel") Net_Res("100kResModel"))
+   )
+
+   DEFAULT_WIRELOAD_MODE(enclosed)
+   DEFAULT_WIRELOAD_GROUP("sub_micron")
+   CELL_SPOWER(0)
+)
+CELL(sram256x32  
+   DONT_TOUCH 
+// model section  
+   TIMING_Model(ioDelayRiseModel0  
+      (Spline 
+         (LOAD_AXIS 0.000000 1.000000) 
+         (INPUT_SLEW_AXIS 0.000000 1.000000) 
+            data 
+               ( 
+                  (3.120000 3.120000) 
+                  (3.280000 3.280000) 
+               ) 
+      ) 
+   ) 
+   TIMING_Model(ioDelayFallModel0  
+      (Spline 
+         (LOAD_AXIS 0.000000 1.000000) 
+         (INPUT_SLEW_AXIS 0.000000 1.000000) 
+            data 
+               ( 
+                  (3.130000 3.130000) 
+                  (3.290000 3.290000) 
+               ) 
+      ) 
+   ) 
+   TIMING_Model(SlopeRiseModel0  
+      (Spline 
+         (LOAD_AXIS 0.000000 1.000000) 
+            data 
+               ( 
+                  (0.000000 0.160000) 
+               ) 
+      ) 
+   ) 
+   TIMING_Model(SlopeFallModel0  
+      (Spline 
+         (LOAD_AXIS 0.000000 1.000000) 
+            data 
+               ( 
+                  (0.000000 0.160000) 
+               ) 
+      ) 
+   ) 
+   TIMING_Model(ioDelayZenableRiseModel1  
+      (Spline 
+         (LOAD_AXIS 0.000000 1.000000) 
+         (INPUT_SLEW_AXIS 0.000000 1.000000) 
+            data 
+               ( 
+                  (1.260000 1.260000) 
+                  (1.380000 1.380000) 
+               ) 
+      ) 
+   ) 
+   TIMING_Model(ioDelayZenableFallModel1  
+      (Spline 
+         (LOAD_AXIS 0.000000 1.000000) 
+         (INPUT_SLEW_AXIS 0.000000 1.000000) 
+            data 
+               ( 
+                  (1.260000 1.260000) 
+                  (1.380000 1.380000) 
+               ) 
+      ) 
+   ) 
+   TIMING_Model(SlopeZenableRiseModel1  
+      (Spline 
+         (LOAD_AXIS 0.000000 1.000000) 
+            data 
+               ( 
+                  (0.000000 0.120000) 
+               ) 
+      ) 
+   ) 
+   TIMING_Model(SlopeZenableFallModel1  
+      (Spline 
+         (LOAD_AXIS 0.000000 1.000000) 
+            data 
+               ( 
+                  (0.000000 0.120000) 
+               ) 
+      ) 
+   ) 
+   TIMING_Model(ioDelayZenableRiseModel2  
+      (Spline 
+         (LOAD_AXIS 0.000000 1.000000) 
+         (INPUT_SLEW_AXIS 0.000000 1.000000) 
+            data 
+               ( 
+                  (1.260000 1.260000) 
+                  (1.380000 1.380000) 
+               ) 
+      ) 
+   ) 
+   TIMING_Model(ioDelayZenableFallModel2  
+      (Spline 
+         (LOAD_AXIS 0.000000 1.000000) 
+         (INPUT_SLEW_AXIS 0.000000 1.000000) 
+            data 
+               ( 
+                  (1.260000 1.260000) 
+                  (1.380000 1.380000) 
+               ) 
+      ) 
+   ) 
+   TIMING_Model(SlopeZenableRiseModel2  
+      (Spline 
+         (LOAD_AXIS 0.000000 1.000000) 
+            data 
+               ( 
+                  (0.000000 0.120000) 
+               ) 
+      ) 
+   ) 
+   TIMING_Model(SlopeZenableFallModel2  
+      (Spline 
+         (LOAD_AXIS 0.000000 1.000000) 
+            data 
+               ( 
+                  (0.000000 0.120000) 
+               ) 
+      ) 
+   ) 
+   TIMING_Model(ioDelayZdisableRiseModel3  
+      (Spline 
+         (LOAD_AXIS 0.000000 1.000000) 
+         (INPUT_SLEW_AXIS 0.000000 1.000000) 
+            data 
+               ( 
+                  (1.340000 1.340000) 
+                  (1.340000 1.340000) 
+               ) 
+      ) 
+   ) 
+   TIMING_Model(ioDelayZdisableFallModel3  
+      (Spline 
+         (LOAD_AXIS 0.000000 1.000000) 
+         (INPUT_SLEW_AXIS 0.000000 1.000000) 
+            data 
+               ( 
+                  (1.340000 1.340000) 
+                  (1.340000 1.340000) 
+               ) 
+      ) 
+   ) 
+// properties section  
+   Area(600470.000000) 
+   PIN(CS 
+      PINTYPE(INPUT ) 
+      CLOCK_PIN 
+// properties section  
+      Capacitance(0.090000) 
+      Slew_Limit(2.000000) 
+   ) 
+ 
+   PIN(RD 
+      PINTYPE(INPUT ) 
+// properties section  
+      Capacitance(0.020000) 
+      Slew_Limit(4.000000) 
+   ) 
+ 
+   PIN(EN 
+      PINTYPE(INPUT ) 
+// properties section  
+      Capacitance(0.010000) 
+      Slew_Limit(4.000000) 
+   ) 
+ 
+   PIN(WR 
+      PINTYPE(INPUT ) 
+// properties section  
+      Capacitance(0.030000) 
+      Slew_Limit(4.000000) 
+   ) 
+ 
+   PIN(NRST 
+      PINTYPE(INPUT ) 
+// properties section  
+      Capacitance(0.020000) 
+      Slew_Limit(4.000000) 
+   ) 
+ 
+   BUS(AD[7:0] 
+      BUSTYPE(INPUT) 
+      Capacitance(0.060000) 
+      Slew_Limit(4.000000) 
+      PIN(AD[0] 
+         PINTYPE(INPUT ) 
+      ) 
+      PIN(AD[1] 
+         PINTYPE(INPUT ) 
+      ) 
+      PIN(AD[2] 
+         PINTYPE(INPUT ) 
+      ) 
+      PIN(AD[3] 
+         PINTYPE(INPUT ) 
+      ) 
+      PIN(AD[4] 
+         PINTYPE(INPUT ) 
+      ) 
+      PIN(AD[5] 
+         PINTYPE(INPUT ) 
+      ) 
+      PIN(AD[6] 
+         PINTYPE(INPUT ) 
+      ) 
+      PIN(AD[7] 
+         PINTYPE(INPUT ) 
+      ) 
+   ) 
+ 
+   BUS(DI[31:0] 
+      BUSTYPE(INPUT) 
+      Capacitance(0.050000) 
+      Slew_Limit(4.000000) 
+      PIN(DI[0] 
+         PINTYPE(INPUT ) 
+      ) 
+      PIN(DI[1] 
+         PINTYPE(INPUT ) 
+      ) 
+      PIN(DI[2] 
+         PINTYPE(INPUT ) 
+      ) 
+      PIN(DI[3] 
+         PINTYPE(INPUT ) 
+      ) 
+      PIN(DI[4] 
+         PINTYPE(INPUT ) 
+      ) 
+      PIN(DI[5] 
+         PINTYPE(INPUT ) 
+      ) 
+      PIN(DI[6] 
+         PINTYPE(INPUT ) 
+      ) 
+      PIN(DI[7] 
+         PINTYPE(INPUT ) 
+      ) 
+      PIN(DI[8] 
+         PINTYPE(INPUT ) 
+      ) 
+      PIN(DI[9] 
+         PINTYPE(INPUT ) 
+      ) 
+      PIN(DI[10] 
+         PINTYPE(INPUT ) 
+      ) 
+      PIN(DI[11] 
+         PINTYPE(INPUT ) 
+      ) 
+      PIN(DI[12] 
+         PINTYPE(INPUT ) 
+      ) 
+      PIN(DI[13] 
+         PINTYPE(INPUT ) 
+      ) 
+      PIN(DI[14] 
+         PINTYPE(INPUT ) 
+      ) 
+      PIN(DI[15] 
+         PINTYPE(INPUT ) 
+      ) 
+      PIN(DI[16] 
+         PINTYPE(INPUT ) 
+      ) 
+      PIN(DI[17] 
+         PINTYPE(INPUT ) 
+      ) 
+      PIN(DI[18] 
+         PINTYPE(INPUT ) 
+      ) 
+      PIN(DI[19] 
+         PINTYPE(INPUT ) 
+      ) 
+      PIN(DI[20] 
+         PINTYPE(INPUT ) 
+      ) 
+      PIN(DI[21] 
+         PINTYPE(INPUT ) 
+      ) 
+      PIN(DI[22] 
+         PINTYPE(INPUT ) 
+      ) 
+      PIN(DI[23] 
+         PINTYPE(INPUT ) 
+      ) 
+      PIN(DI[24] 
+         PINTYPE(INPUT ) 
+      ) 
+      PIN(DI[25] 
+         PINTYPE(INPUT ) 
+      ) 
+      PIN(DI[26] 
+         PINTYPE(INPUT ) 
+      ) 
+      PIN(DI[27] 
+         PINTYPE(INPUT ) 
+      ) 
+      PIN(DI[28] 
+         PINTYPE(INPUT ) 
+      ) 
+      PIN(DI[29] 
+         PINTYPE(INPUT ) 
+      ) 
+      PIN(DI[30] 
+         PINTYPE(INPUT ) 
+      ) 
+      PIN(DI[31] 
+         PINTYPE(INPUT ) 
+      ) 
+   ) 
+ 
+   BUS(DO[31:0] 
+      BUSTYPE(OUTPUT) 
+      Capacitance(0.080000) 
+      Load_Limit(10.390000) 
+      PIN(DO[0] 
+         PINTYPE(OUTPUT ) 
+         ENABLE( ~(EN)) 
+      ) 
+      PIN(DO[1] 
+         PINTYPE(OUTPUT ) 
+         ENABLE( ~(EN)) 
+      ) 
+      PIN(DO[2] 
+         PINTYPE(OUTPUT ) 
+         ENABLE( ~(EN)) 
+      ) 
+      PIN(DO[3] 
+         PINTYPE(OUTPUT ) 
+         ENABLE( ~(EN)) 
+      ) 
+      PIN(DO[4] 
+         PINTYPE(OUTPUT ) 
+         ENABLE( ~(EN)) 
+      ) 
+      PIN(DO[5] 
+         PINTYPE(OUTPUT ) 
+         ENABLE( ~(EN)) 
+      ) 
+      PIN(DO[6] 
+         PINTYPE(OUTPUT ) 
+         ENABLE( ~(EN)) 
+      ) 
+      PIN(DO[7] 
+         PINTYPE(OUTPUT ) 
+         ENABLE( ~(EN)) 
+      ) 
+      PIN(DO[8] 
+         PINTYPE(OUTPUT ) 
+         ENABLE( ~(EN)) 
+      ) 
+      PIN(DO[9] 
+         PINTYPE(OUTPUT ) 
+         ENABLE( ~(EN)) 
+      ) 
+      PIN(DO[10] 
+         PINTYPE(OUTPUT ) 
+         ENABLE( ~(EN)) 
+      ) 
+      PIN(DO[11] 
+         PINTYPE(OUTPUT ) 
+         ENABLE( ~(EN)) 
+      ) 
+      PIN(DO[12] 
+         PINTYPE(OUTPUT ) 
+         ENABLE( ~(EN)) 
+      ) 
+      PIN(DO[13] 
+         PINTYPE(OUTPUT ) 
+         ENABLE( ~(EN)) 
+      ) 
+      PIN(DO[14] 
+         PINTYPE(OUTPUT ) 
+         ENABLE( ~(EN)) 
+      ) 
+      PIN(DO[15] 
+         PINTYPE(OUTPUT ) 
+         ENABLE( ~(EN)) 
+      ) 
+      PIN(DO[16] 
+         PINTYPE(OUTPUT ) 
+         ENABLE( ~(EN)) 
+      ) 
+      PIN(DO[17] 
+         PINTYPE(OUTPUT ) 
+         ENABLE( ~(EN)) 
+      ) 
+      PIN(DO[18] 
+         PINTYPE(OUTPUT ) 
+         ENABLE( ~(EN)) 
+      ) 
+      PIN(DO[19] 
+         PINTYPE(OUTPUT ) 
+         ENABLE( ~(EN)) 
+      ) 
+      PIN(DO[20] 
+         PINTYPE(OUTPUT ) 
+         ENABLE( ~(EN)) 
+      ) 
+      PIN(DO[21] 
+         PINTYPE(OUTPUT ) 
+         ENABLE( ~(EN)) 
+      ) 
+      PIN(DO[22] 
+         PINTYPE(OUTPUT ) 
+         ENABLE( ~(EN)) 
+      ) 
+      PIN(DO[23] 
+         PINTYPE(OUTPUT ) 
+         ENABLE( ~(EN)) 
+      ) 
+      PIN(DO[24] 
+         PINTYPE(OUTPUT ) 
+         ENABLE( ~(EN)) 
+      ) 
+      PIN(DO[25] 
+         PINTYPE(OUTPUT ) 
+         ENABLE( ~(EN)) 
+      ) 
+      PIN(DO[26] 
+         PINTYPE(OUTPUT ) 
+         ENABLE( ~(EN)) 
+      ) 
+      PIN(DO[27] 
+         PINTYPE(OUTPUT ) 
+         ENABLE( ~(EN)) 
+      ) 
+      PIN(DO[28] 
+         PINTYPE(OUTPUT ) 
+         ENABLE( ~(EN)) 
+      ) 
+      PIN(DO[29] 
+         PINTYPE(OUTPUT ) 
+         ENABLE( ~(EN)) 
+      ) 
+      PIN(DO[30] 
+         PINTYPE(OUTPUT ) 
+         ENABLE( ~(EN)) 
+      ) 
+      PIN(DO[31] 
+         PINTYPE(OUTPUT ) 
+         ENABLE( ~(EN)) 
+      ) 
+   ) 
+ 
+// pinrels 
+Path( CS *> DO[31:0] 01 01 DELAY(ioDelayRiseModel0) SLEW(SlopeRiseModel0) ) 
+Path( CS *> DO[31:0] 01 10 DELAY(ioDelayFallModel0) SLEW(SlopeFallModel0) ) 
+Path( EN *> DO[31:0] 10 Z1 DELAY(ioDelayZenableRiseModel2) SLEW(SlopeZenableRiseModel2) ) 
+Path( EN *> DO[31:0] 10 Z0 DELAY(ioDelayZenableFallModel2) SLEW(SlopeZenableFallModel2) ) 
+Period( CS 10 (Const(4.780000)) ) 
+MPWL( CS (Const(1.750000)) ) 
+Period( CS 01 (Const(4.780000)) ) 
+MPWH( CS (Const(0.790000)) ) 
+TIMING_Model (AD_HOLD_TIME (Const( 1.290))) 
+Hold( AD[7:0] *> CS 01 posedge AD_HOLD_TIME)
+Hold( AD[7:0] *> CS 10 posedge AD_HOLD_TIME)
+TIMING_Model (DI_HOLD_TIME (Const( 1.100))) 
+Hold( DI[31:0] *> CS 01 posedge DI_HOLD_TIME)
+Hold( DI[31:0] *> CS 10 posedge DI_HOLD_TIME)
+TIMING_Model (NRST_HOLD_TIME (Const( 2.600))) 
+Hold( NRST => CS 01 posedge NRST_HOLD_TIME)
+Hold( NRST => CS 10 posedge NRST_HOLD_TIME)
+TIMING_Model (RD_HOLD_TIME (Const( 0.200))) 
+Hold( RD => CS 01 posedge RD_HOLD_TIME)
+Hold( RD => CS 10 posedge RD_HOLD_TIME)
+TIMING_Model (WR_HOLD_TIME (Const( 0.200))) 
+Hold( WR => CS 01 posedge WR_HOLD_TIME)
+Hold( WR => CS 10 posedge WR_HOLD_TIME)
+TIMING_Model (AD_SETUP_TIME (Const( 0.790))) 
+Setup( AD[7:0] *> CS 01 posedge AD_SETUP_TIME)
+Setup( AD[7:0] *> CS 10 posedge AD_SETUP_TIME)
+TIMING_Model (DI_SETUP_TIME (Const( 0.440))) 
+Setup( DI[31:0] *> CS 01 posedge DI_SETUP_TIME)
+Setup( DI[31:0] *> CS 10 posedge DI_SETUP_TIME)
+TIMING_Model (NRST_SETUP_TIME (Const( 0.410))) 
+Setup( NRST => CS 01 posedge NRST_SETUP_TIME)
+Setup( NRST => CS 10 posedge NRST_SETUP_TIME)
+TIMING_Model (RD_SETUP_TIME (Const( 0.920))) 
+Setup( RD => CS 01 posedge RD_SETUP_TIME)
+Setup( RD => CS 10 posedge RD_SETUP_TIME)
+TIMING_Model (WR_SETUP_TIME (Const( 0.910))) 
+Setup( WR => CS 01 posedge WR_SETUP_TIME)
+Setup( WR => CS 10 posedge WR_SETUP_TIME)
+) 

@@ -40,15 +40,12 @@ module button_manager(
 // 4000_000C: 1bit  | Wheel Setting Flag
 // 4000_0010: 1bit  | New button pressed Flag
 //------------------------------------------------------------------------------
-  
   logic DayNight_Store, Mode_Store, Trip_Store, Setting_Store;
   wire  NewData;
 
 //------------------------------------------------------------------------------
 // Control and Status Signals
 //------------------------------------------------------------------------------
-
-
   // Input Synchronization
   logic SYNC_MID_nMode, SYNC_nMode;
   logic SYNC_MID_nTrip, SYNC_nTrip;
@@ -81,7 +78,6 @@ module button_manager(
 //------------------------------------------------------------------------------
 // Input Synchronization : nMode, nTrip
 //------------------------------------------------------------------------------
-
 always_ff @(posedge HCLK, negedge HRESETn) begin
   if (!HRESETn) begin
     SYNC_MID_nMode <= '0;  SYNC_nMode <= '0;
@@ -94,9 +90,8 @@ always_ff @(posedge HCLK, negedge HRESETn) begin
 end
 
 //------------------------------------------------------------------------------
-// Button Debounce
+// Button Mode Recognition
 //------------------------------------------------------------------------------
-
   // For the Trip Mode negative edge detection
   always_ff @ (posedge HCLK, negedge HRESETn) begin
     if (!HRESETn) begin
@@ -109,7 +104,9 @@ end
     end
   end
 
-  // Trip button debounce
+  //------------------------------------------------------------------
+  // Trip Button Debounce
+  //------------------------------------------------------------------
   always_ff @ (posedge HCLK, negedge HRESETn) begin
     if (!HRESETn) begin
       state_debtrip <= STATE_IDLE_DEBTRIP;
@@ -120,7 +117,7 @@ end
         STATE_IDLE_DEBTRIP: begin
           if (!SYNC_nTrip && Trip_Last) begin
             state_debtrip <= STATE_COUNT_DEBTRIP;
-            DebCount_Trip <= DebCount_Trip + 1;
+            DebCount_Trip <= DebCount_Trip + 1;     // 为了让
           end
         end
         STATE_COUNT_DEBTRIP: begin
@@ -141,7 +138,9 @@ end
       DebFlag_Trip = '0;
   end
 
-  // Mode button debounce
+  //------------------------------------------------------------------
+  // Mode Button Debounce
+  //------------------------------------------------------------------
   always_ff @ (posedge HCLK, negedge HRESETn) begin
     if (!HRESETn) begin
       state_debmode <= STATE_IDLE_DEBMODE;
@@ -174,7 +173,9 @@ end
       DebFlag_Mode = '0;
   end
 
-  // 500MS after Trip button has been pressed
+  //------------------------------------------------------------------
+  // 500ms counter after Completion of Trip Button Debounce
+  //------------------------------------------------------------------
   always_ff @ (posedge HCLK, negedge HRESETn) begin
     if (!HRESETn) begin
       state_intertrip <= STATE_IDLE_INTERTRIP;
@@ -183,7 +184,7 @@ end
       else
         unique case (state_intertrip)
           STATE_IDLE_INTERTRIP: begin
-            if ((DebFlag_Trip) && (InterCount_Trip == 0) && (InterCount_Mode == 0)) begin
+            if ((DebFlag_Trip) && (InterCount_Trip == 0) && (InterCount_Mode == 0)) begin   // 希望后一个按的按钮不会触发500ms计数器
               state_intertrip <= STATE_COUNT_INTERTRIP;
               InterCount_Trip <= InterCount_Trip + 1;
             end
@@ -199,7 +200,9 @@ end
         endcase
   end
 
-  // 500MS after Mode button has been pressed
+  //------------------------------------------------------------------
+  // 500ms counter after Completion of Mode Button Debounce
+  //------------------------------------------------------------------
   always_ff @ (posedge HCLK, negedge HRESETn) begin
     if (!HRESETn) begin
       state_intermode <= STATE_IDLE_INTERMODE;
@@ -224,7 +227,10 @@ end
       endcase
   end
 
-  // One clock delay new read and write signals generation
+
+  //------------------------------------------------------------------
+  // Refresh Registers
+  //------------------------------------------------------------------
   always_ff @ (posedge HCLK, negedge HRESETn) begin
     if (!HRESETn) begin
       Write <= '0;
@@ -239,23 +245,7 @@ end
       Addr_Reg <= 4;
     end
   end
-
-  // Read button registers
-  always_comb begin
-    if (Write)
-        HRDATA = '0;
-    else
-      HRDATA = '0;
-      case (Addr_Reg)
-        DayNight_Reg_Addr:  begin HRDATA = {31'b0, DayNight_Store}; end
-        Mode_Reg_Addr:      begin HRDATA = {31'b0, Mode_Store};     end
-        Trip_Reg_Addr:      begin HRDATA = {31'b0, Trip_Store};     end
-        Setting_Reg_Addr:   begin HRDATA = {31'b0, Setting_Store};  end
-        NewData_Reg_Addr:   begin HRDATA = {31'b0, NewData};        end
-      endcase
-  end
   
-  // Write button registers
   always_ff @ (posedge HCLK, negedge HRESETn) begin
     if (!HRESETn) begin
         Setting_Store <= '0;
@@ -263,30 +253,19 @@ end
         Mode_Store <= '0;
         DayNight_Store <= '0;
     end
-    /*
-    // Software write
-    else if (Write)
-      case (Addr_Reg)
-        DayNight_Reg_Addr:  DayNight_Store <= HWDATA[0];
-        Mode_Reg_Addr:      Mode_Store <= HWDATA[0];
-        Trip_Reg_Addr:      Trip_Store <= HWDATA[0];
-        Setting_Reg_Addr:   Setting_Store <= HWDATA[0];
-        NewData_Reg_Addr:   NewData <= HWDATA[0];
-      endcase
-    */
-    // Hardware write
     // Read register refresh
     else if (
-                ((Addr_Reg == Mode_Reg_Addr) && (Mode_Store)) ||
-                ((Addr_Reg == Trip_Reg_Addr) && (Trip_Store)) ||
-                ((Addr_Reg == Setting_Reg_Addr) && (Setting_Store)) ||
-                ((Addr_Reg == DayNight_Reg_Addr) && (DayNight_Store))
+                ((Addr_Reg == Mode_Reg_Addr)      && (Mode_Store))    ||
+                ((Addr_Reg == Trip_Reg_Addr)      && (Trip_Store))    ||
+                ((Addr_Reg == Setting_Reg_Addr)   && (Setting_Store)) ||
+                ((Addr_Reg == DayNight_Reg_Addr)  && (DayNight_Store))
             ) begin
       Setting_Store <= '0;
-      Mode_Store <= '0;
       Trip_Store <= '0;
+      Mode_Store <= '0;
       DayNight_Store <= '0;
     end
+  // Button pressed register refresh
     else begin
       if (Con_DayNight)
         DayNight_Store <= 1;
@@ -309,6 +288,24 @@ end
                        ((DebFlag_Trip) && (InterCount_Mode != Time_500MS) && (InterCount_Mode != 0)) ||
                        ((DebFlag_Mode) && (DebFlag_Trip));
   assign NewData = Setting_Store || Trip_Store || Mode_Store || DayNight_Store; 
+
+//------------------------------------------------------------------------------
+// AHB Output
+//------------------------------------------------------------------------------
+  // Read button registers
+  always_comb begin
+    if (Write)
+        HRDATA = '0;
+    else
+      HRDATA = '0;
+      case (Addr_Reg)
+        DayNight_Reg_Addr:  begin HRDATA = {31'b0, DayNight_Store}; end
+        Mode_Reg_Addr:      begin HRDATA = {31'b0, Mode_Store};     end
+        Trip_Reg_Addr:      begin HRDATA = {31'b0, Trip_Store};     end
+        Setting_Reg_Addr:   begin HRDATA = {31'b0, Setting_Store};  end
+        NewData_Reg_Addr:   begin HRDATA = {31'b0, NewData};        end
+      endcase
+  end
 
   // Ready signal generation
   assign HREADYOUT = '1;
