@@ -236,8 +236,8 @@ int main(void) {
     display_segment(mode, int2bcd(display_int), int2bcd(display_frac));
 
     // 4. Refresh OLED
-    // Test with 400 pixels
-    oled_fill_area(0,0,20,20,false); // fill a square
+    // Test with 100 pixels
+    oled_fill_area(0,0,10,10,false); // fill a square
 
   }
 }
