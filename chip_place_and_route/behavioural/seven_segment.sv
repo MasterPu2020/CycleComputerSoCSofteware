@@ -114,35 +114,19 @@ module seven_segment(
   // float point
   always_comb begin
     Disp_Data = '0; DP = '0;
-    if (Store_Mode == 4'hd) begin
+    if ((Store_Mode == 4'hd) || (Store_Mode == 4'he)) begin
       unique case (Display_Counter)
-        0:  begin Disp_Data = Store_Int[3:0];   DP = '1; end
-        1:  begin Disp_Data = Store_Int[7:4];   DP = '0; end
-        2:  begin Disp_Data = Store_Int[11:8];  DP = '0; end
-        3:  begin Disp_Data = Store_Mode;       DP = '0; end
-      endcase
-    end
-    else if (Store_Mode == 4'he) begin
-      unique case (Display_Counter)
-        0:  begin Disp_Data = Store_Int[3:0];   DP = '1; end
-        1:  begin Disp_Data = Store_Int[7:4];   DP = '0; end
-        2:  begin Disp_Data = Store_Int[11:8];  DP = '0; end
-        3:  begin Disp_Data = 4'h2;             DP = '0; end
-      endcase
-    end
-    else if (Store_Mode == 4'he) begin
-      unique case (Display_Counter)
-        0:  begin Disp_Data = Store_Int[ 3:0]; DP = '1; end
-        1:  begin Disp_Data = Store_Int[ 7:4]; DP = '0; end
+        0:  begin Disp_Data = Store_Int[3:0];  DP = '1; end
+        1:  begin Disp_Data = Store_Int[7:4];  DP = '0; end
         2:  begin Disp_Data = Store_Int[11:8]; DP = '0; end
-        3:  begin Disp_Data = 4'h2;            DP = '0; end
+        3:  begin Disp_Data = Store_Mode;      DP = '0; end
       endcase
     end
     else begin
       if (Store_Int[11:8] != '0)
         unique case (Display_Counter)
-          0:  begin Disp_Data = Store_Int[ 3:0];  DP = '1; end
-          1:  begin Disp_Data = Store_Int[ 7:4];  DP = '0; end
+          0:  begin Disp_Data = Store_Int[3:0];   DP = '1; end
+          1:  begin Disp_Data = Store_Int[7:4];   DP = '0; end
           2:  begin Disp_Data = Store_Int[11:8];  DP = '0; end
           3:  begin Disp_Data = Store_Mode;       DP = '0; end
         endcase

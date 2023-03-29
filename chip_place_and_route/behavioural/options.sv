@@ -25,13 +25,13 @@
 //  signals
 //   (Test, SDI, SDO)
 //
-//`define no_scan_signals
+`define no_scan_signals
 
 // The following line indicates that the model supports separate scan control
 //  signals
 //   (Test, ScanEnable)
 //
-`define scan_enable
+//`define scan_enable
 
 // The following line indicates that the model does not properly simulate
 //  the pullup behaviour of the pads and an external pullup should be
@@ -64,12 +64,12 @@
 // After reset, the testbench should wait for this time before expecting
 // the computer to work
 //
-`define start_up_time 110ms
+`define start_up_time 1s
 
 // Uncomment the following line to indicate that your bicycle computer
 //  supports an OLED display
 //
-// `define include_oled
+`define include_oled
 
 // The following line specifies the number of operating modes
 //
@@ -79,5 +79,5 @@
 //
 `define Mode0 Distance
 `define Mode1 Duration
-`define Mode3 Speed
-`define Mode2 Cadence
+`define Mode2 Speed
+`define Mode3 Cadence
