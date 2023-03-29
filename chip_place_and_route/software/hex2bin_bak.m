@@ -2,6 +2,7 @@
 %   Title: Binary Code Conversion Matlab Script
 %  Author: Paiyun Chen (Circle)
 %    Team: C4 Chip Designed
+% Version: General Purpose
 %------------------------------------------------------------------------------
 clear;
 clc;
@@ -21,17 +22,22 @@ HexFileName  = 'code.hex';
 VmemFileLoc  = 'D:\Vscode_Code\ARM_SoC_Project\CycleComputerSoCSofteware\chip_place_and_route\software\';
 VmemFileName = 'code.vmem';
 BinFileLoc   = 'D:\Vscode_Code\ARM_SoC_Project\CycleComputerSoCSofteware\chip_place_and_route\software\';
-BinFileName  = 'code';
+BinFileName  = 'code1';
 
 %------------------------------------------------------------------------------------
 % Main Function
 %------------------------------------------------------------------------------------
+%------------------------------------------------------------------
+% Read hex or vmem file
+%------------------------------------------------------------------
 IntFileConTxt = [];
 RowNum = 0;
 
-%------------------------------------------------------------------
-% Hex file Conversion
-%------------------------------------------------------------------
+BinFileNameSeries = sprintf('%s%d%s',BinFileName,1,'.bin');
+disp(BinFileNameSeries)
+WFileID = fopen([BinFileLoc,BinFileNameSeries],'w','b');
+
+
 if (Mode == 1)
   FileID = fopen([HexFileLoc, HexFileName],'r','b','UTF-8');
   if FileID == -1
@@ -49,10 +55,6 @@ if (Mode == 1)
     end
     IntFileConTxt = sprintf('%s%s',IntFileConTxt, BinFileCon);
   end
-
-%------------------------------------------------------------------
-% Read vmem file
-%------------------------------------------------------------------
 else
   FileID = fopen([VmemFileLoc, VmemFileName],'r','b','UTF-8');
   if FileID == -1
@@ -69,56 +71,13 @@ else
     else
       VmemFileRealCon = VmemFileCon((28 + fix(log10(RowNum - 1))) : (35 + fix(log10(RowNum - 1))));
     end
-
-    BinFileCon = dec2bin(hex2dec(VmemFileRealCon));
-
-    for i = 1:(32-length(BinFileCon))
-      BinFileCon = sprintf('%d%s',0, BinFileCon);
-    end
-    IntFileConTxt = sprintf('%s%s',IntFileConTxt, BinFileCon);
-  end
+    
+    % deal with uint data
+    DecFileCon = hex2dec(VmemFileRealCon);
+    IntFileCon = uint32(DecFileCon);
+    fwrite(WFileID, IntFileCon, 'uint');
+  end 
 end
 
-fclose(FileID);
 
-%------------------------------------------------------------------
-% Write bin file(s)
-%------------------------------------------------------------------
-BinFileNum = ceil(RowNum/512);
-RowNumWritten = 0;
-
-for n = 1:ceil(BinFileNum)
-  BinFileNameSeries = sprintf('%s%d%s',BinFileName,n,'.bin');
-  FileID = fopen([BinFileLoc,BinFileNameSeries],'w','b');
-
-  for m = 1:512
-    if (RowNumWritten < RowNum)
-      for l = 1:32
-        WrittingConTxt = IntFileConTxt(l + 32*(RowNumWritten));
-        WrittingConBin = fix(str2double(WrittingConTxt));
-        fwrite(FileID, WrittingConBin);
-      end
-    else
-      for l = 1:32
-        fwrite(FileID, 0);
-      end
-    end
-    fprintf(FileID, '\n');
-    RowNumWritten = m + 512*(n-1);
-  end
-  fclose(FileID);
-end
-
-BinFileNameWhole = sprintf('%s%s',BinFileName,'.txt');
-FileID = fopen([BinFileLoc,BinFileNameWhole],'w','b');
-
-for n = 1:RowNum
-  for m = 1:32
-    fwrite(FileID,IntFileConTxt(m + 32*(n-1)),'ubit1');
-  end
-  fprintf(FileID, '\n');
-end
-
-fclose(FileID);
-
-fprintf('Writing bin file(s) complete. %d bin file(s) written(excluding summary file %s). %d real instruction(s) written(excluding the final additional NOPs).',BinFileNum,BinFileNameWhole,RowNum);
+fclose(WFileID);

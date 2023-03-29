@@ -82,7 +82,6 @@ timeprecision 100ps;
      end
 
 //Act on control signals in the data phase
-
   // no write since this is a ROM
 
   //read
