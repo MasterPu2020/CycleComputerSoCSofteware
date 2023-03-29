@@ -15,11 +15,12 @@
 //    Verifing with software version 5.5
 //  `define OdometerVerification      // Not Verified
 //  `define TripTimeVerification      // Not Verified
-//  `define SpeedVerification         // Not Verified
+  `define SpeedVerification         // Not Verified
 //  `define CadenceVerification       // Behavioural Passed
 //  `define ModeSwitchVerification    // Gate Level Passed
 //  `define SettingVerification       // Not verified
-  `define ScanPathVerification
+//  `define TimeStopVerification      // Not verified
+//  `define ScanPathVerification
 //  `define SimpleVerification        // Behavioural Passed 
 //  `define FullVerification          // Not Verified
 //  `define MacroCellVerification     // Not Verified
@@ -123,7 +124,6 @@ end
 //------------------------------------------------------------------------------
 // Gate Level Tasks
 //------------------------------------------------------------------------------
-
   //--------------------------------------------------------------
   // Initialization & Completion Tasks
   //--------------------------------------------------------------
@@ -152,7 +152,6 @@ end
   //--------------------------------------------------------------
   // Gate Level Verification Task
   //--------------------------------------------------------------
-
   task OdometerTest;
     $display("\n This is odometer:");
     odometer = (2.136 * fork_times);
@@ -183,65 +182,8 @@ end
   endtask
 
   //--------------------------------------------------------------
-  // Speed Options
+  // Button Press Select
   //--------------------------------------------------------------
-
-  task Speed10km_Cadence100rps;
-    $display("\n Change to low speed: 10km/h, 100rps. (%t)\n", $time);
-    crank_cycle = 600; // ms
-    fork_cycle = 769;  // ms
-    speed = 10;
-    cadence = 100;
-  endtask
-
-  task Speed20km_Cadence150rps;
-    $display("\n Change to fast speed: 20km/h, 150rps. (%t)\n", $time);
-    crank_cycle = 400; // ms
-    fork_cycle = 384;  // ms
-    speed = 20;
-    cadence = 150;
-  endtask
-
-  task BicycleStopped;
-    $display("\n Bicycle stopped. (%t)\n", $time);
-    crank_cycle = 100_000; // ms
-    fork_cycle = 100_000;  // ms
-    speed = 0;
-    cadence = 0;
-  endtask
-
-  //--------------------------------------------------------------
-  // Customization Intended Task
-  //--------------------------------------------------------------
-
-  task CustomWheelSizeSwitch(int digit2, int digit1, int digit0);
-    $display("\n Custom wheel size switch start.\n");
-    $display("------------------------------------------------------------------------------");
-    #1s -> press_mode_button;
-    #17ms -> press_trip_button;
-
-    for (int i=0;i<digit0;i++) begin
-      #1s -> press_trip_button;
-    end
-    #1s -> press_mode_button;
-
-    for (int i=0;i<digit1;i++) begin
-        #1s -> press_trip_button;
-      end
-    #1s -> press_mode_button;
-
-    for (int i=0;i<(digit2+3);i++) begin
-        #1s -> press_trip_button;
-    end
-    #1s -> press_mode_button;
-    DisplayRefresh_Seg = 0;
-    @(posedge Clock);
-    DisplayRefresh_Seg = 1;
-    @(posedge Clock);
-    DisplayRefresh_Seg = 0;
-    #1s;  // Response time
-  endtask
-
   task PressModeButton;
     $display("\n Mode button will be pressed once.\n");
     #1s -> press_mode_button;
@@ -258,11 +200,68 @@ end
     #0.3s ->  press_trip_button;
   endtask
 
+  //--------------------------------------------------------------
+  // Customization Task
+  //--------------------------------------------------------------
+  task CustomizeWheelSize(int wheelsize_ref);
+    $display("\n Custom wheel size switch start.\n");
+    $display("------------------------------------------------------------------------------");
+
+    wheel_size = (real'(wheelsize_ref)/1000);
+
+    integer
+      wheelsize_ref_dig2,
+      wheelsize_ref_dig1,
+      wheelsize_ref_dig0;
+
+    wheelsize_ref_dig2 = (wheelsize_ref/100)%10;
+    wheelsize_ref_dig1 = (wheelsize_ref/ 10)%10;
+    wheelsize_ref_dig0 =  wheelsize_ref     %10;
+
+    PressSettingButton;
+    #1s DisplaySegment;
+    
+    while (seg_digit_value2 != wheelsize_ref_dig2) begin
+      #1s -> press_trip_button;
+      #1s DisplaySegment;
+    end
+    #1s -> press_mode_button;
+
+    while (seg_digit_value1 != wheelsize_ref_dig1) begin
+      #1s -> press_trip_button;
+      #1s DisplaySegment;
+    end
+    #1s -> press_mode_button;
+
+    while (seg_digit_value0 != wheelsize_ref_dig0) begin
+      #1s -> press_trip_button;
+      #1s DisplaySegment;
+    end
+    #1s -> press_mode_button;
+
+    #1s DisplaySegment;
+  endtask
+
+  task CustomizeSpeedCadence(int speed_ref, int cadence_ref);   // unit: speed km/h, cadence rpm.
+    $display("\n Change to speed: %dkm/h. Change to Cadence %drpm. (%t)\n", speed_ref, cadence_ref, $time);
+    if (speed_ref == 0)
+      fork_cycle = 100_000;
+    else
+      fork_cycle = (3600*wheel_size)/speed_ref;
+
+    if (cadence_ref == 0)
+      crank_cycle = 100_000;
+    else
+      crank_cycle = 60000/cadence_ref;
+    
+    speed = speed_ref;
+    cadence = cadence_ref;
+  endtask
+
 //------------------------------------------------------------------------------
 // Gate Level Custom Stimulus & Verification
 // Comment: Use marco to enable
 //------------------------------------------------------------------------------
-
   //--------------------------------------------------------------
   // Gate Level Odometer Verification
   //--------------------------------------------------------------
@@ -270,15 +269,15 @@ end
     initial begin
       StartUp;
 
-      Speed20km_Cadence150rps;
+      CustomizeSpeedCadence(20,150);
       for (int i=0;i<3;i++)
         #3s OdometerTest;
 
-      Speed10km_Cadence100rps;
+      CustomizeSpeedCadence(10,100);
       for (int i=0;i<3;i++)
         #3s OdometerTest;
 
-      BicycleStopped;
+      CustomizeSpeedCadence(0,0);
       for (int i=0;i<3;i++)
         #3s OdometerTest;
 
@@ -294,15 +293,13 @@ end
 
       PressModeButton;
 
-      Speed20km_Cadence150rps;
-
+      CustomizeSpeedCadence(20,150);
       #60s;
       
       for (int i=0;i<3;i++)
         #3s TripTimeTest;
 
-      BicycleStopped;
-
+      CustomizeSpeedCadence(0,0);
       #60s;
 
       trip_time = trip_time - 60;
@@ -316,6 +313,29 @@ end
     end
 
   //--------------------------------------------------------------
+  // Gate Level Time Stop Verification
+  //--------------------------------------------------------------
+  `elsif TimeStopVerification
+    initial begin
+      StartUp;
+
+      BicycleStopped;
+
+      PressModeButton;
+      
+      for (int i = 0; i<3; i++)
+        #1s $display("Running at %t", $time);
+
+      for (int i=0;i<150;i++) begin
+        #0.5s;
+        DisplaySegment;
+        $display("Running at %t", $time);
+      end
+
+      EndSimulation;
+    end
+
+  //--------------------------------------------------------------
   // Gate Level Speedometer Verification
   //--------------------------------------------------------------
   `elsif SpeedVerification
@@ -323,18 +343,20 @@ end
       StartUp;
 
       PressModeButton;
+      #4s;
       PressModeButton;
+      #4s;
 
       Speed20km_Cadence150rps;
-      for (int i=0;i<3;i++)
+      for (int i=0;i<10;i++)
         #3s SpeedTest;
 
       Speed10km_Cadence100rps;
-      for (int i=0;i<3;i++)
+      for (int i=0;i<10;i++)
         #3s SpeedTest;
 
       BicycleStopped;
-      for (int i=0;i<3;i++)
+      for (int i=0;i<10;i++)
         #3s SpeedTest;
 
       EndSimulation;
@@ -379,9 +401,9 @@ end
     initial begin
       StartUp;
 
-      for (int i=0;i<8;i++) begin
+      for (int i=0;i<20;i++) begin
         PressModeButton;
-        #1s;
+        #4s;
         DisplaySegment;
       end
 
@@ -401,7 +423,7 @@ end
       for (int j=0;j<5;j++) begin
         for (int i=0;i<13;i++) begin
           PressTripButton;
-          #0.5s;
+          #1ms;
           DisplaySegment;
         end
         PressModeButton;

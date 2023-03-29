@@ -117,7 +117,7 @@ end
         STATE_IDLE_DEBTRIP: begin
           if (!SYNC_nTrip && Trip_Last) begin
             state_debtrip <= STATE_COUNT_DEBTRIP;
-            DebCount_Trip <= DebCount_Trip + 1;     // 为了让
+            DebCount_Trip <= DebCount_Trip + 1;
           end
         end
         STATE_COUNT_DEBTRIP: begin

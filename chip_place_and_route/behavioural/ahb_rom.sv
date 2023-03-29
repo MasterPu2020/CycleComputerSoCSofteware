@@ -60,9 +60,7 @@ timeprecision 100ps;
      end
 
 //Act on control signals in the data phase
-
   // no write since this is a ROM
-
   // read
   dirom512x32 dirom512x32_1(
     .NRST(HRESETn),

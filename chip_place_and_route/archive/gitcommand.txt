@@ -1,2 +1,0 @@
-SSH: 	 git@github.com:MasterPu2020/CycleComputerSoCS
-HTTPS: https://github.com/MasterPu2020/CycleComputerSoCSofteware.git
