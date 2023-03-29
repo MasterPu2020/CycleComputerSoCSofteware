@@ -55,95 +55,30 @@ if [ "$choice" = "1" ]; then
 elif [ "$choice" = "2" ]; then
 	echo -e "\n------------------------------------------\n Processing...\n"
 ./simulate -no_graphics -gate -sdf ./gate_level/computer.sdf ./gate_level \
-+define+clock_period=30517.6ns \
-+define+scan_enable \
-+define+external_pullup \
-+define+start_up_time=1s \
-+define+include_oled \
-+define+num_modes=4 \
-+define+Mode0=Distance \
-+define+Mode1=Duration \
-+define+Mode2=Speed \
-+define+Mode3=Cadence \
 +define+stimulus=system2/stimulus.sv
 elif [ "$choice" = "3" ]; then
 	echo -e "\n------------------------------------------\n Processing...\n"
 ./simulate -no_graphics -gate -sdf ./gate_level/computer.sdf ./gate_level \
-+define+clock_period=30517.6ns \
-+define+scan_enable \
-+define+external_pullup \
-+define+start_up_time=1s \
-+define+include_oled \
-+define+num_modes=4 \
-+define+Mode0=Distance \
-+define+Mode1=Duration \
-+define+Mode2=Speed \
-+define+Mode3=Cadence \
 +define+stimulus=system2/stimulus.sv
 elif [ "$choice" = "4" ]; then
 	echo -e "\n------------------------------------------\n Processing...\n"
 ./simulate -no_graphics -gate -sdf ./gate_level/computer.sdf ./gate_level \
-+define+clock_period=30517.6ns \
-+define+scan_enable \
-+define+external_pullup \
-+define+start_up_time=1s \
-+define+num_modes=4 \
-+define+Mode0=Distance \
-+define+Mode1=Duration \
-+define+Mode2=Speed \
-+define+Mode3=Cadence \
 +define+stimulus=system2/stimulus.sv
 elif [ "$choice" = "5" ]; then
 	echo -e "\n------------------------------------------\n Processing...\n"
 ./simulate -gate -sdf ./gate_level/computer.sdf ./gate_level \
-+define+clock_period=30517.6ns \
-+define+scan_enable \
-+define+external_pullup \
-+define+start_up_time=1s \
-+define+num_modes=4 \
-+define+Mode0=Distance \
-+define+Mode1=Duration \
-+define+Mode2=Speed \
-+define+Mode3=Cadence \
 +define+stimulus=system2/stimulus.sv
 elif [ "$choice" = "6" ]; then
 	echo -e "\n------------------------------------------\n Processing...\n"
 ./simulate -no_graphics ./behavioural 200s \
-+define+clock_period=30517.6ns \
-+define+no_scan_signals \
-+define+external_pullup \
-+define+start_up_time=1s \
-+define+num_modes=4 \
-+define+Mode0=Distance \
-+define+Mode1=Duration \
-+define+Mode2=Speed \
-+define+Mode3=Cadence \
 +define+stimulus=system2/stimulus.sv
 elif [ "$choice" = "7" ]; then
 	echo -e "\n------------------------------------------\n Processing...\n"
 ./simulate ./behavioural 200s \
-+define+clock_period=30517.6ns \
-+define+no_scan_signals \
-+define+external_pullup \
-+define+start_up_time=1s \
-+define+num_modes=4 \
-+define+Mode0=Distance \
-+define+Mode1=Duration \
-+define+Mode2=Speed \
-+define+Mode3=Cadence \
 +define+stimulus=system2/stimulus.sv
 elif [ "$choice" = "8" ]; then
 	echo -e "\n------------------------------------------\n Processing...\n"
 ./simulate ./behavioural 200s \
-+define+clock_period=30517.6ns \
-+define+no_scan_signals \
-+define+external_pullup \
-+define+start_up_time=1s \
-+define+num_modes=4 \
-+define+Mode0=Distance \
-+define+Mode1=Duration \
-+define+Mode2=Speed \
-+define+Mode3=Cadence \
 +define+stimulus=system2/stimulus.sv
 +define+functional
 elif [ "$choice" = "s" ]; then

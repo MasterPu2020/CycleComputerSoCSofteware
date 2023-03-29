@@ -15,12 +15,11 @@
 //    Verifing with software version 5.5
 //  `define OdometerVerification      // Not Verified
 //  `define TripTimeVerification      // Not Verified
-  `define SpeedVerification         // Not Verified
+//  `define TimeStopVerification      // Not verified
+//  `define SpeedVerification         // Not Verified
 //  `define CadenceVerification       // Behavioural Passed
 //  `define ModeSwitchVerification    // Gate Level Passed
-//  `define SettingVerification       // Not verified
-//  `define TimeStopVerification      // Not verified
-//  `define ScanPathVerification
+  `define SettingVerification       // Not verified
 //  `define SimpleVerification        // Behavioural Passed 
 //  `define FullVerification          // Not Verified
 //  `define MacroCellVerification     // Not Verified
@@ -68,7 +67,10 @@ integer
   trip_time = 0,
   cadence = 0,
   speed = 0,
-  clock_count = 0;
+  clock_count = 0,
+  wheelsize_ref_dig2 = 0,
+  wheelsize_ref_dig1 = 0,
+  wheelsize_ref_dig0 = 0;
 
 initial $timeformat(0, 2, "s", 10);
 
@@ -170,15 +172,21 @@ end
   task SpeedTest;
     $display("\n This is speed:");
     DisplaySegment;
-    $display("\n Real Speed is %f km/h. Segment display is %f km/h (ave speed = %dkm/h). (%t)", speed, seg_value, ave_speed*3.6, $time);
+    $display("\n Real Speed is %fkm/h. Segment display is %fkm/h (ave speed = %dkm/h). (%t)", speed, seg_value, ave_speed*3.6, $time);
     $display("------------------------------------------------------------------------------");
   endtask
 
   task CadenceTest;
     $display("\n This is cadence:");
     DisplaySegment;
-    $display("\n Real Cadence is %d rpm. Segment display is %d rpm (ave cadence = %d). (%t)", cadence, seg_value, ave_cadence, $time);
+    $display("\n Real Cadence is %drpm. Segment display is %drpm (ave cadence = %d). (%t)", cadence, seg_value, ave_cadence, $time);
     $display("------------------------------------------------------------------------------");
+  endtask
+
+  task WheelSizeTest;
+    $display("\n This is Wheel Size:");
+    DisplaySegment;
+    $display("\n Real Wheel Size is %fm. Segment display is %fm. (%t)", wheel_size, real'(seg_value)/1000, $time);
   endtask
 
   //--------------------------------------------------------------
@@ -209,16 +217,11 @@ end
 
     wheel_size = (real'(wheelsize_ref)/1000);
 
-    integer
-      wheelsize_ref_dig2,
-      wheelsize_ref_dig1,
-      wheelsize_ref_dig0;
-
     wheelsize_ref_dig2 = (wheelsize_ref/100)%10;
     wheelsize_ref_dig1 = (wheelsize_ref/ 10)%10;
     wheelsize_ref_dig0 =  wheelsize_ref     %10;
 
-    PressSettingButton;
+    #1s PressSettingButton;
     #1s DisplaySegment;
     
     while (seg_digit_value2 != wheelsize_ref_dig2) begin
@@ -237,8 +240,7 @@ end
       #1s -> press_trip_button;
       #1s DisplaySegment;
     end
-    #1s -> press_mode_button;
-
+    
     #1s DisplaySegment;
   endtask
 
@@ -295,13 +297,11 @@ end
 
       CustomizeSpeedCadence(20,150);
       #60s;
-      
       for (int i=0;i<3;i++)
         #3s TripTimeTest;
 
       CustomizeSpeedCadence(0,0);
       #60s;
-
       trip_time = trip_time - 60;
       for (int i=0;i<3;i++) begin
         #3s;
@@ -319,10 +319,8 @@ end
     initial begin
       StartUp;
 
-      BicycleStopped;
-
       PressModeButton;
-      
+      CustomizeSpeedCadence(0,0);
       for (int i = 0; i<3; i++)
         #1s $display("Running at %t", $time);
 
@@ -343,19 +341,17 @@ end
       StartUp;
 
       PressModeButton;
-      #4s;
       PressModeButton;
-      #4s;
 
-      Speed20km_Cadence150rps;
+      CustomizeSpeedCadence(20,150);
       for (int i=0;i<10;i++)
         #3s SpeedTest;
 
-      Speed10km_Cadence100rps;
+      CustomizeSpeedCadence(10,100);
       for (int i=0;i<10;i++)
         #3s SpeedTest;
 
-      BicycleStopped;
+      CustomizeSpeedCadence(0,0);
       for (int i=0;i<10;i++)
         #3s SpeedTest;
 
@@ -373,7 +369,7 @@ end
       PressModeButton;
       PressModeButton;
 
-      Speed20km_Cadence150rps;
+      CustomizeSpeedCadence(20,150);
       for (int i = 0; i<3; i++)
         #1s $display("Running at %t", $time);
       for (int i=0;i<3;i++)
@@ -408,7 +404,6 @@ end
       end
 
       EndSimulation;
-
     end
 
   //--------------------------------------------------------------
@@ -418,48 +413,10 @@ end
     initial begin
       StartUp;
 
-      PressSettingButton;
-
-      for (int j=0;j<5;j++) begin
-        for (int i=0;i<13;i++) begin
-          PressTripButton;
-          #1ms;
-          DisplaySegment;
-        end
-        PressModeButton;
-      end
+      CustomizeWheelSize(2199);
+      WheelSizeTest;
       
       EndSimulation;
-    end
-
-  //--------------------------------------------------------------
-  // Gate Level ScanPath Verification
-  //--------------------------------------------------------------
-  `elsif ScanPathVerification
-    initial begin
-      StartUp;
-
-      $display("\n Scan path has been enabled.\n");
-
-      @(posedge Clock);
-      #(`clock_period/4);
-        Test = '1;
-      @(posedge Clock);
-      #(`clock_period/4);
-        ScanEnable = '1;
-      #0.5s;
-      @(posedge Clock);
-      #(`clock_period/4);
-        SDI = '1;
-      @(posedge Clock);
-      #(`clock_period/4);
-        SDI = '0;
-
-      for (int i=0;i<8;i++) begin
-        @(posedge SDO);
-        $display("\n Clock number = %d\n", clock_count);
-      end
-
     end
 
   //--------------------------------------------------------------
@@ -469,13 +426,15 @@ end
     initial begin
       StartUp;
 
-      $display(" Fast Speed Test");
-      Speed20km_Cadence150rps;
-      for (int i = 0; i<5; i++)
-        #1s $display("Running at %t", $time);
+      CustomizeWheelSize(2588);
+      CustomizeSpeedCadence(20,150);
+
+      // Odometer Test
       OdometerTest;
+
       PressModeButton;
       PressModeButton;
+
       for (int i = 0; i<5; i++)
         #1s $display("Running at %t", $time);
       SpeedTest;
@@ -485,8 +444,7 @@ end
       CadenceTest;
       PressModeButton;
 
-      $display(" Slow Speed Test");
-      Speed10km_Cadence100rps;
+      CustomizeSpeedCadence(10,100);
       for (int i = 0; i<5; i++)
         #1s $display("Running at %t", $time);
       OdometerTest;
