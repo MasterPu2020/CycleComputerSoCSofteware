@@ -17,9 +17,8 @@
 //  `define TripTimeVerification      // Not Verified
 //  `define TimeStopVerification      // Not verified
 //  `define SpeedVerification         // Not Verified
-//  `define CadenceVerification       // Behavioural Passed
+  `define CadenceVerification       // Behavioural Passed
 //  `define ModeSwitchVerification    // Gate Level Passed
-  `define SettingVerification       // Not verified
 //  `define SimpleVerification        // Behavioural Passed 
 //  `define FullVerification          // Not Verified
 //  `define MacroCellVerification     // Not Verified
@@ -47,13 +46,29 @@ end
 
 // Tested real variable
 real
-  error = 0,
   wheel_size = 2.136,
   crank_cycle = 1200, // ms
   fork_cycle = 800,  // ms
   noise = 25, //ms
   ave_speed = 0,
   ave_cadence = 0;
+
+integer
+  error_sum = 0,
+  error_odometer = 0,
+  error_time = 0,
+  error_speed = 0,
+  error_cadence = 0;
+
+logic [19:0][9:0]
+  error_odometer_value,
+  ref_odometer_value,
+  error_time_value,
+  ref_time_value,
+  error_speed_value,
+  ref_speed_value,
+  error_cadence_value,
+  ref_cadence_value;
 
 // Tested real value
 integer
@@ -148,6 +163,24 @@ end
 
   task EndSimulation;
     #1s;
+    if (error_sum == 0)
+      $display("--------------------------------Simulation Passed--------------------------------");
+    else begin
+      $display("--------------------------------Simulation Failed--------------------------------");
+      $display("\n Error Report: \n");
+      for (integer i=0;i<error_odometer;i++) begin
+        $display("Real odometer = %fkm. Error odometer = %fkm. Odometer error number: %d.", real'(ref_odometer_value[i])/1000.0, real'(error_odometer_value[i])/1000.0, i);
+      end
+      for (integer i=0;i<error_time;i++) begin
+        $display("Real trip time = %ds. Error trip time = %ds. Trip time error number: %d.", ref_time_value[i], error_time_value[i], i);
+      end
+      for (integer i=0;i<error_speed;i++) begin
+        $display("Real speed = %fkmh. Error speed = %fkmh. Speed error number: %d.", real'(ref_speed_value[i])/100.0, real'(error_speed_value[i])/100.0, i);
+      end
+      for (integer i=0;i<error_speed;i++) begin
+        $display("Real cadence = %drpm. Error cadence = %drpm. Cadence error number: %d.", ref_cadence_value[i], error_speed_value[i]/100.0, i);
+      end
+    end
     $finish;
   endtask
 
@@ -160,6 +193,14 @@ end
     DisplaySegment;
     $display("\n Real Odometer is %fkm. Segment display is %fkm (fork_times = %d). (%t)", odometer/1000.0, seg_value, fork_times, $time);
     $display("------------------------------------------------------------------------------");
+    assert ((((odometer/1000.0) - seg_value) < 0.1) ||((seg_value - (odometer/1000.0)) < 0.1)) else begin
+      error_sum       = error_sum       + 1;
+      error_odometer  = error_odometer  + 1;
+      error_odometer_value[error_odometer] = int'(seg_value*1000);
+      ref_odometer_value  [error_odometer] = int'(      odometer);
+      $display("Odometer test failed. Odometer error number: %d. Summary error number: %d.", error_odometer, error_sum);
+    end
+    $display("------------------------------------------------------------------------------");
   endtask
 
   task TripTimeTest;
@@ -167,6 +208,13 @@ end
     DisplaySegment;
     $display("\n Real trip time is %fs. Segment display is %fs. (%t)", trip_time, seg_value*6000, $time);
     $display("------------------------------------------------------------------------------");
+    assert (((trip_time - seg_value*6000) < 60) || ((seg_value*6000 - trip_time) < 60)) else begin
+      error_sum       = error_sum       + 1;
+      error_time      = error_time      + 1;
+      error_time_value[error_time] = int'(seg_value*6000);
+      ref_time_value  [error_time] = int'(      odometer);
+      $display("Trip Time test failed. Trip Time error number: %d. Summary error number: %d.", error_time, error_sum);
+    end
   endtask
 
   task SpeedTest;
@@ -174,6 +222,13 @@ end
     DisplaySegment;
     $display("\n Real Speed is %fkm/h. Segment display is %fkm/h (ave speed = %dkm/h). (%t)", speed, seg_value, ave_speed*3.6, $time);
     $display("------------------------------------------------------------------------------");
+    assert (((speed - seg_value) < 0.1) || ((seg_value - speed) < 0.1)) else begin
+      error_sum       = error_sum       + 1;
+      error_speed     = error_speed     + 1;
+      error_speed_value[error_speed] = int'(seg_value*100);
+      ref_speed_value  [error_speed] = int'(    speed*100);
+      $display("Speed test failed. Speed error number: %d. Summary error number: %d.", error_speed, error_sum);
+    end
   endtask
 
   task CadenceTest;
@@ -181,12 +236,13 @@ end
     DisplaySegment;
     $display("\n Real Cadence is %drpm. Segment display is %drpm (ave cadence = %d). (%t)", cadence, seg_value, ave_cadence, $time);
     $display("------------------------------------------------------------------------------");
-  endtask
-
-  task WheelSizeTest;
-    $display("\n This is Wheel Size:");
-    DisplaySegment;
-    $display("\n Real Wheel Size is %fm. Segment display is %fm. (%t)", wheel_size, real'(seg_value)/1000, $time);
+    assert (((cadence - seg_value) <= 5) || ((seg_value - cadence) <= 5)) else begin
+      error_sum       = error_sum       + 1;
+      error_cadence   = error_cadence   + 1;
+      error_cadence_value[error_cadence] = int'(seg_value);
+      ref_cadence_value  [error_cadence] = int'(  cadence);
+      $display("Cadence test failed. Cadence error number: %d. Summary error number: %d.", error_cadence, error_sum);
+    end
   endtask
 
   //--------------------------------------------------------------
@@ -212,7 +268,7 @@ end
   // Customization Task
   //--------------------------------------------------------------
   task CustomizeWheelSize(int wheelsize_ref);
-    $display("\n Custom wheel size switch start.\n");
+    $display("\n Customize wheel size switch start.\n");
     $display("------------------------------------------------------------------------------");
 
     wheel_size = (real'(wheelsize_ref)/1000);
@@ -220,28 +276,26 @@ end
     wheelsize_ref_dig2 = (wheelsize_ref/100)%10;
     wheelsize_ref_dig1 = (wheelsize_ref/ 10)%10;
     wheelsize_ref_dig0 =  wheelsize_ref     %10;
-
-    #1s PressSettingButton;
+    
+    PressSettingButton;
     #1s DisplaySegment;
     
     while (seg_digit_value2 != wheelsize_ref_dig2) begin
-      #1s -> press_trip_button;
-      #1s DisplaySegment;
+      PressTripButton;
+      DisplaySegment;
     end
-    #1s -> press_mode_button;
+    PressModeButton;
 
     while (seg_digit_value1 != wheelsize_ref_dig1) begin
-      #1s -> press_trip_button;
-      #1s DisplaySegment;
+      PressTripButton;
+      DisplaySegment;
     end
-    #1s -> press_mode_button;
+    PressModeButton;
 
     while (seg_digit_value0 != wheelsize_ref_dig0) begin
-      #1s -> press_trip_button;
-      #1s DisplaySegment;
+      PressTripButton;
+      DisplaySegment;
     end
-    
-    #1s DisplaySegment;
   endtask
 
   task CustomizeSpeedCadence(int speed_ref, int cadence_ref);   // unit: speed km/h, cadence rpm.
@@ -260,6 +314,28 @@ end
     cadence = cadence_ref;
   endtask
 
+  task CustomizeMode(int mode_num);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c)
+    $display("\n Customize Mode switch start.\n");
+    if ((mode_num != 0) && (mode_num != 1) && (mode_num != 2) && (mode_num != 3)) begin
+      $display("\n Wrong Mode Number! Mode button will not be pressed. Please go back to correct your testbench.\n");
+      $display("------------------------------------------------------------------------------");
+      $stop;
+    end
+    else begin
+      case(mode_num)
+        0: $display("\n Switch to odometer mode.\n");
+        1: $display("\n Switch to trip time mode.\n");
+        2: $display("\n Switch to speed mode.\n");
+        3: $display("\n Switch to cadence mode.\n");
+      endcase
+      $display("------------------------------------------------------------------------------");
+      while (seg_digit_value3 != mode_num) begin
+        PressModeButton;
+        DisplaySegment;
+      end
+    end
+  endtask
+
 //------------------------------------------------------------------------------
 // Gate Level Custom Stimulus & Verification
 // Comment: Use marco to enable
@@ -270,6 +346,8 @@ end
   `ifdef OdometerVerification
     initial begin
       StartUp;
+
+      CustomizeMode(0);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
 
       CustomizeSpeedCadence(20,150);
       for (int i=0;i<3;i++)
@@ -293,7 +371,7 @@ end
     initial begin
       StartUp;
 
-      PressModeButton;
+      CustomizeMode(1);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
 
       CustomizeSpeedCadence(20,150);
       #60s;
@@ -319,7 +397,8 @@ end
     initial begin
       StartUp;
 
-      PressModeButton;
+      CustomizeMode(1);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
+
       CustomizeSpeedCadence(0,0);
       for (int i = 0; i<3; i++)
         #1s $display("Running at %t", $time);
@@ -340,8 +419,7 @@ end
     initial begin
       StartUp;
 
-      PressModeButton;
-      PressModeButton;
+      CustomizeMode(2);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
 
       CustomizeSpeedCadence(20,150);
       for (int i=0;i<10;i++)
@@ -365,23 +443,21 @@ end
     initial begin
       StartUp;
 
-      PressModeButton;
-      PressModeButton;
-      PressModeButton;
+      CustomizeMode(3);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
 
-      CustomizeSpeedCadence(20,150);
+      CustomizeSpeedCadence(20,15);
       for (int i = 0; i<3; i++)
         #1s $display("Running at %t", $time);
       for (int i=0;i<3;i++)
         #9s CadenceTest;
 
-      Speed10km_Cadence100rps;
+      CustomizeSpeedCadence(20,20);
       for (int i = 0; i<3; i++)
         #1s $display("Running at %t", $time);
       for (int i=0;i<3;i++)
         #9s CadenceTest;
 
-      BicycleStopped;
+      CustomizeSpeedCadence(20,25);
       for (int i = 0; i<3; i++)
         #1s $display("Running at %t", $time);
       for (int i=0;i<3;i++)
@@ -407,78 +483,85 @@ end
     end
 
   //--------------------------------------------------------------
-  // Gate Level Setting Verification
-  //--------------------------------------------------------------
-  `elsif SettingVerification
-    initial begin
-      StartUp;
-
-      CustomizeWheelSize(2199);
-      WheelSizeTest;
-      
-      EndSimulation;
-    end
-
-  //--------------------------------------------------------------
   // Gate Level Simple Verification
   //--------------------------------------------------------------
   `elsif SimpleVerification
     initial begin
       StartUp;
 
+      //--------------------------------------------------
+      // Three Mode Test Round 1
+      //--------------------------------------------------
       CustomizeWheelSize(2588);
-      CustomizeSpeedCadence(20,150);
+      CustomizeSpeedCadence(70,80);
 
       // Odometer Test
+      CustomizeMode(0);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
       OdometerTest;
 
-      PressModeButton;
-      PressModeButton;
-
+      // Speed Test
+      CustomizeMode(2);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
       for (int i = 0; i<5; i++)
         #1s $display("Running at %t", $time);
       SpeedTest;
-      PressModeButton;
+
+      // Cadence Test
+      CustomizeMode(3);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
       for (int i = 0; i<5; i++)
         #1s $display("Running at %t", $time);
-      CadenceTest;
-      PressModeButton;
+      for (int i = 0; i<5; i++)
+        CadenceTest;
 
-      CustomizeSpeedCadence(10,100);
+      //--------------------------------------------------
+      // Three Mode Test Round 2
+      //--------------------------------------------------
+      CustomizeWheelSize(2765);
+      CustomizeSpeedCadence(50,100);
+
+      // Odometer Test
+      CustomizeMode(0);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
       for (int i = 0; i<5; i++)
         #1s $display("Running at %t", $time);
       OdometerTest;
-      PressModeButton;
-      PressModeButton;
+
+      // Speed Test
+      CustomizeMode(2);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
       for (int i = 0; i<5; i++)
         #1s $display("Running at %t", $time);
       SpeedTest;
-      PressModeButton;
+
+      // Cadence Test
+      CustomizeMode(3);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
       for (int i = 0; i<10; i++)
         #1s $display("Running at %t", $time);
       CadenceTest;
-      PressModeButton;
 
+      //--------------------------------------------------
+      // Timer Test
+      //--------------------------------------------------
       $display(" Time Test: Wait until 64s");
       PressModeButton;
       for (int i = 0; i<20; i++)
         #1s $display("Running at %t", $time);
       TripTimeTest;
 
-      BicycleStopped;
+      CustomizeSpeedCadence(0,0);
       $display(" Stop Test: Wait until 128s");
       for (int i = 0; i<66; i++)
         #1s $display("Running at %t", $time);
       trip_time = trip_time - 61;
       TripTimeTest;
+
       PressModeButton;
       for (int i = 0; i<3; i++)
         #1s $display("Running at %t", $time);
       SpeedTest;
+
       PressModeButton;
       for (int i = 0; i<3; i++)
         #1s $display("Running at %t", $time);
       CadenceTest;
+
       PressModeButton;
       for (int i = 0; i<3; i++)
         #1s $display("Running at %t", $time);
