@@ -22,7 +22,8 @@ logic DisplayRefresh = 0;
 // Fake Seven Segment Display: Initial Definition
 string seg_row;
 logic [7:0] seg_data [3:0];
-real seg_digit_value3, seg_digit_value2, seg_digit_value1, seg_digit_value0;
+real seg_digit_value2, seg_digit_value1, seg_digit_value0;
+integer seg_digit_value3;
 real seg_value;
 logic DisplayRefresh_Seg = 0;
 
@@ -31,6 +32,7 @@ logic DisplayRefresh_Seg = 0;
 //------------------------------------------------------------------------------
 
 task DisplaySegment;
+  #1s;
   for (int i=0;i<7;i++)
     @(posedge Clock);
   DisplayRefresh_Seg = 0;
@@ -84,11 +86,11 @@ initial begin
           oled_counter = 0;
           if (oled_real_colour == 0) begin
             oled_ram[oled_x][oled_y] = 0;
-            $display(" Pixel(%d, %d) 0 is written into OLED RAM (%t)", oled_x, oled_y, $time);
+            //$display(" Pixel(%d, %d) 0 is written into OLED RAM (%t)", oled_x, oled_y, $time);
           end
           else begin
             oled_ram[oled_x][oled_y] = 1;
-            $display(" Pixel(%d, %d) 1 is written into OLED RAM (%t)", oled_x, oled_y, $time);
+            //$display(" Pixel(%d, %d) 1 is written into OLED RAM (%t)", oled_x, oled_y, $time);
           end
           if (oled_x == oled_X[7:0]) begin
             oled_x = oled_X[15:8];
@@ -210,6 +212,14 @@ initial begin
       7'b1111111: seg_digit_value2 = 8;
       7'b1111011: seg_digit_value2 = 9;
       default   : seg_digit_value2 = 0;
+    endcase
+
+    unique case (seg_data[0][7:1])
+      7'b0111101: seg_digit_value3 = 0;
+      7'b0001111: seg_digit_value3 = 1;
+      7'b0011000: seg_digit_value3 = 2;
+      7'b0001101: seg_digit_value3 = 3;
+      default   : seg_digit_value3 = 0;
     endcase
   end
 end

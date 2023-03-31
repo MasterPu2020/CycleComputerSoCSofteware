@@ -7,11 +7,6 @@
 //
 ///////////////////////////////////////////////////////////////////////
 
-// The following lines indicates that a file "stimulus.sv" exists and contains
-// custom stimulus information
-//
-`define stimulus ../system2/stimulus.sv
-
 // The following lines indicates that a stimulus time exists and contains
 // custom stimulus time information
 //
@@ -52,19 +47,19 @@
 //  synchronisation if you wish to control the choice of gates used in the
 //  synchroniser. 
 //
-//`define synchronise_reset_within_wrapper
+`define synchronise_reset_within_wrapper
 
 // The following line indicates that the stimulus should ensure that the
 //  hall effect inputs and button signals are well behaved to avoid setup
 //  and hold violations during simulation.
 //
-// `define sanitise_input
+ `define sanitise_input
 
 // The following line specifies a start-up time for the cycle computer
 // After reset, the testbench should wait for this time before expecting
 // the computer to work
 //
-`define start_up_time 1s
+`define start_up_time 100ms
 
 // Uncomment the following line to indicate that your bicycle computer
 //  supports an OLED display
