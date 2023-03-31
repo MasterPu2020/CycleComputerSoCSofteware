@@ -42,6 +42,15 @@ task DisplaySegment;
   DisplayRefresh_Seg = 0;
 endtask
 
+task DisplayOLED;
+  #1s;
+  DisplayRefresh = 0;
+  @(posedge Clock);
+  DisplayRefresh = 1;
+  @(posedge Clock);
+  DisplayRefresh = 0;
+endtask
+
 //------------------------------------------------------------------------------
 // Fake OLED Display: Get Area and Colour
 //------------------------------------------------------------------------------
