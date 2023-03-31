@@ -2,7 +2,7 @@
 // Titile:  Cortex M0 Software Main C File
 // Author:  Clark Pu & ChangXin Shen
 // Team:    C4 Chip Designed
-// Version: 6.0
+// Version: 6.2 New OLED Manager
 // Verification: Not Verified
 // Comment: Redesigned by Clark
 //------------------------------------------------------------------------------
@@ -19,41 +19,47 @@
 #define AHB_TIMER_BASE           0x80000000
 #define AHB_SENSOR_MANAGER_BASE  0x60000000
 #define AHB_BUTTON_MANAGER_BASE  0x40000000
-//------------------------------------------------------------------------------
-// OLED[0]        DnC            0xC0000000
-// OLED[1]        Ready flag     0xC0000004
-// OLED[2]        8 bit data     0xC0000008
-volatile uint32_t* OLED    = (volatile uint32_t*) AHB_OLEDR_MANAGER_BASE;
-bool oled_ready(void){return   OLED[1]?true:false;}
-void  oled_send(uint32_t Data, bool DnC){while(!oled_ready()); OLED[0] = DnC?1:0; OLED[2] = Data; OLED[1] = 0; return;}
-//------------------------------------------------------------------------------
+
+// OLED MANAGER
+// Memory Map:
+// C[0]:     | Mode       : 0: Auto, 1: Normal
+// C[1]:     | Normal Mode: 2 bit D/C: 1/0 2: self update
+// C[2]:     | Normal Mode: 1 bit Ready flag.
+// C[3]:     | Normal Mode: 8 bit data.
+// C[4 + n]: | Pixel Block: 0 ~ n. Write Only
+volatile uint32_t* OLED = (volatile uint32_t*) AHB_OLEDR_MANAGER_BASE;
+bool oled_ready(void){return OLED[2]?true:false;}
+void  oled_mode(bool IsNormal){OLED[0] = IsNormal?1:0; return;}
+void  oled_send(uint32_t Data, bool DnC){while(!oled_ready()); OLED[1] = DnC?1:0; OLED[3] = Data; OLED[2] = 0; return;}
+void oled_block(int BlockID, uint32_t ResourceID){OLED[BlockID + 4] = ResourceID; return;}
+
+// SEGMENT MANAGER
 // SEGMENT[0]     Fraction       0xA0000000
 // SEGMENT[1]     Integer        0xA0000004
 // SEGMENT[2]     Mode           0xA0000008
 volatile uint32_t* SEGMENT = (volatile uint32_t*) AHB_SEGMENT_MANAGER_BASE;
 void display_segment(uint32_t Mode, uint32_t Integer, uint32_t Fraction){SEGMENT[0] = Fraction; SEGMENT[1] = Integer; SEGMENT[2] = Mode; return;}
-//------------------------------------------------------------------------------
-// TIMER[0]       Long           0x80000000 
-// TIMER[1]       Flag           0x80000004 
-volatile uint32_t* TIMER   = (volatile uint32_t*) AHB_TIMER_BASE;
-bool             time_up(void){return  TIMER[1]?true:false;}
-uint32_t  read_trip_time(void){return  TIMER[0];}
-void        claim_update(void){TIMER[1] = 0; return;}
-void    clear_trip_timer(void){TIMER[0] = 0; return;}
-//------------------------------------------------------------------------------
-// SENSOR[0]      Fork           0x60000000
-// SENSOR[1]      Delta Crank    0x60000004
-// SENSOR[2]      Delta Fork     0x60000008
-// SENSOR[3]      Crank Time     0x6000000A
-// SENSOR[4]      Fork  Time     0x60000010
+
+// TIMER
+// 8000_0000: 32bit | Trip timer records less than 18 hours
+// 8000_0004: 32bit | 3 second flag
+volatile uint32_t* TIMER = (volatile uint32_t*) AHB_TIMER_BASE;
+bool            time_up(void){return  TIMER[1]?true:false;}
+uint32_t read_trip_time(void){return  TIMER[0];}
+void       claim_update(void){TIMER[1] = 0; return;}
+void   clear_trip_timer(void){TIMER[0] = 0; return;}
+
+// SENSOR MANAGER
+// 6000_0000: 32bit | Recording triggerd fork cycle number
+// 6000_0004: 32bit | Recording triggerd 1 cycle crank time
+// 6000_0008: 32bit | Recording triggerd 1 cycle fork time
 volatile uint32_t* SENSOR  = (volatile uint32_t*) AHB_SENSOR_MANAGER_BASE;
-uint32_t  read_delta_fork(void){return SENSOR[2];}
-uint32_t read_delta_crank(void){return SENSOR[1];}
-uint32_t        read_fork(void){return SENSOR[0];}
-void           clear_fork(void){SENSOR[0] = 0; return;}
-float     delta_fork_time(void){return (float)(SENSOR[4]) / 1000;}
-float    delta_crank_time(void){return (float)(SENSOR[3]) / 1000;}
-//------------------------------------------------------------------------------
+uint32_t          read_fork(void){return SENSOR[0];}
+void             clear_fork(void){SENSOR[0] = 0; return;}
+float  read_delta_fork_time(void){return (float)(SENSOR[2]);}
+float read_delta_crank_time(void){return (float)(SENSOR[1]);}
+
+// BUTTON MANAGER
 // BUTTON[0]      DayNight       0x40000000
 // BUTTON[1]      Mode           0x40000004
 // BUTTON[2]      Trip           0x40000008
@@ -69,30 +75,6 @@ bool   press_d_mode(void){return BUTTON[0]?true:false;}
 //------------------------------------------------------------------------------
 // Compound Functions
 //------------------------------------------------------------------------------
-
-// start value must less than end value!
-void oled_fill_area(uint8_t x_start, uint8_t y_start, uint8_t x_end, uint8_t y_end, bool clear){
-  uint8_t colour_0 = 0x06, colour_1 = 0x3C;
-  if (clear){
-    colour_0 = 0xFF;
-    colour_1 = 0xFF;
-  }
-  oled_send(0x15,  false); // setting column
-  oled_send(x_start,true);
-  oled_send(x_end,  true);
-  oled_send(0x75,  false); // setting row
-  oled_send(y_start,true);
-  oled_send(y_end,  true);
-  // Fill the area with blue colour
-  oled_send(0x5C,  false); // setting pixels
-  for (int i = x_start; i <= x_end; i++){
-    for (int j = y_start; j <= y_end; j++){
-      oled_send(colour_0, true);
-      oled_send(colour_1, true);
-    }
-  }
-  return;
-}
 
 uint32_t int2bcd(uint32_t value){
     uint32_t bcd = 0, shift = 0;
@@ -146,12 +128,12 @@ int main(void) {
   uint32_t mode, wheel_girth;
   uint32_t 
     present_time, last_time, 
-    delta_crank,
-    delta_fork,
     present_fork, 
     present_cadence;
   float 
-    delta_distance, present_distance, 
+    delta_crank_time,
+    delta_fork_time,
+    present_distance, 
     present_speed;
 
   // general initiate
@@ -162,9 +144,12 @@ int main(void) {
   display_segment(mode, 0, 0);
 
   // oled initiate
-  oled_send(0xAE,false); // fill white
-  oled_send(0xAF,false); // light up
-  oled_fill_area(10,10,20,20,false); // fill a blue square
+  int test_change = 1;
+  oled_mode(true);
+  oled_send(0xAA, true);
+  for (int i = 0; i < 32; i++)
+    oled_block(i, test_change);
+  oled_mode(false);
 
   // process start
   while(1) {
@@ -176,7 +161,8 @@ int main(void) {
         wheel_girth = wait_for_wheel_girth(wheel_girth);
       else if (check_trip() != 0){
         clear_fork();
-        clear_trip_timer(); 
+        clear_trip_timer();
+        last_time = 0;
       } 
       else if (press_d_mode())
         is_night = ~ is_night;
@@ -190,10 +176,10 @@ int main(void) {
     // II. Refresh Time, Speed, Distance, Cadence.
     
     // 1. Time Stamp Data Read
-    present_time = read_trip_time();
-    present_fork = read_fork();
-    delta_fork   = read_delta_fork();
-    delta_crank  = read_delta_crank();
+    present_time     = read_trip_time();
+    present_fork     = read_fork();
+    delta_fork_time  = read_delta_fork_time();
+    delta_crank_time = read_delta_crank_time();
     claim_update();
 
     // 2. Calculate
@@ -202,14 +188,19 @@ int main(void) {
     present_distance = (float)(present_fork * wheel_girth) / 1e6 + 0.01; // Number 0.01 is a bias.
     
     // Get speed (unit: km/h) : present_speed < 99.99
-    delta_distance = (float)(delta_fork * wheel_girth) / 1e6;
-    present_speed = (delta_distance * 3600) / delta_fork_time();
+    if (delta_fork_time < 2990)
+      present_speed = 3.6 * wheel_girth / delta_fork_time;
+    else
+      present_speed = 0;
 
     // Get cadence (unit: round/second) : present_cadence < 999
-    present_cadence = (uint32_t)(delta_crank * 12 / delta_crank_time()) * 5; // Precision: 5 round
+    if (delta_crank_time < 2990)
+      present_cadence = (uint32_t)(12 / (delta_crank_time / 1000)) * 5; // Precision: 5 round
+    else
+      present_cadence = 0;
 
     // Get present time (unit: second)
-    if (delta_distance == 0) // if bicycle stopped
+    if (delta_fork_time > 2990) // if bicycle stopped
       present_time = last_time;
     last_time = present_time;
 
@@ -236,8 +227,12 @@ int main(void) {
     display_segment(mode, int2bcd(display_int), int2bcd(display_frac));
 
     // 4. Refresh OLED
-    // Test with 100 pixels
-    oled_fill_area(0,0,10,10,false); // fill a square
-
+    // Over than 3s Test
+    if (test_change > 8)
+      test_change = 0;
+    else
+      test_change ++;
+    for (int i = 0; i < 32; i++)
+        oled_block(i, test_change);
   }
 }
