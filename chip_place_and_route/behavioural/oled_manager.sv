@@ -3,8 +3,8 @@
 // Titile:  OLED Manager Behavioural
 // Author:  Clark Pu
 // Team:    C4 Chip Designed
-// Version: 5.0
-// Verification: Not Verified
+// Version: 5.1
+// Verification: Verified
 // Comment: Super large and smart manager for super slow clock
 //------------------------------------------------------------------------------
 
@@ -45,10 +45,10 @@ timeunit 1ns; timeprecision 100ps;
 //------------------------------------------------------------------------------
 
 localparam 
-  BlockAmoutWidth    = 3,
-  BlockAmout         = 2**(BlockAmoutWidth + 1) - 1,    // 16 bit
+  BlockAmoutWidth    = 4,
+  BlockAmout         = 2**(BlockAmoutWidth + 1) - 1,     // 32 bit
   ResourceAmoutWidth = 4,
-  ResourceAmout      = 2**(ResourceAmoutWidth + 1) - 1, // 32 bit
+  ResourceAmout      = 2**(ResourceAmoutWidth + 1) - 1,  // 32 bit
   PictureHeight      = 13,
   PictureWidth       = 8,
   ResourceWidth      = PictureHeight * PictureWidth - 1; // 104 bit
@@ -60,13 +60,13 @@ logic [7:0] normal_data;
 logic [ResourceAmoutWidth:0] block_ram [BlockAmout:0];
 
 //------------------------------------------------------------------------------
-// Process registers
+// Process Registers
 //------------------------------------------------------------------------------
 
 // AHB Control registers
 localparam 
   NoTransfer = 2'b00,
-  MemoryWidth = 4;
+  MemoryWidth = BlockAmoutWidth + 1;
 logic ahb_write;
 logic [MemoryWidth:0] ahb_addr;
 
@@ -95,29 +95,51 @@ logic auto_dnc;        // combinational
 
 // Command 8 bit
 localparam
-  SetX = 8'hFF,
-  SetY = 8'hFF,
-  SetPixel = 8'hFF;
+  SetX = 8'h15, // Column
+  SetY = 8'h75, // Row
+  SetPixel = 8'h5C;
 
 // Colours 16 bit
 localparam
-  ColourBlue0  = 8'h00,
-  ColourBlue1  = 8'h00,
-  ColourWhite0 = 8'hff,
-  ColourWhite1 = 8'hff;
+  ColourBlue0  = 8'h06,
+  ColourBlue1  = 8'h3C,
+  ColourWhite0 = 8'hFF,
+  ColourWhite1 = 8'hFF;
 
 // Locations 16 bit: Same address of RAM
 wire [15:0] location_rom [BlockAmout:0];
-assign location_rom[0] = 16'h0000;
-assign location_rom[1] = 16'h0000;
-assign location_rom[2] = 16'h0000;
-assign location_rom[3] = 16'h0000;
-assign location_rom[4] = 16'h0000;
-assign location_rom[5] = 16'h0000;
-assign location_rom[6] = 16'h0000;
-assign location_rom[7] = 16'h0000;
-assign location_rom[8] = 16'h0000;
-assign location_rom[9] = 16'h0000;
+assign location_rom[ 0] = 16'h0000;
+assign location_rom[ 1] = 16'h0000;
+assign location_rom[ 2] = 16'h0000;
+assign location_rom[ 3] = 16'h0000;
+assign location_rom[ 4] = 16'h0000;
+assign location_rom[ 5] = 16'h0000;
+assign location_rom[ 6] = 16'h0000;
+assign location_rom[ 7] = 16'h0000;
+assign location_rom[ 8] = 16'h0000;
+assign location_rom[ 9] = 16'h0000;
+assign location_rom[10] = 16'h0000;
+assign location_rom[11] = 16'h0000;
+assign location_rom[12] = 16'h0000;
+assign location_rom[13] = 16'h0000;
+assign location_rom[14] = 16'h0000;
+assign location_rom[15] = 16'h0000;
+assign location_rom[16] = 16'h0000;
+assign location_rom[17] = 16'h0000;
+assign location_rom[18] = 16'h0000;
+assign location_rom[19] = 16'h0000;
+assign location_rom[20] = 16'h0000;
+assign location_rom[21] = 16'h0000;
+assign location_rom[22] = 16'h0000;
+assign location_rom[23] = 16'h0000;
+assign location_rom[24] = 16'h0000;
+assign location_rom[25] = 16'h0000;
+assign location_rom[26] = 16'h0000;
+assign location_rom[27] = 16'h0000;
+assign location_rom[28] = 16'h0000;
+assign location_rom[29] = 16'h0000;
+assign location_rom[30] = 16'h0000;
+assign location_rom[31] = 16'h0000;
 
 // Pictures 8x13 bit: begin with 0 bit, end with 104 bit
 wire [ResourceWidth:0] resource_rom [ResourceAmout:0];
@@ -159,16 +181,17 @@ end
 always_comb begin
   auto_data = 0;
   auto_dnc = 1;
-  case (auto_control)
-    PixelCMD : begin auto_dnc = 0; auto_data = SetPixel; end
-    XCMD     : begin auto_dnc = 0; auto_data = SetX; end
-    YCMD     : begin auto_dnc = 0; auto_data = SetY; end
-    Pixel0   : auto_data = resource_rom[resource_rom_addr][pixel_pointer]?ColourBlue0:ColourWhite0;
-    Pixel1   : auto_data = resource_rom[resource_rom_addr][pixel_pointer]?ColourBlue1:ColourWhite1;
-    xStart   : auto_data = location_rom[block_ram_addr][ 7:0];
-    yStart   : auto_data = location_rom[block_ram_addr][15:8];
-    xEnd     : auto_data = location_rom[block_ram_addr][ 7:0] + (PictureWidth - 1);
-    yEnd     : auto_data = location_rom[block_ram_addr][15:8] + (PictureHeight - 1);
+  case (auto_control) // "One-cycle-ahead" value
+    Start    : begin auto_dnc = 0; auto_data = SetX; end
+    XCMD     : auto_data = location_rom[block_ram_addr][ 7:0];
+    xStart   : auto_data = location_rom[block_ram_addr][ 7:0] + (PictureWidth - 1);
+    xEnd     : begin auto_dnc = 0; auto_data = SetY; end
+    YCMD     : auto_data = location_rom[block_ram_addr][15:8];
+    yStart   : auto_data = location_rom[block_ram_addr][15:8] + (PictureHeight - 1);
+    yEnd     : begin auto_dnc = 0; auto_data = SetPixel; end
+    PixelCMD : auto_data = resource_rom[resource_rom_addr][pixel_pointer]?ColourBlue0:ColourWhite0;
+    Pixel0   : auto_data = resource_rom[resource_rom_addr][pixel_pointer]?ColourBlue1:ColourWhite1;
+    Pixel1   : auto_data = resource_rom[resource_rom_addr][pixel_pointer]?ColourBlue0:ColourWhite0;
   endcase
 end
 
@@ -192,6 +215,7 @@ always_ff @(posedge HCLK, negedge HRESETn) begin
   if (!HRESETn) begin
     // Mode Control
     mode <= 0;
+    normal_data <= 0;
     // SDI Data
     state <= Wait;
     ready <= 1;
@@ -218,6 +242,7 @@ always_ff @(posedge HCLK, negedge HRESETn) begin
       Wait: begin
         if (mode) begin // normal mode
           data <= normal_data;
+          search_ram_addr <= 0;
           if (ready == 0) 
             state <= ChangeData;
         end
@@ -239,6 +264,7 @@ always_ff @(posedge HCLK, negedge HRESETn) begin
               if (pixel_pointer == ResourceWidth) begin
                 oled_block_ram[block_ram_addr] <= resource_rom_addr;
                 auto_control <= Finished;
+                search_ram_addr <= 0;
               end
               else begin
                 auto_control <= Pixel0;
@@ -258,6 +284,7 @@ always_ff @(posedge HCLK, negedge HRESETn) begin
                 search_ram_addr <= search_ram_addr + 1;
             end
           endcase
+          // One cycle delayed, so it needs combinational logic provide an one-cycle-ahead value
           data <= auto_data;
           dnc <= auto_dnc;
           if (auto_control != Finished)

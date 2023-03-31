@@ -2,7 +2,7 @@
 // Titile:  Cortex M0 Software Main C File
 // Author:  Clark Pu & ChangXin Shen
 // Team:    C4 Chip Designed
-// Version: 6.1
+// Version: 6.2 New OLED Manager
 // Verification: Not Verified
 // Comment: Redesigned by Clark
 //------------------------------------------------------------------------------
@@ -26,12 +26,12 @@
 // C[1]:     | Normal Mode: 2 bit D/C: 1/0 2: self update
 // C[2]:     | Normal Mode: 1 bit Ready flag.
 // C[3]:     | Normal Mode: 8 bit data.
-// C[3 + n]: | Pixel Block: 0 ~ n. Write Only
+// C[4 + n]: | Pixel Block: 0 ~ n. Write Only
 volatile uint32_t* OLED = (volatile uint32_t*) AHB_OLEDR_MANAGER_BASE;
 bool oled_ready(void){return OLED[2]?true:false;}
-void oled_switch_mode(bool IsAuto){OLED[0] = IsAuto?1:0; return;}
-void oled_send(uint32_t Data, bool DnC){while(!oled_ready()); OLED[1] = DnC?1:0; OLED[3] = Data; OLED[2] = 0; return;}
-void oled_block(int address, uint32_t Data){OLED[address + 4] = Data; return;}
+void  oled_mode(bool IsNormal){OLED[0] = IsNormal?1:0; return;}
+void  oled_send(uint32_t Data, bool DnC){while(!oled_ready()); OLED[1] = DnC?1:0; OLED[3] = Data; OLED[2] = 0; return;}
+void oled_block(int BlockID, uint32_t ResourceID){OLED[BlockID + 4] = ResourceID; return;}
 
 // SEGMENT MANAGER
 // SEGMENT[0]     Fraction       0xA0000000
@@ -44,20 +44,20 @@ void display_segment(uint32_t Mode, uint32_t Integer, uint32_t Fraction){SEGMENT
 // 8000_0000: 32bit | Trip timer records less than 18 hours
 // 8000_0004: 32bit | 3 second flag
 volatile uint32_t* TIMER = (volatile uint32_t*) AHB_TIMER_BASE;
-bool             time_up(void){return  TIMER[1]?true:false;}
-uint32_t  read_trip_time(void){return  TIMER[0];}
-void        claim_update(void){TIMER[1] = 0; return;}
-void    clear_trip_timer(void){TIMER[0] = 0; return;}
+bool            time_up(void){return  TIMER[1]?true:false;}
+uint32_t read_trip_time(void){return  TIMER[0];}
+void       claim_update(void){TIMER[1] = 0; return;}
+void   clear_trip_timer(void){TIMER[0] = 0; return;}
 
 // SENSOR MANAGER
 // 6000_0000: 32bit | Recording triggerd fork cycle number
 // 6000_0004: 32bit | Recording triggerd 1 cycle crank time
 // 6000_0008: 32bit | Recording triggerd 1 cycle fork time
 volatile uint32_t* SENSOR  = (volatile uint32_t*) AHB_SENSOR_MANAGER_BASE;
-uint32_t        read_fork(void){return SENSOR[0];}
-void           clear_fork(void){SENSOR[0] = 0; return;}
-float     read_delta_fork_time(void){return (float)(SENSOR[2]);}
-float    read_delta_crank_time(void){return (float)(SENSOR[1]);}
+uint32_t          read_fork(void){return SENSOR[0];}
+void             clear_fork(void){SENSOR[0] = 0; return;}
+float  read_delta_fork_time(void){return (float)(SENSOR[2]);}
+float read_delta_crank_time(void){return (float)(SENSOR[1]);}
 
 // BUTTON MANAGER
 // BUTTON[0]      DayNight       0x40000000
@@ -144,8 +144,12 @@ int main(void) {
   display_segment(mode, 0, 0);
 
   // oled initiate
-  oled_switch_mode(true);
-  oled_block(3, 3); // block_ram[3] = 3 -> resource_rom[3] = 104'hff;
+  int test_change = 1;
+  oled_mode(true);
+  oled_send(0xAA, true);
+  for (int i = 0; i < 32; i++)
+    oled_block(i, test_change);
+  oled_mode(false);
 
   // process start
   while(1) {
@@ -223,7 +227,12 @@ int main(void) {
     display_segment(mode, int2bcd(display_int), int2bcd(display_frac));
 
     // 4. Refresh OLED
-
-
+    // Over than 3s Test
+    if (test_change > 8)
+      test_change = 0;
+    else
+      test_change ++;
+    for (int i = 0; i < 32; i++)
+        oled_block(i, test_change);
   }
 }
