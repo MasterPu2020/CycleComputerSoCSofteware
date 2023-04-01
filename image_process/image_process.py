@@ -12,9 +12,12 @@ import os
 
 def generate_template(file_path):
     image = Image.new('RGB', (8, 13), (0, 196, 226))  # blue
-    for row in range(0, int(image.size[0] / 2)):
-        for col in range(0, int(image.size[1] / 2)):
-            image.putpixel((row, col), (255, 255, 255))  # white
+    for y in range(0, 13):
+        for x in range(3, 5):
+            image.putpixel((x, y), (255, 255, 255))  # white
+    for y in range(3, 5):
+        for x in range(0, 8):
+            image.putpixel((x, y), (255, 255, 255))  # white
     # image.show()  # debug
     image.save(file_path)
 
@@ -24,9 +27,9 @@ def extract_bit_list(file_path):
     if image.size[0] == 8 and image.size[1] == 13:
         # image.show()  # debug
         image_data = ''
-        for row in range(0, image.size[0]):
-            for col in range(0, image.size[1]):
-                red, green, blue = image.getpixel((row, col))
+        for y in range(0, image.size[1]):
+            for x in range(0, image.size[0]):
+                red, green, blue = image.getpixel((x, y))
                 if blue > 220 and red < 200 and green < 200:  # colour is blue
                     image_data += '1'
                 elif blue > 250 and red > 250 and green > 250:  # colour is white
@@ -60,6 +63,7 @@ for file in os.listdir(path):
             print(' ERROR: Image size not correct, file location: ', path + '/' + file)
             error += 1
         else:
+            print(data)
             data_reverse = '0b' + data[::-1]
             bit_stream = hex(int(data_reverse, 2)).upper()[2:]
             print(' MESSAGE: [File Number]', data_index, ' [File Name]', file, ' [Bit Stream]', bit_stream, ' [Length/Bit]', len(data))

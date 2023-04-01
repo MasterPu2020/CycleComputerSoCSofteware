@@ -144,16 +144,17 @@ assign location_rom[31] = 16'h0000;
 
 // Pictures 8x13 bit: begin with 0 bit, end with 104 bit
 wire [ResourceWidth:0] resource_rom [ResourceAmout:0];
-assign resource_rom[ 1] = 104'hFFFFFFFFFFFFFFE07F03F81FC0; // File Name: template.png
-assign resource_rom[ 2] = 104'hFFFFFFFFFFFFFFE07F03F81FC0; // File Name: template.png
-assign resource_rom[ 3] = 104'hFFFFFFFFFFFFFFE07F03F81FC0; // File Name: template.png
-assign resource_rom[ 4] = 104'hFFFFFFFFFFFFFFE07F03F81FC0; // File Name: template.png
-assign resource_rom[ 5] = 104'hFFFFFFFFFFFFFFE07F03F81FC0; // File Name: template.png
-assign resource_rom[ 6] = 104'hFFFFFFFFFFFFFFE07F03F81FC0; // File Name: template.png
-assign resource_rom[ 7] = 104'hFFFFFFFFFFFFFFE07F03F81FC0; // File Name: template.png
-assign resource_rom[ 8] = 104'hFFFFFFFFFFFFFFE07F03F81FC0; // File Name: template.png
-assign resource_rom[ 9] = 104'hFFFFFFFFFFFFFFE07F03F81FC0; // File Name: template.png
-assign resource_rom[10] = 104'hFFFFFFFFFFFFFFE07F03F81FC0; // File Name: template.png
+assign resource_rom[ 0] = 104'h0;
+assign resource_rom[ 1] = 104'hE7E7E7E7E7E7E7E70000E7E7E7; // File Name: template.png
+assign resource_rom[ 2] = 104'h0;
+assign resource_rom[ 3] = 104'hE7E7E7E7E7E7E7E70000E7E7E7; // File Name: template.png
+assign resource_rom[ 4] = 104'h0;
+assign resource_rom[ 5] = 104'hE7E7E7E7E7E7E7E70000E7E7E7; // File Name: template.png
+assign resource_rom[ 6] = 104'h0;
+assign resource_rom[ 7] = 104'hE7E7E7E7E7E7E7E70000E7E7E7; // File Name: template.png
+assign resource_rom[ 8] = 104'h0; 
+assign resource_rom[ 9] = 104'hE7E7E7E7E7E7E7E70000E7E7E7; // File Name: template.png
+assign resource_rom[10] = 104'h0; 
 
 //------------------------------------------------------------------------------
 // AHB Signal
