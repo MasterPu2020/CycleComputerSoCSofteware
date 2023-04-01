@@ -3,8 +3,8 @@
 // Titile:  OLED Manager Behavioural
 // Author:  Clark Pu
 // Team:    C4 Chip Designed
-// Version: 5.1
-// Verification: Verified
+// Version: 5.2
+// Verification: Verified by Clark
 // Comment: Super large and smart manager for super slow clock
 //------------------------------------------------------------------------------
 
@@ -259,18 +259,18 @@ always_ff @(posedge HCLK, negedge HRESETn) begin
             yStart   : auto_control <= yEnd;
             yEnd     : auto_control <= PixelCMD;
             PixelCMD : auto_control <= Pixel0;
-            Pixel0   : auto_control <= Pixel1;
-            Pixel1   : begin
+            Pixel0   : begin
               if (pixel_pointer == ResourceWidth) begin
                 oled_block_ram[block_ram_addr] <= resource_rom_addr;
                 auto_control <= Finished;
                 search_ram_addr <= 0;
               end
               else begin
-                auto_control <= Pixel0;
+                auto_control <= Pixel1;
                 pixel_pointer <= pixel_pointer + 1;
               end
             end
+            Pixel1   : auto_control <= Pixel0;
             Finished : begin
               // If an OLED block (a resource picture) is out of date, update the block according to the privilege.
               if (block_ram[search_ram_addr] != oled_block_ram[search_ram_addr]) begin
