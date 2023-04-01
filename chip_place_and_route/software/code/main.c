@@ -103,7 +103,7 @@ uint32_t wait_for_wheel_girth(uint32_t wheel_girth) {
   while (1){
     if (check_button()) {
       press_times += check_mode();
-      if (press_times == 3)
+      if (press_times > 2)
         return wheel_girth;
       if (press_times == 0)
         wheel_3 = (wheel_3 + check_trip()) % 10;
@@ -143,10 +143,35 @@ int main(void) {
   mode = 0xA;
   display_segment(mode, 0, 0);
 
-  // oled initiate
+  // oled software initiate
+  oled_mode(true); // normal 8 bit sending mode
+  oled_send(0xFD, false); // CMD: unlock all commands
+  oled_send(0xB1, true);
+  oled_send(0xCA, false); // CMD: set MUX ratio to 128*96 OLED screen
+  oled_send(0x5F, true);
+  oled_send(0xA2, false); // CMD: set start row
+  oled_send(0x00, true); 
+  oled_send(0xA0, false); // CMD: set colour format
+  oled_send(0x74, true);
+  oled_send(0xC1, false); // CMD: set colour contrast
+  oled_send(0xC8, true);
+  oled_send(0x80, true);
+  oled_send(0xC8, true);
+  oled_send(0xAF, false); // CMD: display on (Debug)
+  oled_send(0x15, false); // CMD: set col (Debug)
+  oled_send(0x00, true);  // (Debug)
+  oled_send(0x7F, true);  // (Debug)
+  oled_send(0x75, false); // CMD: set row (Debug)
+  oled_send(0x00, true);  // (Debug)
+  oled_send(0x5F, true);  // (Debug)
+  oled_send(0x5C, false); // CMD: send pixels
+  for (int i = 0; i < 24576; i++)
+    oled_send(0xFF, true); // DATA: white colour0, colour1
+  
+  // oled auto initiate
+  oled_mode(false); // auto block update mode
+  // force OLED manager in busy status
   int test_change = 1;
-  oled_mode(true);
-  oled_send(0xAA, true);
   for (int i = 0; i < 32; i++)
     oled_block(i, test_change);
   oled_mode(false);
@@ -176,6 +201,7 @@ int main(void) {
     // II. Refresh Time, Speed, Distance, Cadence.
     
     // 1. Time Stamp Data Read
+
     present_time     = read_trip_time();
     present_fork     = read_fork();
     delta_fork_time  = read_delta_fork_time();

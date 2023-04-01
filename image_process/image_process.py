@@ -40,7 +40,7 @@ def extract_bit_list(file_path):
 
 
 path = './Assets'
-generate_template(path + '/template.png')
+# generate_template(path + '/template.png')
 error = 0
 data_index = 0
 rom_code = []
