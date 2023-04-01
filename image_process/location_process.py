@@ -34,9 +34,9 @@ for pair in locations:
     if len(y) != 2:
         y = '0' + y
     if index < 10:
-        code += "assign location_rom[ " + str(index) + "] = 16'h" + x + y + ";\n"
+        code += "assign location_rom[ " + str(index) + "] = 16'h" + y + x + ";\n"
     else:
-        code += "assign location_rom[" + str(index) + "] = 16'h" + x + y + ";\n"
+        code += "assign location_rom[" + str(index) + "] = 16'h" + y + x + ";\n"
     index += 1
 print(code)
 with open('location.sv', 'w') as sv:

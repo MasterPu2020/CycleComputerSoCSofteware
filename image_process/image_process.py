@@ -34,13 +34,13 @@ def extract_bit_list(file_path):
                 red = image.getpixel((x, y))[0]
                 green = image.getpixel((x, y))[1]
                 blue = image.getpixel((x, y))[2]
-                if blue > 220 and red < 200 and green < 200:  # colour is blue
+                if blue > 210 and red < 100 and green < 210:  # colour is blue
                     image_data += '1'
-                elif blue > 250 and red > 250 and green > 250:  # colour is white
+                elif blue > 230 and red > 230 and green > 230:  # colour is white
                     image_data += '0'
                 else:  # colour unknown
                     image_data += 'x'
-                    print(' WARNING: Pixel colour unknown, file location: ', file_path)
+                    print(' WARNING: Pixel colour unknown, file location: ', file_path, '. Colour is ', image.getpixel((x, y)))
         return image_data
     else:
         return 'size not correct'
@@ -51,11 +51,12 @@ generate_template(path + '/empty.png')
 error = 0
 data_index = 0
 rom_code = []
+c_code = []
 all_image_data_log = []
 for file in os.listdir(path):
     if file.endswith('.png') or file.endswith('.jpg'):
         data = extract_bit_list(path + '/' + file)
-        all_image_data_log.append('File name: ' + file + 'Bit Stream: ' + data)
+        all_image_data_log.append('File name: ' + file + ' Bit Stream: ' + data)
         all_pixel_is_known = True
         for bit in data:
             if bit == 'x':
@@ -74,12 +75,13 @@ for file in os.listdir(path):
                 for empty_bit in range(26 - len(bit_stream)):
                     bit_stream = '0' + bit_stream
             # print(len(bit_stream))  # Debug
-            print(' MESSAGE: [File Number]', data_index, ' [File Name]', file, ' [Bit Stream]', bit_stream, ' [Length/Bit]', len(data))
+            # print(' MESSAGE: [File Number]', data_index, ' [File Name]', file, ' [Bit Stream]', bit_stream, ' [Length/Bit]', len(data))
             if data_index < 10:
                 str_index = ' ' + str(data_index)
             else:
                 str_index = str(data_index)
             rom_code.append("assign resource_rom[" + str_index + "] = 104'h" + bit_stream + '; // File Name: ' + file + '\n')
+            c_code.append("# define " + "IMG_" + file.strip('.png') + " " + str_index + '\n')
             data_index += 1
 
 data_index = 0
@@ -94,4 +96,7 @@ else:
         for line in rom_code:
             data_index += 1
             sv.write(line)
+    with open('define.c', 'w') as c:
+        for line in c_code:
+            c.write(line)
     print('\n Finished: Generate', data_index, 'line(s) system verilog code.')

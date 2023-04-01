@@ -254,7 +254,7 @@ int main(void) {
 
     // 4. Refresh OLED
     // Over than 3s Test
-    if (test_change > 13)
+    if (test_change > 31)
       test_change = 0;
     else
       test_change ++;
