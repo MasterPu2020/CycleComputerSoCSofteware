@@ -8,19 +8,24 @@
 
 ***
 
-### chip behavioural 文件夹下是 "Behavioural milestone (DDL)" 的工作文件夹
+### image_process 文件夹下是 python图像处理工程文件夹与OLED图像素材
+
+- [pyhton图像处理代码](./image_process/image_process.py)
+- [图像素材库](./image_process/Assets)
+
+### chip behavioural 文件夹下是 "Behavioural milestone (DDL)" 的工作文件
 
 - [SoC硬件代码](./chip%20behavioural/behavioural)
 - [SoC软件代码](./chip%20behavioural/software/code/main.c)
 - [SoC仿真文件](./chip%20behavioural/system2/stimulus.sv)
 
-### chip gate level 文件夹下是 "Gate level milestone (DDL)" 的工作文件夹
+### chip gate level 文件夹下是 "Gate level milestone (DDL)" 的工作文件
 
 - [SoC硬件代码](./chip%20gate%20level/behavioural)
 - [SoC软件代码](./chip%20gate%20level/software/code/main.c)
 - [SoC仿真文件](./chip%20gate%20level/system2/stimulus.sv)
 
-### chip_palce_and_route 文件夹下是 "Palce And Route milestone (DDL)" 的工作文件夹
+### chip_palce_and_route 文件夹下是 "Palce And Route milestone (DDL)" 的工作文件
 
 - [SoC综合脚本(有scan path)](./chip_place_and_route/synthesis/synthesis_dft.tcl)
 - [SoC硬件代码](./chip_place_and_route/behavioural/)
