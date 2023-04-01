@@ -1,4 +1,10 @@
 
+# ---------------------------------------------------------------------
+# Title: ELEC6231 VLSI Design Project 2023 : OLED Block Location Process
+# Author: Clark PU
+# Version: 1.0  2023/Fool's Day
+# Comment: Not a submission file. All rights remained by Clark Pu
+# ---------------------------------------------------------------------
 
 locations = []
 last_x = 0

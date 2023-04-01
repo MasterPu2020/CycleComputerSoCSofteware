@@ -1,6 +1,6 @@
 
 # ---------------------------------------------------------------------
-# Title: ELEC6231 VLSI Design Project 2023 : OLED Image Block Process
+# Title: ELEC6231 VLSI Design Project 2023 : OLED Block Image Process
 # Author: Clark PU
 # Version: 1.0  2023/Fool's Day
 # Comment: Not a submission file. All rights remained by Clark Pu
