@@ -102,8 +102,8 @@ localparam
 // Colours 16 bit
 localparam
   // Sending -> {ColourBlue0, ColourBlue1} = {Red, Green, Blue}
-  ColourBlue0  = 8'h3C,
-  ColourBlue1  = 8'h06,
+  ColourBlue0  = 8'h06,
+  ColourBlue1  = 8'h3C,
   ColourWhite0 = 8'hFF,
   ColourWhite1 = 8'hFF;
 
