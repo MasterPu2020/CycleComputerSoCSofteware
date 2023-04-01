@@ -177,7 +177,7 @@ end
       for (integer i=0;i<error_speed;i++) begin
         $display("Real speed = %fkmh. Error speed = %fkmh. Speed error number: %d.", real'(ref_speed_value[i])/100.0, real'(error_speed_value[i])/100.0, i);
       end
-      for (integer i=0;i<error_speed;i++) begin
+      for (integer i=0;i<error_cadence;i++) begin
         $display("Real cadence = %drpm. Error cadence = %drpm. Cadence error number: %d.", ref_cadence_value[i], error_speed_value[i]/100.0, i);
       end
     end
@@ -193,7 +193,7 @@ end
     DisplaySegment;
     $display("\n Real Odometer is %fkm. Segment display is %fkm (fork_times = %d). (%t)", odometer/1000.0, seg_value, fork_times, $time);
     $display("------------------------------------------------------------------------------");
-    assert ((((odometer/1000.0) - seg_value) < 0.1) ||((seg_value - (odometer/1000.0)) < 0.1)) else begin
+    assert ((((odometer/1000.0) - seg_value) < 0.1) && ((seg_value - (odometer/1000.0)) < 0.1)) else begin
       error_sum       = error_sum       + 1;
       error_odometer  = error_odometer  + 1;
       error_odometer_value[error_odometer] = int'(seg_value*1000);
@@ -208,7 +208,7 @@ end
     DisplaySegment;
     $display("\n Real trip time is %fs. Segment display is %fs. (%t)", trip_time, seg_value*6000, $time);
     $display("------------------------------------------------------------------------------");
-    assert (((trip_time - seg_value*6000) < 60) || ((seg_value*6000 - trip_time) < 60)) else begin
+    assert (((trip_time - seg_value*6000) < 60) && ((seg_value*6000 - trip_time) < 60)) else begin
       error_sum       = error_sum       + 1;
       error_time      = error_time      + 1;
       error_time_value[error_time] = int'(seg_value*6000);
@@ -222,7 +222,7 @@ end
     DisplaySegment;
     $display("\n Real Speed is %fkm/h. Segment display is %fkm/h (ave speed = %dkm/h). (%t)", speed, seg_value, ave_speed*3.6, $time);
     $display("------------------------------------------------------------------------------");
-    assert (((speed - seg_value) < 0.1) || ((seg_value - speed) < 0.1)) else begin
+    assert (((speed - seg_value) < 0.1) && ((seg_value - speed) < 0.1)) else begin
       error_sum       = error_sum       + 1;
       error_speed     = error_speed     + 1;
       error_speed_value[error_speed] = int'(seg_value*100);
@@ -236,7 +236,7 @@ end
     DisplaySegment;
     $display("\n Real Cadence is %drpm. Segment display is %drpm (ave cadence = %d). (%t)", cadence, seg_value, ave_cadence, $time);
     $display("------------------------------------------------------------------------------");
-    assert (((cadence - seg_value) <= 5) || ((seg_value - cadence) <= 5)) else begin
+    assert (((cadence - seg_value) <= 5) && ((seg_value - cadence) <= 5)) else begin
       error_sum       = error_sum       + 1;
       error_cadence   = error_cadence   + 1;
       error_cadence_value[error_cadence] = int'(seg_value);
@@ -347,7 +347,7 @@ end
     initial begin
       StartUp;
 
-      CustomizeMode(0);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
+      CustomizeMode(0);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c)
 
       CustomizeSpeedCadence(20,150);
       for (int i=0;i<3;i++)
@@ -371,7 +371,7 @@ end
     initial begin
       StartUp;
 
-      CustomizeMode(1);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
+      CustomizeMode(1);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c)
 
       CustomizeSpeedCadence(20,150);
       #60s;
@@ -397,7 +397,7 @@ end
     initial begin
       StartUp;
 
-      CustomizeMode(1);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
+      CustomizeMode(1);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c)
 
       CustomizeSpeedCadence(0,0);
       for (int i = 0; i<3; i++)
@@ -419,7 +419,7 @@ end
     initial begin
       StartUp;
 
-      CustomizeMode(2);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
+      CustomizeMode(2);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c)
 
       CustomizeSpeedCadence(20,150);
       for (int i=0;i<10;i++)
@@ -443,21 +443,21 @@ end
     initial begin
       StartUp;
 
-      CustomizeMode(3);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
+      CustomizeMode(3);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c)
 
-      CustomizeSpeedCadence(20,15);
-      for (int i = 0; i<3; i++)
-        #1s $display("Running at %t", $time);
-      for (int i=0;i<3;i++)
-        #9s CadenceTest;
-
-      CustomizeSpeedCadence(20,20);
+      CustomizeSpeedCadence(20,30);
       for (int i = 0; i<3; i++)
         #1s $display("Running at %t", $time);
       for (int i=0;i<3;i++)
         #9s CadenceTest;
 
       CustomizeSpeedCadence(20,25);
+      for (int i = 0; i<3; i++)
+        #1s $display("Running at %t", $time);
+      for (int i=0;i<3;i++)
+        #9s CadenceTest;
+
+      CustomizeSpeedCadence(20,30);
       for (int i = 0; i<3; i++)
         #1s $display("Running at %t", $time);
       for (int i=0;i<3;i++)
@@ -496,17 +496,17 @@ end
       CustomizeSpeedCadence(70,80);
 
       // Odometer Test
-      CustomizeMode(0);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
+      CustomizeMode(0);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c)
       OdometerTest;
 
       // Speed Test
-      CustomizeMode(2);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
+      CustomizeMode(2);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c)
       for (int i = 0; i<5; i++)
         #1s $display("Running at %t", $time);
       SpeedTest;
 
       // Cadence Test
-      CustomizeMode(3);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
+      CustomizeMode(3);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c)
       for (int i = 0; i<5; i++)
         #1s $display("Running at %t", $time);
       for (int i = 0; i<5; i++)
@@ -519,19 +519,19 @@ end
       CustomizeSpeedCadence(50,100);
 
       // Odometer Test
-      CustomizeMode(0);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
+      CustomizeMode(0);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c)
       for (int i = 0; i<5; i++)
         #1s $display("Running at %t", $time);
       OdometerTest;
 
       // Speed Test
-      CustomizeMode(2);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
+      CustomizeMode(2);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c)
       for (int i = 0; i<5; i++)
         #1s $display("Running at %t", $time);
       SpeedTest;
 
       // Cadence Test
-      CustomizeMode(3);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
+      CustomizeMode(3);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c)
       for (int i = 0; i<10; i++)
         #1s $display("Running at %t", $time);
       CadenceTest;
