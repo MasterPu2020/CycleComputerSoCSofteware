@@ -110,10 +110,10 @@ localparam
 // Locations 16 bit: Same address of RAM
 wire [15:0] location_rom [BlockAmout:0];
 assign location_rom[ 0] = 16'h0000;
-assign location_rom[ 1] = 16'h0000;
-assign location_rom[ 2] = 16'h0000;
-assign location_rom[ 3] = 16'h0000;
-assign location_rom[ 4] = 16'h0000;
+assign location_rom[ 1] = 16'h0A0A;
+assign location_rom[ 2] = 16'h1A1A;
+assign location_rom[ 3] = 16'h2A2A;
+assign location_rom[ 4] = 16'h3A3A;
 assign location_rom[ 5] = 16'h0000;
 assign location_rom[ 6] = 16'h0000;
 assign location_rom[ 7] = 16'h0000;
@@ -144,16 +144,16 @@ assign location_rom[31] = 16'h0000;
 
 // Pictures 8x13 bit: begin with 0 bit, end with 104 bit
 wire [ResourceWidth:0] resource_rom [ResourceAmout:0];
-assign resource_rom[0] = 104'hff;
-assign resource_rom[1] = 104'hff;
-assign resource_rom[2] = 104'hff;
-assign resource_rom[3] = 104'hff;
-assign resource_rom[4] = 104'hff;
-assign resource_rom[5] = 104'hff;
-assign resource_rom[6] = 104'hff;
-assign resource_rom[7] = 104'hff;
-assign resource_rom[8] = 104'hff;
-assign resource_rom[9] = 104'hff;
+assign resource_rom[ 1] = 104'hFFFFFFFFFFFFFFE07F03F81FC0; // File Name: template.png
+assign resource_rom[ 2] = 104'hFFFFFFFFFFFFFFE07F03F81FC0; // File Name: template.png
+assign resource_rom[ 3] = 104'hFFFFFFFFFFFFFFE07F03F81FC0; // File Name: template.png
+assign resource_rom[ 4] = 104'hFFFFFFFFFFFFFFE07F03F81FC0; // File Name: template.png
+assign resource_rom[ 5] = 104'hFFFFFFFFFFFFFFE07F03F81FC0; // File Name: template.png
+assign resource_rom[ 6] = 104'hFFFFFFFFFFFFFFE07F03F81FC0; // File Name: template.png
+assign resource_rom[ 7] = 104'hFFFFFFFFFFFFFFE07F03F81FC0; // File Name: template.png
+assign resource_rom[ 8] = 104'hFFFFFFFFFFFFFFE07F03F81FC0; // File Name: template.png
+assign resource_rom[ 9] = 104'hFFFFFFFFFFFFFFE07F03F81FC0; // File Name: template.png
+assign resource_rom[10] = 104'hFFFFFFFFFFFFFFE07F03F81FC0; // File Name: template.png
 
 //------------------------------------------------------------------------------
 // AHB Signal

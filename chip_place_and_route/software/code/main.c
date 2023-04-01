@@ -147,10 +147,10 @@ int main(void) {
   oled_mode(true); // normal 8 bit sending mode
   oled_send(0xFD, false); // CMD: unlock all commands
   oled_send(0xB1, true);
-  // oled_send(0xCA, false); // CMD: set MUX ratio to 128*96 OLED screen
-  // oled_send(0x5F, true);
-  // oled_send(0xA2, false); // CMD: set start row
-  // oled_send(0x00, true);
+  oled_send(0xCA, false); // CMD: set MUX ratio to 128*96 OLED screen
+  oled_send(0x5F, true);
+  oled_send(0xA2, false); // CMD: set start row
+  oled_send(0x00, true); 
   oled_send(0xA0, false); // CMD: set colour format
   oled_send(0x74, true);
   oled_send(0xC1, false); // CMD: set colour contrast
@@ -158,21 +158,21 @@ int main(void) {
   oled_send(0x80, true);
   oled_send(0xC8, true);
   oled_send(0xAF, false); // CMD: display on (Debug)
-  // oled_send(0x15, false); // CMD: set col (Debug)
-  // oled_send(0x00, true);  // (Debug)
-  // oled_send(0x7F, true);  // (Debug)
-  // oled_send(0x75, false); // CMD: set row (Debug)
-  // oled_send(0x00, true);  // (Debug)
-  // oled_send(0x5F, true);  // (Debug)
-  // oled_send(0x5C, false); // CMD: send pixels
-  for (int i = 0; i < 24576; i++)
-    oled_send(0xFF, true); // DATA: white colour0, colour1
+  oled_send(0x15, false); // CMD: set col (Debug)
+  oled_send(0x00, true);  // (Debug)
+  oled_send(0x7F, true);  // (Debug)
+  oled_send(0x75, false); // CMD: set row (Debug)
+  oled_send(0x00, true);  // (Debug)
+  oled_send(0x5F, true);  // (Debug)
+  oled_send(0x5C, false); // CMD: send pixels
+  // for (int i = 0; i < 24576; i++)
+  //   oled_send(0xFF, true); // DATA: white colour0, colour1
   
   // oled auto initiate
   oled_mode(false); // auto block update mode
   // force OLED manager in busy status
   int test_change = 1;
-  for (int i = 0; i < 32; i++)
+  for (int i = 0; i < 5; i++)
     oled_block(i, test_change);
   oled_mode(false);
 
@@ -254,11 +254,11 @@ int main(void) {
 
     // 4. Refresh OLED
     // Over than 3s Test
-    if (test_change > 8)
+    if (test_change > 5)
       test_change = 0;
     else
       test_change ++;
-    for (int i = 0; i < 32; i++)
+    for (int i = 0; i < 5; i++)
         oled_block(i, test_change);
   }
 }
