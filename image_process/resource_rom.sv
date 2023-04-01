@@ -1,1 +1,14 @@
-assign resource_rom[ 0] = 104'hE7E7E7E7E7E7E7E70000E7E7E7; // File Name: template.png
+assign resource_rom[ 0] = 104'h7EFFC3C3C3C3C3C3C3C3C3FF7E; // File Name: 0.png
+assign resource_rom[ 1] = 104'hFF7E18181818181818181B1E1C; // File Name: 1.png
+assign resource_rom[ 2] = 104'h7EFFFF0303037FFEC0C0C0FF7E; // File Name: 2.png
+assign resource_rom[ 3] = 104'h7EFFFFC0C0C0FFFFC0C0C0FF7F; // File Name: 3.png
+assign resource_rom[ 4] = 104'h40C0C0C0C0FEFFFFC3C3C3C3C3; // File Name: 4.png
+assign resource_rom[ 5] = 104'h7EFFFFC0C0C0FFFF030303FF7F; // File Name: 5.png
+assign resource_rom[ 6] = 104'h7EFFFFC3C3C3FFFF030303FF7F; // File Name: 6.png
+assign resource_rom[ 7] = 104'h40C0C0C0C0C0C0C0C0C0C0FFFE; // File Name: 7.png
+assign resource_rom[ 8] = 104'h7EFFC3C3C3C3FFFFC3C3C3FF7E; // File Name: 8.png
+assign resource_rom[ 9] = 104'h7EFFFFC0C0C0FEFFC3C3C3FF7E; // File Name: 9.png
+assign resource_rom[10] = 104'h00000018180000001818000000; // File Name: colon.png
+assign resource_rom[11] = 104'h00181800000000000000000000; // File Name: dot.png
+assign resource_rom[12] = 104'h00000000000000000000000000; // File Name: empty.png
+assign resource_rom[13] = 104'hE7E7E7E7E7E7E7E70000E7E7E7; // File Name: template.png

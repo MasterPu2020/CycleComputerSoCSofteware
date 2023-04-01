@@ -11,13 +11,14 @@ import os
 
 
 def generate_template(file_path):
-    image = Image.new('RGB', (8, 13), (0, 196, 226))  # blue
-    for y in range(0, 13):
-        for x in range(3, 5):
-            image.putpixel((x, y), (255, 255, 255))  # white
-    for y in range(3, 5):
-        for x in range(0, 8):
-            image.putpixel((x, y), (255, 255, 255))  # white
+    image = Image.new('RGB', (8, 13), (255, 255, 255))  # white
+    # image = Image.new('RGB', (8, 13), (0, 196, 226))  # blue
+    # for y in range(0, 13):
+    #     for x in range(3, 5):
+    #         image.putpixel((x, y), (255, 255, 255))  # white
+    # for y in range(3, 5):
+    #     for x in range(0, 8):
+    #         image.putpixel((x, y), (255, 255, 255))  # white
     # image.show()  # debug
     image.save(file_path)
 
@@ -29,7 +30,10 @@ def extract_bit_list(file_path):
         image_data = ''
         for y in range(0, image.size[1]):
             for x in range(0, image.size[0]):
-                red, green, blue = image.getpixel((x, y))
+                # print(image.getpixel((x, y)))  # Debug
+                red = image.getpixel((x, y))[0]
+                green = image.getpixel((x, y))[1]
+                blue = image.getpixel((x, y))[2]
                 if blue > 220 and red < 200 and green < 200:  # colour is blue
                     image_data += '1'
                 elif blue > 250 and red > 250 and green > 250:  # colour is white
@@ -43,7 +47,7 @@ def extract_bit_list(file_path):
 
 
 path = './Assets'
-generate_template(path + '/template.png')
+generate_template(path + '/empty.png')
 error = 0
 data_index = 0
 rom_code = []
@@ -63,9 +67,13 @@ for file in os.listdir(path):
             print(' ERROR: Image size not correct, file location: ', path + '/' + file)
             error += 1
         else:
-            print(data)
+            # print(data)  # Debug
             data_reverse = '0b' + data[::-1]
             bit_stream = hex(int(data_reverse, 2)).upper()[2:]
+            if len(bit_stream) < 26:
+                for empty_bit in range(26 - len(bit_stream)):
+                    bit_stream = '0' + bit_stream
+            # print(len(bit_stream))  # Debug
             print(' MESSAGE: [File Number]', data_index, ' [File Name]', file, ' [Bit Stream]', bit_stream, ' [Length/Bit]', len(data))
             if data_index < 10:
                 str_index = ' ' + str(data_index)

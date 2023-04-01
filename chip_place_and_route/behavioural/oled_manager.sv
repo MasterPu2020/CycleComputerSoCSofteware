@@ -110,51 +110,54 @@ localparam
 // Locations 16 bit: Same address of RAM
 wire [15:0] location_rom [BlockAmout:0];
 assign location_rom[ 0] = 16'h0000;
-assign location_rom[ 1] = 16'h0A0A;
-assign location_rom[ 2] = 16'h1A1A;
-assign location_rom[ 3] = 16'h2A2A;
-assign location_rom[ 4] = 16'h3A3A;
-assign location_rom[ 5] = 16'h0000;
-assign location_rom[ 6] = 16'h0000;
-assign location_rom[ 7] = 16'h0000;
-assign location_rom[ 8] = 16'h0000;
-assign location_rom[ 9] = 16'h0000;
-assign location_rom[10] = 16'h0000;
-assign location_rom[11] = 16'h0000;
-assign location_rom[12] = 16'h0000;
-assign location_rom[13] = 16'h0000;
-assign location_rom[14] = 16'h0000;
-assign location_rom[15] = 16'h0000;
-assign location_rom[16] = 16'h0000;
-assign location_rom[17] = 16'h0000;
-assign location_rom[18] = 16'h0000;
-assign location_rom[19] = 16'h0000;
-assign location_rom[20] = 16'h0000;
-assign location_rom[21] = 16'h0000;
-assign location_rom[22] = 16'h0000;
-assign location_rom[23] = 16'h0000;
-assign location_rom[24] = 16'h0000;
-assign location_rom[25] = 16'h0000;
-assign location_rom[26] = 16'h0000;
-assign location_rom[27] = 16'h0000;
-assign location_rom[28] = 16'h0000;
-assign location_rom[29] = 16'h0000;
-assign location_rom[30] = 16'h0000;
-assign location_rom[31] = 16'h0000;
+assign location_rom[ 1] = 16'h0800;
+assign location_rom[ 2] = 16'h1000;
+assign location_rom[ 3] = 16'h1800;
+assign location_rom[ 4] = 16'h2000;
+assign location_rom[ 5] = 16'h2800;
+assign location_rom[ 6] = 16'h3000;
+assign location_rom[ 7] = 16'h3800;
+assign location_rom[ 8] = 16'h4000;
+assign location_rom[ 9] = 16'h000D;
+assign location_rom[10] = 16'h080D;
+assign location_rom[11] = 16'h100D;
+assign location_rom[12] = 16'h180D;
+assign location_rom[13] = 16'h200D;
+assign location_rom[14] = 16'h280D;
+assign location_rom[15] = 16'h300D;
+assign location_rom[16] = 16'h380D;
+assign location_rom[17] = 16'h400D;
+assign location_rom[18] = 16'h001A;
+assign location_rom[19] = 16'h081A;
+assign location_rom[20] = 16'h101A;
+assign location_rom[21] = 16'h181A;
+assign location_rom[22] = 16'h201A;
+assign location_rom[23] = 16'h281A;
+assign location_rom[24] = 16'h301A;
+assign location_rom[25] = 16'h381A;
+assign location_rom[26] = 16'h401A;
+assign location_rom[27] = 16'h0027;
+assign location_rom[28] = 16'h0034;
+assign location_rom[29] = 16'h0834;
+assign location_rom[30] = 16'h1034;
+assign location_rom[31] = 16'h1834;
 
 // Pictures 8x13 bit: begin with 0 bit, end with 104 bit
 wire [ResourceWidth:0] resource_rom [ResourceAmout:0];
-assign resource_rom[ 0] = 104'h0;
-assign resource_rom[ 1] = 104'hE7E7E7E7E7E7E7E70000E7E7E7; // File Name: template.png
-assign resource_rom[ 2] = 104'h0;
-assign resource_rom[ 3] = 104'hE7E7E7E7E7E7E7E70000E7E7E7; // File Name: template.png
-assign resource_rom[ 4] = 104'h0;
-assign resource_rom[ 5] = 104'hE7E7E7E7E7E7E7E70000E7E7E7; // File Name: template.png
-assign resource_rom[ 6] = 104'h0;
-assign resource_rom[ 7] = 104'hE7E7E7E7E7E7E7E70000E7E7E7; // File Name: template.png
-assign resource_rom[ 8] = 104'h0; 
-assign resource_rom[ 9] = 104'hE7E7E7E7E7E7E7E70000E7E7E7; // File Name: template.png
-assign resource_rom[10] = 104'h0; 
+assign resource_rom[ 0] = 104'h7EFFC3C3C3C3C3C3C3C3C3FF7E; // File Name: 0.png
+assign resource_rom[ 1] = 104'hFF7E18181818181818181B1E1C; // File Name: 1.png
+assign resource_rom[ 2] = 104'h7EFFFF0303037FFEC0C0C0FF7E; // File Name: 2.png
+assign resource_rom[ 3] = 104'h7EFFFFC0C0C0FFFFC0C0C0FF7F; // File Name: 3.png
+assign resource_rom[ 4] = 104'h40C0C0C0C0FEFFFFC3C3C3C3C3; // File Name: 4.png
+assign resource_rom[ 5] = 104'h7EFFFFC0C0C0FFFF030303FF7F; // File Name: 5.png
+assign resource_rom[ 6] = 104'h7EFFFFC3C3C3FFFF030303FF7F; // File Name: 6.png
+assign resource_rom[ 7] = 104'h40C0C0C0C0C0C0C0C0C0C0FFFE; // File Name: 7.png
+assign resource_rom[ 8] = 104'h7EFFC3C3C3C3FFFFC3C3C3FF7E; // File Name: 8.png
+assign resource_rom[ 9] = 104'h7EFFFFC0C0C0FEFFC3C3C3FF7E; // File Name: 9.png
+assign resource_rom[10] = 104'h00000018180000001818000000; // File Name: colon.png
+assign resource_rom[11] = 104'h00181800000000000000000000; // File Name: dot.png
+assign resource_rom[12] = 104'h00000000000000000000000000; // File Name: empty.png
+assign resource_rom[13] = 104'hE7E7E7E7E7E7E7E70000E7E7E7; // File Name: template.png
 
 //------------------------------------------------------------------------------
 // AHB Signal

@@ -172,7 +172,7 @@ int main(void) {
   oled_mode(false); // auto block update mode
   // force OLED manager in busy status
   int test_change = 1;
-  for (int i = 0; i < 5; i++)
+  for (int i = 0; i < 32; i++)
     oled_block(i, test_change);
   oled_mode(false);
 
@@ -254,11 +254,11 @@ int main(void) {
 
     // 4. Refresh OLED
     // Over than 3s Test
-    if (test_change > 5)
+    if (test_change > 13)
       test_change = 0;
     else
       test_change ++;
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < 32; i++)
         oled_block(i, test_change);
   }
 }
