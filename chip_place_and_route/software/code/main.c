@@ -157,10 +157,6 @@ void oled_update_icon(int mode){
   return; 
 }
 
-void oled_underline_display(){
-
-}
-
 uint32_t int2bcd(uint32_t value){
     uint32_t bcd = 0, shift = 0;
     while (value != 0) {
