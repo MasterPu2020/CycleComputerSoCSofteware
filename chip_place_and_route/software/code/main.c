@@ -27,6 +27,25 @@
 // C[2]:     | Normal Mode: 1 bit Ready flag.
 // C[3]:     | Normal Mode: 8 bit data.
 // C[4 + n]: | Pixel Block: 0 ~ n. Write Only
+# define IMG_candence1 10
+# define IMG_candence2 11
+# define IMG_colo      12
+# define IMG_distance1 13
+# define IMG_distance2 14
+# define IMG_dot       15
+# define IMG_empty     16
+# define IMG_h         17
+# define IMG_k         18
+# define IMG_m         19
+# define IMG_rpm1      20
+# define IMG_rpm2      21
+# define IMG_setting1  22
+# define IMG_setting2  23
+# define IMG_speed1    24
+# define IMG_speed2    25
+# define IMG_timer1    26
+# define IMG_timer2    27
+# define IMG_underline 28
 volatile uint32_t* OLED = (volatile uint32_t*) AHB_OLEDR_MANAGER_BASE;
 bool oled_ready(void){return OLED[2]?true:false;}
 void  oled_mode(bool IsNormal){OLED[0] = IsNormal?1:0; return;}
@@ -75,6 +94,40 @@ bool       press_ui(void){return BUTTON[0]?true:false;}
 //------------------------------------------------------------------------------
 // Compound Functions
 //------------------------------------------------------------------------------
+
+void oled_data_display(int main_data, int sub_data){
+  bool leave_empty = true;
+  // 直接份成两部分传入，消除leave empty的隐患
+  // main data
+  leave_empty = oled_number_process(main_data, 1000, 3, leave_empty);
+  leave_empty = oled_number_process(main_data, 100, 5, leave_empty);
+  leave_empty = true;
+  leave_empty = oled_number_process(main_data, 10, 7, leave_empty);
+  leave_empty = oled_number_process(main_data, 1, 9, leave_empty);
+  // sub data
+  leave_empty = true;
+  leave_empty = oled_number_process(sub_data, 1000, 16, leave_empty);
+  leave_empty = oled_number_process(sub_data, 100, 17, leave_empty);
+  leave_empty = true;
+  leave_empty = oled_number_process(sub_data, 10, 18, leave_empty);
+  leave_empty = oled_number_process(sub_data, 1, 19, leave_empty);
+}
+
+bool oled_number_process(int data, int scale, int block, bool leave_empty){
+  int bit = data / scale % 10;
+  if (bit == 0 && leave_empty){
+    oled_block(block, IMG_empty);
+    return true;
+  }
+  else{
+    oled_block(block, bit);
+    return false;
+  }
+}
+
+void oled_underline_display(){
+
+}
 
 uint32_t int2bcd(uint32_t value){
     uint32_t bcd = 0, shift = 0;
@@ -140,7 +193,7 @@ int main(void) {
   wheel_girth = 2136; // setting
   is_night = false;
   last_time = 0;
-  mode = 0xA;
+  mode = 0xA;  // 0xA: Odometer  0xB: Duration  0xC: Speed  0xD: Cadence
   display_segment(mode, 0, 0);
 
   // oled software initiate
@@ -170,11 +223,21 @@ int main(void) {
   
   // oled auto initiate
   oled_mode(false); // auto block update mode
-  // force OLED manager in busy status
-  int test_change = 1;
   for (int i = 0; i < 32; i++)
-    oled_block(i, test_change);
-  oled_mode(false);
+    oled_block(i, IMG_empty);
+  // main icon 
+  oled_block(1, IMG_distance1);
+  oled_block(2, IMG_distance2);
+  oled_block(13, IMG_dot);
+  // sub icon 
+  oled_block(14, IMG_timer1);
+  oled_block(15, IMG_timer2);
+  oled_block(20, IMG_colo);
+  // main unit
+  oled_block(10, IMG_k);
+  oled_block(11, IMG_m);
+  oled_block(12, IMG_empty);
+  
 
   // process start
   while(1) {
@@ -194,9 +257,66 @@ int main(void) {
         is_night ? oled_send(0xA7, false) : oled_send(0xA6, false); // night mode : day mode
       }
       else{
-        mode = mode + check_mode() % 4; // 0xA: Odometer  0xB: Duration  0xC: Speed  0xD: Cadence
+        mode = mode + check_mode() % 4;
         if (mode > 0xD)
           mode = mode - 4;
+        // 0xA: Odometer  0xB: Duration  0xC: Speed  0xD: Cadence
+        if (mode == 0xA){
+          // main icon 
+          oled_block(1, IMG_distance1);
+          oled_block(2, IMG_distance2);
+          oled_block(13, IMG_dot);
+          // sub icon 
+          oled_block(14, IMG_timer1);
+          oled_block(15, IMG_timer2);
+          oled_block(20, IMG_colo);
+          // main unit
+          oled_block(10, IMG_k);
+          oled_block(11, IMG_m);
+          oled_block(12, IMG_empty);
+        }
+        else if (mode == 0xB){
+          // main icon 
+          oled_block(1, IMG_timer1);
+          oled_block(2, IMG_timer2);
+          oled_block(13, IMG_colo);
+          // sub icon 
+          oled_block(14, IMG_speed1);
+          oled_block(15, IMG_speed2);
+          oled_block(20, IMG_dot);
+          // main unit
+          oled_block(10, IMG_h);
+          oled_block(11, IMG_empty);
+          oled_block(12, IMG_empty);
+        }
+        else if(mode == 0xC){
+          // main icon 
+          oled_block(1, IMG_speed1);
+          oled_block(2, IMG_speed2);
+          oled_block(13, IMG_dot);
+          // sub icon 
+          oled_block(14, IMG_candence1);
+          oled_block(15, IMG_candence2);
+          oled_block(20, IMG_empty);
+          // main unit
+          oled_block(10, IMG_k);
+          oled_block(11, IMG_m);
+          oled_block(12, IMG_h);
+        }
+        else{
+          // main icon 
+          oled_block(1, IMG_candence1);
+          oled_block(2, IMG_candence2);
+          oled_block(13, IMG_empty);
+          // sub icon 
+          oled_block(14, IMG_distance1);
+          oled_block(15, IMG_distance2);
+          oled_block(20, IMG_dot);
+          // main unit
+          oled_block(10, IMG_rpm1);
+          oled_block(11, IMG_rpm2);
+          oled_block(12, IMG_empty);
+        }
       }
     }
 
@@ -235,31 +355,29 @@ int main(void) {
     // 3. Refresh Segment & OLED
 
     uint32_t display_int, display_frac;
+    uint32_t oled_sub_display;
     if (mode == 0xA){
       display_int  = (uint32_t) present_distance; // km
       display_frac = (uint32_t) ((present_distance - display_int) * 100); // km
+      oled_sub_display = present_time / 36 + (present_time % 3600) / 60; // hour, minute
     }
     else if (mode == 0xB){
       display_int  = present_time / 3600; // hour
       display_frac = (present_time % 3600) / 60; // minute
+      oled_sub_display = ((uint32_t) present_speed) * 100 + (uint32_t) ((present_speed - display_int) * 100);
     }
     else if (mode == 0xC){
       display_int  = (uint32_t) present_speed; // km/h
       display_frac = (uint32_t) ((present_speed - display_int) * 100); // km/h
+      oled_sub_display = present_cadence;
     }
     else if (mode == 0xD){
       display_int  = present_cadence; // r/s
       display_frac = 0; // nothing to show
+      oled_sub_display = ((uint32_t) present_distance) * 100 + (uint32_t) ((present_distance - display_int) * 100);
     }
 
+    oled_data_display(display_int * 100 + display_frac, present_cadence);
     display_segment(mode, int2bcd(display_int), int2bcd(display_frac));
-
-    // Over than 3s OLED Test
-    if (test_change > 28) // 素材量
-      test_change = 0;
-    else
-      test_change ++;
-    for (int i = 0; i < 32; i++) // 区块量
-        oled_block(i, test_change);
   }
 }
