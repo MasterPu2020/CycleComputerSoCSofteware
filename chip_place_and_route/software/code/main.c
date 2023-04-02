@@ -255,11 +255,11 @@ int main(void) {
     display_segment(mode, int2bcd(display_int), int2bcd(display_frac));
 
     // Over than 3s OLED Test
-    if (test_change > 31)
+    if (test_change > 28) // 素材量
       test_change = 0;
     else
       test_change ++;
-    for (int i = 0; i < 32; i++)
+    for (int i = 0; i < 32; i++) // 区块量
         oled_block(i, test_change);
   }
 }
