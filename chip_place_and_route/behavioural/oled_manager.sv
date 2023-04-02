@@ -46,9 +46,9 @@ timeunit 1ns; timeprecision 100ps;
 
 localparam 
   BlockAmoutWidth    = 4,
-  BlockAmout         = 19,  // 32 bit Max: 2**(BlockAmoutWidth + 1) - 1
+  BlockAmout         = 19,  // Max: 2**(BlockAmoutWidth + 1) - 1
   ResourceAmoutWidth = 4,
-  ResourceAmout      = 28,  // 32 bit Max: 2**(ResourceAmoutWidth + 1) - 1
+  ResourceAmout      = 28,  // Max: 2**(ResourceAmoutWidth + 1) - 1
   PictureHeight      = 13,
   PictureWidth       = 8,
   ResourceWidth      = PictureHeight * PictureWidth - 1; // 104 bit

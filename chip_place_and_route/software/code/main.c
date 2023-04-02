@@ -154,7 +154,7 @@ void oled_update_icon(int mode){
     oled_icon_display(IMG_speed1, IMG_speed2, IMG_dot, IMG_candence1, IMG_candence2, IMG_empty, IMG_k, IMG_m, IMG_h);
   else
     oled_icon_display(IMG_candence1, IMG_candence2, IMG_empty, IMG_distance1, IMG_distance2, IMG_dot, IMG_rpm1, IMG_rpm2, IMG_empty);
-  return; 
+  return;
 }
 
 uint32_t int2bcd(uint32_t value){
@@ -341,30 +341,30 @@ int main(void) {
       display_frac = (uint32_t) ((present_distance - display_int) * 100); // km
       sub_int  = present_time / 3600; // hour
       sub_frac = (present_time % 3600) / 60; // minute
-      oled_float_display(display_int, display_frac, 3, 5, 7, 9);
-      oled_float_display(sub_int, sub_frac, 16, 17, 18, 19);
+      oled_float_display(display_int, display_frac, 2, 4, 6, 8);
+      oled_float_display(sub_int, sub_frac, 15, 16, 17, 18);
     }
     else if (mode == 0xB){
       display_int  = present_time / 3600; // hour
       display_frac = (present_time % 3600) / 60; // minute
       sub_int  = (uint32_t) present_speed; // km/h
       sub_frac = (uint32_t) ((present_speed - display_int) * 100); // km/h
-      oled_float_display(display_int, display_frac, 3, 5, 7, 9);
-      oled_float_display(sub_int, sub_frac, 16, 17, 18, 19);
+      oled_float_display(display_int, display_frac, 2, 4, 6, 8);
+      oled_float_display(sub_int, sub_frac, 15, 16, 17, 18);
     }
     else if (mode == 0xC){
       display_int  = (uint32_t) present_speed; // km/h
       display_frac = (uint32_t) ((present_speed - display_int) * 100); // km/h
-      oled_float_display(display_int, display_frac, 3, 5, 7, 9);
-      oled_cadence_display(present_cadence, 16, 17, 18, 19);
+      oled_float_display(display_int, display_frac, 2, 4, 6, 8);
+      oled_cadence_display(present_cadence, 15, 16, 17, 18);
     }
     else if (mode == 0xD){
       display_int  = present_cadence; // r/s
       display_frac = 0; // nothing to show
       sub_int  = (uint32_t) present_distance; // km
       sub_frac = (uint32_t) ((present_distance - display_int) * 100); // km
-      oled_cadence_display(present_cadence, 3, 5, 7, 9);
-      oled_float_display(sub_int, sub_frac, 16, 17, 18, 19);
+      oled_cadence_display(present_cadence, 2, 4, 6, 8);
+      oled_float_display(sub_int, sub_frac, 15, 16, 17, 18);
     }
 
     display_segment(mode, int2bcd(display_int), int2bcd(display_frac));
