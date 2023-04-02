@@ -46,7 +46,7 @@ timeunit 1ns; timeprecision 100ps;
 
 localparam 
   BlockAmoutWidth    = 4,
-  BlockAmout         = 2**(BlockAmoutWidth + 1) - 1,     // 32 bit Max: 2**(BlockAmoutWidth + 1) - 1
+  BlockAmout         = 19,  // 32 bit Max: 2**(BlockAmoutWidth + 1) - 1
   ResourceAmoutWidth = 4,
   ResourceAmout      = 28,  // 32 bit Max: 2**(ResourceAmoutWidth + 1) - 1
   PictureHeight      = 13,
@@ -129,18 +129,6 @@ assign location_rom[16] = 16'h0D38;
 assign location_rom[17] = 16'h0D40;
 assign location_rom[18] = 16'h1A00;
 assign location_rom[19] = 16'h1A08;
-assign location_rom[20] = 16'h1A10;
-assign location_rom[21] = 16'h1A18;
-assign location_rom[22] = 16'h1A20;
-assign location_rom[23] = 16'h1A28;
-assign location_rom[24] = 16'h1A30;
-assign location_rom[25] = 16'h1A38;
-assign location_rom[26] = 16'h1A40;
-assign location_rom[27] = 16'h2700;
-assign location_rom[28] = 16'h3400;
-assign location_rom[29] = 16'h3408;
-assign location_rom[30] = 16'h3410;
-assign location_rom[31] = 16'h3418;
 
 // Pictures 8x13 bit: begin from 0 bit, end at 104 bit
 wire [ResourceWidth:0] resource_rom [ResourceAmout:0];
