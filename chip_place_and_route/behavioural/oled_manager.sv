@@ -109,26 +109,26 @@ localparam
 
 // Locations 16 bit: Same address of RAM. 16 bit {Y,X}
 wire [15:0] location_rom [BlockAmout:0];
-assign location_rom[ 0] = 16'h0000;
-assign location_rom[ 1] = 16'h0008;
-assign location_rom[ 2] = 16'h0010;
-assign location_rom[ 3] = 16'h0018;
-assign location_rom[ 4] = 16'h0020;
-assign location_rom[ 5] = 16'h0028;
-assign location_rom[ 6] = 16'h0030;
-assign location_rom[ 7] = 16'h0038;
-assign location_rom[ 8] = 16'h0040;
-assign location_rom[ 9] = 16'h0D00;
-assign location_rom[10] = 16'h0D08;
-assign location_rom[11] = 16'h0D10;
-assign location_rom[12] = 16'h0D18;
-assign location_rom[13] = 16'h0D20;
-assign location_rom[14] = 16'h0D28;
-assign location_rom[15] = 16'h0D30;
-assign location_rom[16] = 16'h0D38;
-assign location_rom[17] = 16'h0D40;
-assign location_rom[18] = 16'h1A00;
-assign location_rom[19] = 16'h1A08;
+assign location_rom[ 0] = 16'h1F0E;
+assign location_rom[ 1] = 16'h1F16;
+assign location_rom[ 2] = 16'h1F2A;
+assign location_rom[ 3] = 16'h2C35;
+assign location_rom[ 4] = 16'h1F35;
+assign location_rom[ 5] = 16'h2C45;
+assign location_rom[ 6] = 16'h1F45;
+assign location_rom[ 7] = 16'h2C50;
+assign location_rom[ 8] = 16'h1F50;
+assign location_rom[ 9] = 16'h1F5E;
+assign location_rom[10] = 16'h1F66;
+assign location_rom[11] = 16'h1F6E;
+assign location_rom[12] = 16'h1F3D;
+assign location_rom[13] = 16'h3E0E;
+assign location_rom[14] = 16'h3E16;
+assign location_rom[15] = 16'h3E2A;
+assign location_rom[16] = 16'h3E35;
+assign location_rom[17] = 16'h3E45;
+assign location_rom[18] = 16'h3E50;
+assign location_rom[19] = 16'h3E3D;
 
 // Pictures 8x13 bit: begin from 0 bit, end at 104 bit
 wire [ResourceWidth:0] resource_rom [ResourceAmout:0];
