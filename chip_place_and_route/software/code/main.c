@@ -182,6 +182,13 @@ uint32_t wait_for_wheel_girth(uint32_t wheel_girth) {
   int wheel_3 = wheel_girth / 100 % 10;
   int wheel_2 = wheel_girth / 10 % 10;
   int wheel_1 = wheel_girth % 10;
+  for (int i = 0; i < 20; i++)
+    oled_block(i, IMG_empty);
+  oled_block(0, IMG_setting1);
+  oled_block(1, IMG_setting2);
+  oled_block(3, IMG_underline);
+  oled_block(9, IMG_m);
+  oled_block(10, IMG_m);
   oled_block(2, 2);
   oled_block(4, wheel_3);
   oled_block(6, wheel_2);
@@ -280,13 +287,6 @@ int main(void) {
 
     if (wait_for_press()){
       if (setting()){
-        for (int i = 0; i < 20; i++)
-          oled_block(i, IMG_empty);
-        oled_block(0, IMG_setting1);
-        oled_block(1, IMG_setting2);
-        oled_block(3, IMG_underline);
-        oled_block(9, IMG_m);
-        oled_block(10, IMG_m);
         wheel_girth = wait_for_wheel_girth(wheel_girth);
         mode = ODOMETER;
         oled_update_icon(mode);
@@ -322,7 +322,7 @@ int main(void) {
 
     // Get present distance (unit: km) present_distance < 99.99;
     present_distance = (float)(present_fork * wheel_girth) / 1e6 + 0.01; // Number 0.01 is a bias.
-    if (present_distance == 0.01)
+    if (present_distance < 0.02)
       present_distance = 0;
     
     // Get speed (unit: km/h) : present_speed < 99.99
