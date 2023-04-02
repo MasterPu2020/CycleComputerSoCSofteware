@@ -1,32 +1,25 @@
-0 0
-follow left
-follow left
-follow left
-follow left
-follow left
-follow left
-follow left
-follow left
-0 13
-follow left
-follow left
-follow left
-follow left
-follow left
-follow left
-follow left
-follow left
-0 26
-follow left
-follow left
-follow left
-follow left
-follow left
-follow left
-follow left
-follow left
-0 39
-follow down
-follow left
-follow left
-follow left
+14 31  //此位置刷新主显示图标的左半区域
+22 31 //此位置刷新主显示图标的右半区域
+
+42 31 //此位置刷新主显示第一位的数字
+53 31 //此位置刷新主显示第二位的数字
+61 31 //此位置刷新主显示的标点符号
+69 31 //此位置刷新主显示第三位的数字
+80 31 //此位置刷新主显示第四位的数字
+
+ 39 //此位置刷新主显示第一位的单位
+0 39 //此位置刷新主显示第二位的单位
+0 39 //此位置刷新主显示第三位的单位
+
+0 39 //此位置刷新副显示图标的左半区域
+0 39 //此位置刷新副显示图标的右半区域
+
+0 39 //此位置刷新副显示第一位的数字
+0 39 //此位置刷新副显示第二位的数字
+0 39 //此位置刷新副显示的标点符号
+0 39 //此位置刷新副显示第三位的数字
+0 39 //此位置刷新副显示第四位的数字
+
+0 39 //此位置刷新设置模式下百位的下划线
+0 39 //此位置刷新设置模式下十位的下划线
+0 39 //此位置刷新设置模式下个位的下划线
