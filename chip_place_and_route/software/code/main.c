@@ -14,6 +14,7 @@
 //------------------------------------------------------------------------------
 // Hardware Address &  Access Functions
 //------------------------------------------------------------------------------
+
 #define AHB_OLEDR_MANAGER_BASE   0xC0000000
 #define AHB_SEGMENT_MANAGER_BASE 0xA0000000
 #define AHB_TIMER_BASE           0x80000000
@@ -21,7 +22,6 @@
 #define AHB_BUTTON_MANAGER_BASE  0x40000000
 
 // OLED MANAGER
-// Memory Map:
 // C[0]:     | Mode       : 0: Auto, 1: Normal
 // C[1]:     | Normal Mode: 2 bit D/C: 1/0 2: self update
 // C[2]:     | Normal Mode: 1 bit Ready flag.
@@ -70,7 +70,7 @@ bool   check_button(void){return BUTTON[4]?true:false;}
 bool        setting(void){return BUTTON[3]?true:false;}
 uint32_t check_trip(void){return BUTTON[2];}
 uint32_t check_mode(void){return BUTTON[1];}
-bool   press_d_mode(void){return BUTTON[0]?true:false;}
+bool       press_ui(void){return BUTTON[0]?true:false;}
 
 //------------------------------------------------------------------------------
 // Compound Functions
@@ -147,7 +147,7 @@ int main(void) {
   oled_mode(true); // normal 8 bit sending mode
   oled_send(0xFD, false); // CMD: unlock all commands
   oled_send(0xB1, true);
-  oled_send(0xCA, false); // CMD: set MUX ratio to 128*96 OLED screen
+  oled_send(0xCA, false); // CMD: set MUX ratio to fit 128*96 OLED screen
   oled_send(0x5F, true);
   oled_send(0xA2, false); // CMD: set start row
   oled_send(0x00, true); 
@@ -165,7 +165,7 @@ int main(void) {
   oled_send(0x00, true);  // (Debug)
   oled_send(0x5F, true);  // (Debug)
   oled_send(0x5C, false); // CMD: send pixels
-  // for (int i = 0; i < 24576; i++)
+  // for (int i = 0; i < 128 * 96 * 2; i++)
   //   oled_send(0xFF, true); // DATA: white colour0, colour1
   
   // oled auto initiate
@@ -189,8 +189,10 @@ int main(void) {
         clear_trip_timer();
         last_time = 0;
       } 
-      else if (press_d_mode())
-        is_night = ~ is_night;
+      else if (press_ui()){
+        is_night = ! is_night;
+        is_night ? oled_send(0xA7, false) : oled_send(0xA6, false); // night mode : day mode
+      }
       else{
         mode = mode + check_mode() % 4; // 0xA: Odometer  0xB: Duration  0xC: Speed  0xD: Cadence
         if (mode > 0xD)
@@ -198,7 +200,7 @@ int main(void) {
       }
     }
 
-    // II. Refresh Time, Speed, Distance, Cadence.
+    // II. Update Time, Speed, Distance, Cadence.
     
     // 1. Time Stamp Data Read
 
@@ -230,9 +232,9 @@ int main(void) {
       present_time = last_time;
     last_time = present_time;
 
-    // 3. Refresh Segment
+    // 3. Refresh Segment & OLED
 
-    uint32_t display_int, display_frac; //  This coding is to save more energy
+    uint32_t display_int, display_frac;
     if (mode == 0xA){
       display_int  = (uint32_t) present_distance; // km
       display_frac = (uint32_t) ((present_distance - display_int) * 100); // km
@@ -252,8 +254,7 @@ int main(void) {
 
     display_segment(mode, int2bcd(display_int), int2bcd(display_frac));
 
-    // 4. Refresh OLED
-    // Over than 3s Test
+    // Over than 3s OLED Test
     if (test_change > 31)
       test_change = 0;
     else

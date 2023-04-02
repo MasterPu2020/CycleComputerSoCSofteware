@@ -46,9 +46,9 @@ timeunit 1ns; timeprecision 100ps;
 
 localparam 
   BlockAmoutWidth    = 4,
-  BlockAmout         = 2**(BlockAmoutWidth + 1) - 1,     // 32 bit
+  BlockAmout         = 2**(BlockAmoutWidth + 1) - 1,     // 32 bit Max: 2**(BlockAmoutWidth + 1) - 1
   ResourceAmoutWidth = 4,
-  ResourceAmout      = 2**(ResourceAmoutWidth + 1) - 1,  // 32 bit
+  ResourceAmout      = 28,  // 32 bit Max: 2**(ResourceAmoutWidth + 1) - 1
   PictureHeight      = 13,
   PictureWidth       = 8,
   ResourceWidth      = PictureHeight * PictureWidth - 1; // 104 bit
@@ -107,7 +107,7 @@ localparam
   ColourWhite0 = 8'hFF,
   ColourWhite1 = 8'hFF;
 
-// Locations 16 bit: Same address of RAM  {Y,X}
+// Locations 16 bit: Same address of RAM. 16 bit {Y,X}
 wire [15:0] location_rom [BlockAmout:0];
 assign location_rom[ 0] = 16'h0000;
 assign location_rom[ 1] = 16'h0008;
@@ -142,7 +142,7 @@ assign location_rom[29] = 16'h3408;
 assign location_rom[30] = 16'h3410;
 assign location_rom[31] = 16'h3418;
 
-// Pictures 8x13 bit: begin with 0 bit, end with 104 bit
+// Pictures 8x13 bit: begin from 0 bit, end at 104 bit
 wire [ResourceWidth:0] resource_rom [ResourceAmout:0];
 assign resource_rom[ 0] = 104'h7EFFC3C3C3C3C3C3C3C3C3FF7E; // File Name: 0.png
 assign resource_rom[ 1] = 104'hFF7E18181818181818181B1E1C; // File Name: 1.png
@@ -161,21 +161,18 @@ assign resource_rom[13] = 104'h8282868606060C8C8C98181890; // File Name: distanc
 assign resource_rom[14] = 104'h41416161606030313119181809; // File Name: distance2.png
 assign resource_rom[15] = 104'h00181800000000000000000000; // File Name: dot.png
 assign resource_rom[16] = 104'h00000000000000000000000000; // File Name: empty.png
-assign resource_rom[17] = 104'h330B0F0B330303030200000000; // File Name: km1.png
-assign resource_rom[18] = 104'h2B2B2B2B3F1F00000000000000; // File Name: km2.png
-assign resource_rom[19] = 104'h330B0F0B330303030200000000; // File Name: kmh1.png
-assign resource_rom[20] = 104'h2B2B2B2B3F1F00000000000000; // File Name: kmh2.png
-assign resource_rom[21] = 104'h13131313131F03030300000000; // File Name: kmh3.png
-assign resource_rom[22] = 104'h565656567E3E00000000000000; // File Name: mm1.png
-assign resource_rom[23] = 104'h565656567E3E00000000000000; // File Name: mm2.png
-assign resource_rom[24] = 104'h00000606060E1E360000000000; // File Name: rpm1.png
-assign resource_rom[25] = 104'h0303838F9F93938F0000000000; // File Name: rpm2.png
-assign resource_rom[26] = 104'h0000151515151F0F0000000000; // File Name: rpm3.png
-assign resource_rom[27] = 104'h78C888183060407C183060C080; // File Name: speed1.png
-assign resource_rom[28] = 104'h00000103060C183E060C18103F; // File Name: speed2.png
-assign resource_rom[29] = 104'hE0F0180C06868686868C18F0E0; // File Name: timer1.png
-assign resource_rom[30] = 104'h070F1830606767606030180F07; // File Name: timer2.png
-assign resource_rom[31] = 104'hCCDCF8F8F8787070E0C0800000; // File Name: timeunit1.png
+assign resource_rom[17] = 104'h000013131313131F0303030000; // File Name: h.png
+assign resource_rom[18] = 104'h0000330B0F0B33030303020000; // File Name: k.png
+assign resource_rom[19] = 104'h00002B2B2B2B3F1F0000000000; // File Name: m.png
+assign resource_rom[20] = 104'h00000606060E1E360000000000; // File Name: rpm1.png
+assign resource_rom[21] = 104'h0303838F9F93938F0000000000; // File Name: rpm2.png
+assign resource_rom[22] = 104'hE0F0180C86C66666C68C18F0E0; // File Name: setting1.png
+assign resource_rom[23] = 104'h070F1830616366666331180F07; // File Name: setting2.png
+assign resource_rom[24] = 104'h78C888183060407C183060C080; // File Name: speed1.png
+assign resource_rom[25] = 104'h00000103060C183E060C18103F; // File Name: speed2.png
+assign resource_rom[26] = 104'hE0F0180C06868686868C18F0E0; // File Name: timer1.png
+assign resource_rom[27] = 104'h070F1830606767606030180F07; // File Name: timer2.png
+assign resource_rom[28] = 104'h000000000000000000FFFF0000; // File Name: underline.png
 
 //------------------------------------------------------------------------------
 // AHB Signal
@@ -303,6 +300,8 @@ always_ff @(posedge HCLK, negedge HRESETn) begin
                   pixel_pointer <= 0;
                   search_ram_addr <= 0;
               end
+              else if (search_ram_addr == BlockAmout) // if it's the last block
+                search_ram_addr <= 0;
               else
                 search_ram_addr <= search_ram_addr + 1;
             end
