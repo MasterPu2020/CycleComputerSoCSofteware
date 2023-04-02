@@ -66,7 +66,7 @@ volatile uint32_t* TIMER = (volatile uint32_t*) AHB_TIMER_BASE;
 bool            time_up(void){return  TIMER[1]?true:false;}
 uint32_t read_trip_time(void){return  TIMER[0];}
 void       claim_update(void){TIMER[1] = 0; return;}
-void   clear_trip_timer(void){TIMER[0] = 0; return;}
+void   write_trip_timer(int new_time){TIMER[0] = new_time; return;}
 
 // SENSOR MANAGER
 // 6000_0000: 32bit | Recording triggerd fork cycle number
@@ -108,12 +108,12 @@ void oled_float_display(int num_int, int num_frac, int num1, int num2, int num3,
 
 void oled_cadence_display(int present_cadence, int num1, int num2, int num3, int num4){
   oled_block(num1, IMG_empty);
-  if (present_cadence / 100 != 0){
+  if (present_cadence > 99){
     oled_block(num2, present_cadence / 100 % 10);
     oled_block(num3, present_cadence / 10 % 10);
     oled_block(num4, present_cadence % 10);
   }
-  else if (present_cadence / 10 != 0){
+  else if (present_cadence > 9){
     oled_block(num2, IMG_empty);
     oled_block(num3, present_cadence / 10 % 10);
     oled_block(num4, present_cadence % 10);
@@ -175,6 +175,10 @@ uint32_t wait_for_wheel_girth(uint32_t wheel_girth) {
   int wheel_3 = wheel_girth / 100 % 10;
   int wheel_2 = wheel_girth / 10 % 10;
   int wheel_1 = wheel_girth % 10;
+  oled_block(2, 2);
+  oled_block(4, wheel_3);
+  oled_block(6, wheel_2);
+  oled_block(8, wheel_1);
   display_segment(0xE, int2bcd(wheel_girth % 1000), 0);
   while (1){
     if (check_button()) {
@@ -273,7 +277,6 @@ int main(void) {
           oled_block(i, IMG_empty);
         oled_block(0, IMG_setting1);
         oled_block(1, IMG_setting2);
-        oled_block(2, 2);
         oled_block(3, IMG_underline);
         oled_block(9, IMG_m);
         oled_block(10, IMG_m);
@@ -282,7 +285,7 @@ int main(void) {
       }
       else if (check_trip() != 0){
         clear_fork();
-        clear_trip_timer();
+        write_trip_timer(0);
         last_time = 0;
       } 
       else if (press_ui()){
@@ -325,8 +328,10 @@ int main(void) {
       present_cadence = 0;
 
     // Get present time (unit: second)
-    if (delta_fork_time > 2990) // if bicycle stopped
+    if (delta_fork_time > 2990){ // if bicycle stopped
       present_time = last_time;
+      write_trip_timer(last_time);
+    }
     last_time = present_time;
 
     // 3. Refresh Segment & OLED
@@ -345,7 +350,7 @@ int main(void) {
       display_int  = present_time / 3600; // hour
       display_frac = (present_time % 3600) / 60; // minute
       sub_int  = (uint32_t) present_speed; // km/h
-      sub_frac = (uint32_t) ((present_speed - display_int) * 100); // km/h
+      sub_frac = (uint32_t) ((present_speed - sub_int) * 100); // km/h
       oled_float_display(display_int, display_frac, 2, 4, 6, 8);
       oled_float_display(sub_int, sub_frac, 15, 16, 17, 18);
     }
@@ -359,7 +364,7 @@ int main(void) {
       display_int  = present_cadence; // r/s
       display_frac = 0; // nothing to show
       sub_int  = (uint32_t) present_distance; // km
-      sub_frac = (uint32_t) ((present_distance - display_int) * 100); // km
+      sub_frac = (uint32_t) ((present_distance - sub_int) * 100); // km
       oled_cadence_display(present_cadence, 2, 4, 6, 8);
       oled_float_display(sub_int, sub_frac, 15, 16, 17, 18);
     }
