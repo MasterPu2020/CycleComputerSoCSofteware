@@ -21,12 +21,6 @@
 #define AHB_SENSOR_MANAGER_BASE  0x60000000
 #define AHB_BUTTON_MANAGER_BASE  0x40000000
 
-// OLED MANAGER
-// C[0]:     | Mode       : 0: Auto, 1: Normal
-// C[1]:     | Normal Mode: 2 bit D/C: 1/0 2: self update
-// C[2]:     | Normal Mode: 1 bit Ready flag.
-// C[3]:     | Normal Mode: 8 bit data.
-// C[4 + n]: | Pixel Block: 0 ~ n. Write Only
 # define    IMG_candence1    10
 # define    IMG_candence2    11
 # define    IMG_colo         12
@@ -46,6 +40,19 @@
 # define    IMG_timer1       26
 # define    IMG_timer2       27
 # define    IMG_underline    28
+
+# define    ODOMETER         0xA
+# define    DURATION         0xB
+# define    SPEED            0xC
+# define    CADENCE          0xD
+# define    SETTING          0xE
+
+// OLED MANAGER
+// C[0]:     | Mode       : 0: Auto, 1: Normal
+// C[1]:     | Normal Mode: 2 bit D/C: 1/0 2: self update
+// C[2]:     | Normal Mode: 1 bit Ready flag.
+// C[3]:     | Normal Mode: 8 bit data.
+// C[4 + n]: | Pixel Block: 0 ~ n. Write Only
 volatile uint32_t* OLED = (volatile uint32_t*) AHB_OLEDR_MANAGER_BASE;
 bool oled_ready(void){return OLED[2]?true:false;}
 void  oled_mode(bool IsNormal){OLED[0] = IsNormal?1:0; return;}
@@ -95,7 +102,6 @@ bool       press_ui(void){return BUTTON[0]?true:false;}
 // Compound Functions
 //------------------------------------------------------------------------------
 
-// 0xA: Odometer  0xB: Duration  0xC: Speed  0xD: Cadence
 void oled_float_display(int num_int, int num_frac, int num1, int num2, int num3, int num4){
   if (num_int > 9)
     oled_block(num1, num_int / 10 % 10);
@@ -141,11 +147,12 @@ void oled_icon_display(int pic1, int pic2, int pic3, int pic4, int pic5, int pic
 }
 
 void oled_update_icon(int mode){
-  if (mode == 0xA)
+  // 0xA: Odometer  0xB: Duration  0xC: Speed  0xD: Cadence
+  if (mode == ODOMETER)
     oled_icon_display(IMG_distance1, IMG_distance2, IMG_dot, IMG_timer1, IMG_timer2, IMG_colo, IMG_k, IMG_m, IMG_empty);
-  else if (mode == 0xB)
+  else if (mode == DURATION)
     oled_icon_display(IMG_timer1, IMG_timer2, IMG_colo, IMG_speed1, IMG_speed2, IMG_dot, IMG_empty, IMG_empty, IMG_empty);
-  else if(mode == 0xC)
+  else if(mode == SPEED)
     oled_icon_display(IMG_speed1, IMG_speed2, IMG_dot, IMG_candence1, IMG_candence2, IMG_empty, IMG_k, IMG_m, IMG_h);
   else
     oled_icon_display(IMG_candence1, IMG_candence2, IMG_empty, IMG_distance1, IMG_distance2, IMG_dot, IMG_rpm1, IMG_rpm2, IMG_m);
@@ -201,7 +208,7 @@ uint32_t wait_for_wheel_girth(uint32_t wheel_girth) {
         oled_block(7, IMG_underline);
       }
       wheel_girth = 2000 + wheel_3 * 100 + wheel_2 * 10 + wheel_1;
-      display_segment(0xE, int2bcd(wheel_girth % 1000), 0); // 0xE: Setting
+      display_segment(SETTING, int2bcd(wheel_girth % 1000), 0); // 0xE: Setting
       oled_block(4, wheel_3);
       oled_block(6, wheel_2);
       oled_block(8, wheel_1);
@@ -232,7 +239,7 @@ int main(void) {
   wheel_girth = 2136; // setting
   is_night = false;
   last_time = 0;
-  mode = 0xA;  // 0xA: Odometer  0xB: Duration  0xC: Speed  0xD: Cadence
+  mode = ODOMETER;  // 0xA: Odometer  0xB: Duration  0xC: Speed  0xD: Cadence
   display_segment(mode, 0, 0);
 
   // oled software initiate
@@ -281,6 +288,7 @@ int main(void) {
         oled_block(9, IMG_m);
         oled_block(10, IMG_m);
         wheel_girth = wait_for_wheel_girth(wheel_girth);
+        mode = ODOMETER;
         oled_update_icon(mode);
       }
       else if (check_trip() != 0){
@@ -294,7 +302,7 @@ int main(void) {
       }
       else{
         mode = mode + check_mode() % 4;
-        if (mode > 0xD)
+        if (mode > CADENCE)
           mode = mode - 4;
         oled_update_icon(mode);
       }
@@ -314,6 +322,8 @@ int main(void) {
 
     // Get present distance (unit: km) present_distance < 99.99;
     present_distance = (float)(present_fork * wheel_girth) / 1e6 + 0.01; // Number 0.01 is a bias.
+    if (present_distance == 0.01)
+      present_distance = 0;
     
     // Get speed (unit: km/h) : present_speed < 99.99
     if (delta_fork_time < 2990)
@@ -336,40 +346,40 @@ int main(void) {
 
     // 3. Refresh Segment & OLED
 
-    uint32_t display_int, display_frac, sub_int, sub_frac;
+    uint32_t main_int, main_frac, sub_int, sub_frac;
 
-    if (mode == 0xA){
-      display_int  = (uint32_t) present_distance; // km
-      display_frac = (uint32_t) ((present_distance - display_int) * 100); // km
+    if (mode == ODOMETER){
+      main_int  = (uint32_t) present_distance; // km
+      main_frac = (uint32_t) ((present_distance - main_int) * 100); // km
       sub_int  = present_time / 3600; // hour
       sub_frac = (present_time % 3600) / 60; // minute
-      oled_float_display(display_int, display_frac, 2, 4, 6, 8);
+      oled_float_display(main_int, main_frac, 2, 4, 6, 8);
       oled_float_display(sub_int, sub_frac, 15, 16, 17, 18);
     }
-    else if (mode == 0xB){
-      display_int  = present_time / 3600; // hour
-      display_frac = (present_time % 3600) / 60; // minute
+    else if (mode == DURATION){
+      main_int  = present_time / 3600; // hour
+      main_frac = (present_time % 3600) / 60; // minute
       sub_int  = (uint32_t) present_speed; // km/h
       sub_frac = (uint32_t) ((present_speed - sub_int) * 100); // km/h
-      oled_float_display(display_int, display_frac, 2, 4, 6, 8);
+      oled_float_display(main_int, main_frac, 2, 4, 6, 8);
       oled_float_display(sub_int, sub_frac, 15, 16, 17, 18);
     }
-    else if (mode == 0xC){
-      display_int  = (uint32_t) present_speed; // km/h
-      display_frac = (uint32_t) ((present_speed - display_int) * 100); // km/h
-      oled_float_display(display_int, display_frac, 2, 4, 6, 8);
+    else if (mode == SPEED){
+      main_int  = (uint32_t) present_speed; // km/h
+      main_frac = (uint32_t) ((present_speed - main_int) * 100); // km/h
+      oled_float_display(main_int, main_frac, 2, 4, 6, 8);
       oled_cadence_display(present_cadence, 15, 16, 17, 18);
     }
-    else if (mode == 0xD){
-      display_int  = present_cadence; // r/s
-      display_frac = 0; // nothing to show
+    else if (mode == CADENCE){
+      main_int  = present_cadence; // r/s
+      main_frac = 0; // nothing to show
       sub_int  = (uint32_t) present_distance; // km
       sub_frac = (uint32_t) ((present_distance - sub_int) * 100); // km
       oled_cadence_display(present_cadence, 2, 4, 6, 8);
       oled_float_display(sub_int, sub_frac, 15, 16, 17, 18);
     }
 
-    display_segment(mode, int2bcd(display_int), int2bcd(display_frac));
+    display_segment(mode, int2bcd(main_int), int2bcd(main_frac));
 
   }
 }
