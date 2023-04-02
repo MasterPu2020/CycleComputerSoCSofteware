@@ -14,12 +14,12 @@
 //    Mission Status: ----- Passed, Failed, Not Verified.
 //    Verifing with software version 5.5
 //  `define OdometerVerification      // Not Verified
-//  `define TripTimeVerification      // Not Verified
+  `define TripTimeVerification      // Not Verified
 //  `define TimeStopVerification      // Not verified
 //  `define SpeedVerification         // Not Verified
 //  `define CadenceVerification       // Behavioural Passed
 //  `define ModeSwitchVerification    // Gate Level Passed
-  `define SimpleVerification        // Behavioural Passed 
+//  `define SimpleVerification        // Behavioural Passed 
 //  `define FullVerification          // Not Verified
 //  `define MacroCellVerification     // Not Verified
 
@@ -190,9 +190,8 @@ end
   //--------------------------------------------------------------
   task OdometerTest;
     $display("\n This is odometer:");
-    odometer = (2.136 * fork_times);
+    odometer = (wheel_size * fork_times);
     DisplaySegment;
-    DisplayOLED;
     $display("\n Real Odometer is %fkm. Segment display is %fkm (fork_times = %d). (%t)", odometer/1000.0, seg_value, fork_times, $time);
     $display("------------------------------------------------------------------------------");
     assert ((((odometer/1000.0) - seg_value) < 0.1) && ((seg_value - (odometer/1000.0)) < 0.1)) else begin
@@ -208,7 +207,6 @@ end
   task TripTimeTest;
     $display("\n This is Trip time:");
     DisplaySegment;
-    DisplayOLED;
     $display("\n Real trip time is %fs. Segment display is %fs. (%t)", trip_time, seg_value*6000, $time);
     $display("------------------------------------------------------------------------------");
     assert (((trip_time - seg_value*6000) < 60) && ((seg_value*6000 - trip_time) < 60)) else begin
@@ -223,7 +221,6 @@ end
   task SpeedTest;
     $display("\n This is speed:");
     DisplaySegment;
-    DisplayOLED;
     $display("\n Real Speed is %fkm/h. Segment display is %fkm/h (ave speed = %dkm/h). (%t)", speed, seg_value, ave_speed*3.6, $time);
     $display("------------------------------------------------------------------------------");
     assert (((speed - seg_value) <= 0.1) && ((seg_value - speed) <= 0.1)) else begin
@@ -238,7 +235,6 @@ end
   task CadenceTest;
     $display("\n This is cadence:");
     DisplaySegment;
-    DisplayOLED;
     $display("\n Real Cadence is %drpm. Segment display is %drpm (ave cadence = %d). (%t)", cadence, seg_value, ave_cadence, $time);
     $display("------------------------------------------------------------------------------");
     assert (((cadence - seg_value) <= 5) && ((seg_value - cadence) <= 5)) else begin
@@ -284,26 +280,22 @@ end
     
     PressSettingButton;
     DisplaySegment;
-    DisplayOLED;
     
     while (seg_digit_value2 != wheelsize_ref_dig2) begin
       PressTripButton;
       DisplaySegment;
-      DisplayOLED;
     end
     PressModeButton;
 
     while (seg_digit_value1 != wheelsize_ref_dig1) begin
       PressTripButton;
       DisplaySegment;
-      DisplayOLED;
     end
     PressModeButton;
 
     while (seg_digit_value0 != wheelsize_ref_dig0) begin
       PressTripButton;
       DisplaySegment;
-      DisplayOLED;
     end
   endtask
 
@@ -341,7 +333,6 @@ end
       while (seg_digit_value3 != mode_num) begin
         PressModeButton;
         DisplaySegment;
-        DisplayOLED;
       end
     end
   endtask
@@ -527,7 +518,7 @@ end
       // Three Mode Test Round 1
       //--------------------------------------------------
       CustomizeWheelSize(2694);
-      CustomizeSpeedCadence(3,30);
+      CustomizeSpeedCadence(7,30);
 
       // Odometer Test
       CustomizeMode(0);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
@@ -548,7 +539,7 @@ end
       // Three Mode Test Round 2
       //--------------------------------------------------
       CustomizeWheelSize(2765);
-      CustomizeSpeedCadence(500,600);
+      CustomizeSpeedCadence(120,200);
 
       // Odometer Test
       CustomizeMode(0);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
@@ -571,7 +562,7 @@ end
       CustomizeMode(1);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
 
       for (int i=0;i<2;i++) begin
-        time_label60 = int'($time / 60);
+        time_label60 = $time / 60;
         $display(" Time Test: Wait until %ds",(time_label60+1)*60+1);
         while ($time != (time_label60+1)*60+1);
           TripTimeTest;

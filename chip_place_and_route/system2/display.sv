@@ -28,30 +28,6 @@ real seg_value;
 logic DisplayRefresh_Seg = 0;
 
 //------------------------------------------------------------------------------
-// Display Tasks
-//------------------------------------------------------------------------------
-
-task DisplaySegment;
-  #1s;
-  for (int i=0;i<7;i++)
-    @(posedge Clock);
-  DisplayRefresh_Seg = 0;
-  @(posedge Clock);
-  DisplayRefresh_Seg = 1;
-  @(posedge Clock);
-  DisplayRefresh_Seg = 0;
-endtask
-
-task DisplayOLED;
-  #1s;
-  DisplayRefresh = 0;
-  @(posedge Clock);
-  DisplayRefresh = 1;
-  @(posedge Clock);
-  DisplayRefresh = 0;
-endtask
-
-//------------------------------------------------------------------------------
 // Fake OLED Display: Get Area and Colour
 //------------------------------------------------------------------------------
 
@@ -152,9 +128,9 @@ initial begin
     for (integer j = 0; j < 96; j++) begin
       for (integer i = 0; i < 128; i++) begin
         if(oled_ram[i][j])
-          oled_row = {oled_row, "#"};
+          oled_row = {oled_row, "-"};
         else
-          oled_row = {oled_row, "_"};
+          oled_row = {oled_row, "#"};
       end
       $display("%s", oled_row);
       oled_row = "  ";
@@ -228,7 +204,7 @@ initial begin
       7'b0001111: seg_digit_value3 = 1;
       7'b0011000: seg_digit_value3 = 2;
       7'b0001101: seg_digit_value3 = 3;
-      default   : seg_digit_value3 = 0;
+      default   : seg_digit_value3 = 9;
     endcase
   end
 end
