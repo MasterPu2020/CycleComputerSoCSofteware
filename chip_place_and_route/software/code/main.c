@@ -95,20 +95,15 @@ bool       press_ui(void){return BUTTON[0]?true:false;}
 // Compound Functions
 //------------------------------------------------------------------------------
 
+// 0xA: Odometer  0xB: Duration  0xC: Speed  0xD: Cadence
 void oled_float_display(int num_int, int num_frac, int num1, int num2, int num3, int num4){
   if (num_int > 9)
     oled_block(num1, num_int / 10 % 10);
   else
     oled_block(num1, IMG_empty);
   oled_block(num2, num_int % 10);
-  if (num_frac > 9){
-    oled_block(num3, num_int / 10 % 10);
-    oled_block(num4, num_frac % 10);
-  }
-  else{
-    oled_block(num3, num_frac);
-    oled_block(num4, IMG_empty);
-  }
+  oled_block(num3, num_frac / 10 % 10);
+  oled_block(num4, num_frac % 10);
 }
 
 void oled_cadence_display(int present_cadence, int num1, int num2, int num3, int num4){
@@ -149,11 +144,11 @@ void oled_update_icon(int mode){
   if (mode == 0xA)
     oled_icon_display(IMG_distance1, IMG_distance2, IMG_dot, IMG_timer1, IMG_timer2, IMG_colo, IMG_k, IMG_m, IMG_empty);
   else if (mode == 0xB)
-    oled_icon_display(IMG_timer1, IMG_timer2, IMG_colo, IMG_speed1, IMG_speed2, IMG_dot, IMG_h, IMG_empty, IMG_empty);
+    oled_icon_display(IMG_timer1, IMG_timer2, IMG_colo, IMG_speed1, IMG_speed2, IMG_dot, IMG_empty, IMG_empty, IMG_empty);
   else if(mode == 0xC)
     oled_icon_display(IMG_speed1, IMG_speed2, IMG_dot, IMG_candence1, IMG_candence2, IMG_empty, IMG_k, IMG_m, IMG_h);
   else
-    oled_icon_display(IMG_candence1, IMG_candence2, IMG_empty, IMG_distance1, IMG_distance2, IMG_dot, IMG_rpm1, IMG_rpm2, IMG_empty);
+    oled_icon_display(IMG_candence1, IMG_candence2, IMG_empty, IMG_distance1, IMG_distance2, IMG_dot, IMG_rpm1, IMG_rpm2, IMG_m);
   return;
 }
 
@@ -280,6 +275,8 @@ int main(void) {
         oled_block(1, IMG_setting2);
         oled_block(2, 2);
         oled_block(3, IMG_underline);
+        oled_block(9, IMG_m);
+        oled_block(10, IMG_m);
         wheel_girth = wait_for_wheel_girth(wheel_girth);
         oled_update_icon(mode);
       }
