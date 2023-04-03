@@ -116,12 +116,13 @@ void oled_block_clear(void){
 // In Auto mode, display a 00.00 format number to OLED 
 // input : Integer, Fraction, BlockIDs for 4 digits
 void oled_float_display(int num_int, int num_frac, int id1, int id2, int id3, int id4){
-  oled_block(id1, num_int / 10 % 10);
+  if (num_int < 10)
+    oled_block(id1, IMG_empty);
+  else
+    oled_block(id1, num_int / 10 % 10);
   oled_block(id2, num_int % 10);
   oled_block(id3, num_frac / 10 % 10);
   oled_block(id4, num_frac % 10);
-  if (num_int < 10)
-    oled_block(id1, IMG_empty);
   return;
 }
 
@@ -129,13 +130,15 @@ void oled_float_display(int num_int, int num_frac, int id1, int id2, int id3, in
 // input : Integer, BlockIDs for 4 digits
 void oled_int_display(int num_int, int id1, int id2, int id3, int id4){
   oled_block(id1, IMG_empty);
-  oled_block(id2, num_int / 100 % 10);
-  oled_block(id3, num_int / 10 % 10);
-  oled_block(id4, num_int % 10);
   if (num_int < 100)
     oled_block(id2, IMG_empty);
+  else
+    oled_block(id2, num_int / 100 % 10);
   if (num_int < 10)
     oled_block(id3, IMG_empty);
+  else
+    oled_block(id3, num_int / 10 % 10);
+  oled_block(id4, num_int % 10);
   return;
 }
 
@@ -172,9 +175,9 @@ void oled_update_icon(int mode){
       IMG_k,         IMG_m,         IMG_empty);
   else if (mode == DURATION)
     oled_icon_display( 
-      IMG_timer1, IMG_timer2, IMG_colo, 
-      IMG_speed1, IMG_speed2, IMG_dot, 
-      IMG_empty,  IMG_empty,  IMG_empty);
+      IMG_timer1,    IMG_timer2,    IMG_colo, 
+      IMG_speed1,    IMG_speed2,    IMG_dot, 
+      IMG_empty,     IMG_empty,     IMG_empty);
   else if(mode == SPEED)
     oled_icon_display( 
       IMG_speed1,    IMG_speed2,    IMG_dot, 
@@ -269,7 +272,7 @@ int main(void) {
     present_time, 
     last_time = 0,
     present_fork,
-    num_int;
+    present_cadence;
   float 
     delta_crank_time,
     delta_fork_time,
@@ -310,7 +313,9 @@ int main(void) {
   // process start
   while(1) {
 
+    //------------------------------------------------------------------------------
     // I. Button interrupted 3 seconds wait
+    //------------------------------------------------------------------------------
 
     if (wait_for_press()){
       if (BUTTON[3]){
@@ -335,7 +340,9 @@ int main(void) {
       }
     }
 
+    //------------------------------------------------------------------------------
     // II. Update Time, Speed, Distance, Cadence.
+    //------------------------------------------------------------------------------
     
     // 1. Time Stamp Data Read
 
@@ -349,20 +356,20 @@ int main(void) {
 
     // Get present distance (unit: km) present_distance < 99.99;
     present_distance = (float)(present_fork * wheel_girth) / 1e6 + 0.01; // Number 0.01 is a bias.
-    if (present_distance < 0.02)
+    if (present_distance < 0.02) // Bias will make zero distance always output 0.01. This is to show a zero.
       present_distance = 0;
     
     // Get speed (unit: km/h) : present_speed < 99.99
-    if (delta_fork_time < 2990)
+    if (delta_fork_time < 2990) // If the fork rolls for more than three seconds, it is considered stationary.
       present_speed = 3.6 * wheel_girth / delta_fork_time;
     else
       present_speed = 0;
 
-    // Get cadence (unit: round/second) : num_int < 999
-    if (delta_crank_time < 2990)
-      num_int = (uint32_t)(12 / (delta_crank_time / 1000)) * 5; // Precision: 5 round
+    // Get cadence (unit: round/second) : present_cadence < 999
+    if (delta_crank_time < 2990) // If the crank rolls for more than three seconds, it is considered stationary.
+      present_cadence = (uint32_t)(12 / (delta_crank_time / 1000)) * 5; // Precision: 5 round
     else
-      num_int = 0;
+      present_cadence = 0;
 
     // Get present time (unit: second)
     if (delta_fork_time > 2990){ // if bicycle stopped
@@ -371,7 +378,9 @@ int main(void) {
     }
     last_time = present_time;
 
-    // 3. Refresh Segment & OLED
+    //------------------------------------------------------------------------------
+    // III. Refresh Segment & OLED
+    //------------------------------------------------------------------------------
 
     distance_int = (uint32_t) present_distance; // km
     distance_frac = (uint32_t) ((present_distance - distance_int) * 100); // km
@@ -393,11 +402,11 @@ int main(void) {
     else if (mode == SPEED){
       display_segment(mode, int2bcd(speed_int), int2bcd(speed_frac));
       oled_float_display(speed_int, speed_frac, 2, 4, 6, 8);
-      oled_int_display(num_int, 15, 16, 17, 18);
+      oled_int_display(present_cadence, 15, 16, 17, 18);
     }
     else{
-      display_segment(mode, int2bcd(num_int), int2bcd(0));
-      oled_int_display(num_int, 2, 4, 6, 8);
+      display_segment(mode, int2bcd(present_cadence), int2bcd(0));
+      oled_int_display(present_cadence, 2, 4, 6, 8);
       oled_float_display(distance_int, distance_frac, 15, 16, 17, 18);
     }
 
