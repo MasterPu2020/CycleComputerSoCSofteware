@@ -114,7 +114,7 @@ void oled_block_clear(void){
 }
 
 // In Auto mode, display a 00.00 format number to OLED 
-// input : Integer, Fraction, BlockIDs for 4 digits
+// input : Integer, Fraction, Block ID for 4 digits
 void oled_float_display(int num_int, int num_frac, int id1, int id2, int id3, int id4){
   if (num_int < 10)
     oled_block(id1, IMG_empty);
@@ -127,7 +127,7 @@ void oled_float_display(int num_int, int num_frac, int id1, int id2, int id3, in
 }
 
 // In Auto mode, display a 000 format number to OLED 
-// input : Integer, BlockIDs for 4 digits
+// input : Integer, Block ID for 4 digits
 void oled_int_display(int num_int, int id1, int id2, int id3, int id4){
   oled_block(id1, IMG_empty);
   if (num_int < 100)
@@ -295,12 +295,6 @@ int main(void) {
   oled_send(0x80, true);
   oled_send(0xC8, true);
   oled_send(0xAF, false); // CMD: display on
-  // oled_send(0x15, false); // CMD: set col (Debug)
-  // oled_send(0x00, true);  // (Debug)
-  // oled_send(0x7F, true);  // (Debug)
-  // oled_send(0x75, false); // CMD: set row (Debug)
-  // oled_send(0x00, true);  // (Debug)
-  // oled_send(0x5F, true);  // (Debug)
   oled_send(0x5C, false); // CMD: send pixels
   for (int i = 0; i < 128 * 96 * 2; i++)
     oled_send(0xFF, true); // DATA: white colour0, colour1
@@ -308,6 +302,7 @@ int main(void) {
   // oled hardware auto initiate
   OLED[0] = 0;
   oled_block_clear();
+  TIMER[1] = 0;
   oled_update_icon(mode);
   
   // process start
