@@ -2,24 +2,20 @@
 // Titile:  Cortex M0 Software Main C File
 // Author:  Clark Pu & ChangXin Shen
 // Team:    C4 Chip Designed
-// Version: 6.2 New OLED Manager
+// Version: 6.3 Use Only 6 ROM cells
 // Verification: Not Verified
 // Comment: Redesigned by Clark
 //------------------------------------------------------------------------------
 
-#define __MAIN_C__
-#include <stdint.h>
-#include <stdbool.h>
+# define __MAIN_C__
+# include <stdint.h>
+# include <stdbool.h>
 
-//------------------------------------------------------------------------------
-// Hardware Address &  Access Functions
-//------------------------------------------------------------------------------
-
-#define AHB_OLEDR_MANAGER_BASE   0xC0000000
-#define AHB_SEGMENT_MANAGER_BASE 0xA0000000
-#define AHB_TIMER_BASE           0x80000000
-#define AHB_SENSOR_MANAGER_BASE  0x60000000
-#define AHB_BUTTON_MANAGER_BASE  0x40000000
+# define    AHB_OLEDR_MANAGER_BASE      0xC0000000
+# define    AHB_SEGMENT_MANAGER_BASE    0xA0000000
+# define    AHB_TIMER_BASE              0x80000000
+# define    AHB_SENSOR_MANAGER_BASE     0x60000000
+# define    AHB_BUTTON_MANAGER_BASE     0x40000000
 
 # define    IMG_candence1    10
 # define    IMG_candence2    11
@@ -47,88 +43,98 @@
 # define    CADENCE          0xD
 # define    SETTING          0xE
 
+//------------------------------------------------------------------------------
+// Hardware Address &  Access Functions
+//------------------------------------------------------------------------------
+
 // OLED MANAGER
-// C[0]:     | Mode       : 0: Auto, 1: Normal
-// C[1]:     | Normal Mode: 2 bit D/C: 1/0 2: self update
-// C[2]:     | Normal Mode: 1 bit Ready flag.
-// C[3]:     | Normal Mode: 8 bit data.
-// C[4 + n]: | Pixel Block: 0 ~ n. Write Only
+// [0] C000_0000: 1bit | Mode        : 0 for Auto, 1 for Normal.
+// [1] C000_0004: 1bit | Normal Mode : 0 for Command 1 for Data.
+// [2] C000_0008: 1bit | Normal Mode : 0 for send data.
+// [3] C000_000C: 8bit | Normal Mode : 8 bit data.
+// [4 + n]        4bit | Pixel Block : 0 ~ n. Write Only
 volatile uint32_t* OLED = (volatile uint32_t*) AHB_OLEDR_MANAGER_BASE;
-bool oled_ready(void){return OLED[2]?true:false;}
-void  oled_mode(bool IsNormal){OLED[0] = IsNormal?1:0; return;}
-void  oled_send(uint32_t Data, bool DnC){OLED[1] = DnC?1:0; OLED[3] = Data; OLED[2] = 0; return;}
-void oled_block(int BlockID, uint32_t ResourceID){OLED[BlockID + 4] = ResourceID; return;}
 
 // SEGMENT MANAGER
-// SEGMENT[0]     Fraction       0xA0000000
-// SEGMENT[1]     Integer        0xA0000004
-// SEGMENT[2]     Mode           0xA0000008
+// [0] A000_0000: 8bit  | Storing BCD code of the fraction part
+// [1] A000_0004: 12bit | Storing BCD code of the integer part
+// [2] A000_0008: 4bit  | Storing Mode Information
 volatile uint32_t* SEGMENT = (volatile uint32_t*) AHB_SEGMENT_MANAGER_BASE;
-void display_segment(uint32_t Mode, uint32_t Integer, uint32_t Fraction){SEGMENT[0] = Fraction; SEGMENT[1] = Integer; SEGMENT[2] = Mode; return;}
 
 // TIMER
-// 8000_0000: 32bit | Trip timer records less than 18 hours
-// 8000_0004: 32bit | 3 second flag
+// [0] 8000_0000: 16bit | Trip timer records less than 18 hours
+// [1] 8000_0004: 1bit  | 3 second flag
 volatile uint32_t* TIMER = (volatile uint32_t*) AHB_TIMER_BASE;
-bool            time_up(void){return  TIMER[1]?true:false;}
-uint32_t read_trip_time(void){return  TIMER[0];}
-void       claim_update(void){TIMER[1] = 0; return;}
-void   write_trip_timer(int new_time){TIMER[0] = new_time; return;}
 
 // SENSOR MANAGER
-// 6000_0000: 32bit | Recording triggerd fork cycle number
-// 6000_0004: 32bit | Recording triggerd 1 cycle crank time
-// 6000_0008: 32bit | Recording triggerd 1 cycle fork time
+// [0] 6000_0000: 16bit | Recording triggerd fork cycle number
+// [1] 6000_0004: 16bit | Recording triggerd 1 cycle crank time
+// [2] 6000_0008: 16bit | Recording triggerd 1 cycle fork time
 volatile uint32_t* SENSOR  = (volatile uint32_t*) AHB_SENSOR_MANAGER_BASE;
-uint32_t          read_fork(void){return SENSOR[0];}
-void             clear_fork(void){SENSOR[0] = 0; return;}
-float  read_delta_fork_time(void){return (float)(SENSOR[2]);}
-float read_delta_crank_time(void){return (float)(SENSOR[1]);}
 
 // BUTTON MANAGER
-// BUTTON[0]      DayNight       0x40000000
-// BUTTON[1]      Mode           0x40000004
-// BUTTON[2]      Trip           0x40000008
-// BUTTON[3]      Setting        0x4000000A
-// BUTTON[4]      NewData        0x40000010
+// [0] 4000_0000: 1bit  | DayNight Switch Flag
+// [1] 4000_0004: 4bit  | Mode Switch Times
+// [2] 4000_0008: 4bit  | Trip Clear Times
+// [3] 4000_000C: 1bit  | Wheel Setting Flag
+// [4] 4000_0010: 1bit  | New button pressed Flag
 volatile uint32_t* BUTTON  = (volatile uint32_t*) AHB_BUTTON_MANAGER_BASE;
-bool   check_button(void){return BUTTON[4]?true:false;}
-bool        setting(void){return BUTTON[3]?true:false;}
-uint32_t check_trip(void){return BUTTON[2];}
-uint32_t check_mode(void){return BUTTON[1];}
-bool       press_ui(void){return BUTTON[0]?true:false;}
+
+// In Normal mode, send 8 bit data or command to OLED
+void  oled_send(uint32_t Data, bool DnC){
+  OLED[1] = DnC?1:0; 
+  OLED[3] = Data; 
+  OLED[2] = 0; 
+  return;
+}
+
+// In Auto mode, let hardware manage sending a block of a picture to OLED
+void oled_block(int BlockID, uint32_t ResourceID){
+  OLED[BlockID + 4] = ResourceID; 
+  return;
+}
+
+// Both integer and fraction must be in a BCD coding style
+void display_segment(uint32_t Mode, uint32_t Integer, uint32_t Fraction){
+  SEGMENT[0] = Fraction; 
+  SEGMENT[1] = Integer; 
+  SEGMENT[2] = Mode; 
+  return;
+}
 
 //------------------------------------------------------------------------------
 // Compound Functions
 //------------------------------------------------------------------------------
 
+// In Auto mode, let hardware manage sending all block with blank picture to OLED
+void oled_block_clear(void){
+  for (int i = 0; i < 20; i++)
+    oled_block(i, IMG_empty);
+  return;
+}
+
+// In Auto mode, input : Integer, Fraction, Blocks for 4 digits
 void oled_float_display(int num_int, int num_frac, int num1, int num2, int num3, int num4){
-  if (num_int > 9)
-    oled_block(num1, num_int / 10 % 10);
-  else
-    oled_block(num1, IMG_empty);
+  oled_block(num1, num_int / 10 % 10);
   oled_block(num2, num_int % 10);
   oled_block(num3, num_frac / 10 % 10);
   oled_block(num4, num_frac % 10);
+  if (num_int < 10)
+    oled_block(num1, IMG_empty);
+  return;
 }
 
-void oled_cadence_display(int present_cadence, int num1, int num2, int num3, int num4){
+// In Auto mode, input : Integer, Blocks for 4 digits
+void oled_int_display(int num_int, int num1, int num2, int num3, int num4){
   oled_block(num1, IMG_empty);
-  if (present_cadence > 99){
-    oled_block(num2, present_cadence / 100 % 10);
-    oled_block(num3, present_cadence / 10 % 10);
-    oled_block(num4, present_cadence % 10);
-  }
-  else if (present_cadence > 9){
+  oled_block(num2, num_int / 100 % 10);
+  oled_block(num3, num_int / 10 % 10);
+  oled_block(num4, num_int % 10);
+  if (num_int < 100)
     oled_block(num2, IMG_empty);
-    oled_block(num3, present_cadence / 10 % 10);
-    oled_block(num4, present_cadence % 10);
-  }
-  else{
-    oled_block(num2, IMG_empty);
+  if (num_int < 10)
     oled_block(num3, IMG_empty);
-    oled_block(num4, present_cadence % 10);
-  }
+  return;
 }
 
 void oled_icon_display(int pic1, int pic2, int pic3, int pic4, int pic5, int pic6,int pic7, int pic8, int pic9){
@@ -144,6 +150,7 @@ void oled_icon_display(int pic1, int pic2, int pic3, int pic4, int pic5, int pic
   oled_block(9, pic7);
   oled_block(10, pic8);
   oled_block(11, pic9);
+  return;
 }
 
 void oled_update_icon(int mode){
@@ -170,9 +177,9 @@ uint32_t int2bcd(uint32_t value){
 
 bool wait_for_press(void){
   while(1)
-    if (check_button())
+    if (BUTTON[4])
       return true;
-    else if (time_up())
+    else if (TIMER[1])
       return false;
 }
 
@@ -181,43 +188,38 @@ uint32_t wait_for_wheel_girth(uint32_t wheel_girth) {
   int wheel_3 = wheel_girth / 100 % 10;
   int wheel_2 = wheel_girth / 10 % 10;
   int wheel_1 = wheel_girth % 10;
-  for (int i = 0; i < 20; i++)
-    oled_block(i, IMG_empty);
+  oled_block_clear();
   oled_block(0, IMG_setting1);
   oled_block(1, IMG_setting2);
   oled_block(3, IMG_underline);
   oled_block(9, IMG_m);
   oled_block(10, IMG_m);
   oled_block(2, 2);
-  oled_block(4, wheel_3);
-  oled_block(6, wheel_2);
-  oled_block(8, wheel_1);
-  display_segment(0xE, int2bcd(wheel_girth % 1000), 0);
   while (1){
-    if (check_button()) {
-      press_times += check_mode();
+    oled_block(4, wheel_3);
+    oled_block(6, wheel_2);
+    oled_block(8, wheel_1);
+    display_segment(SETTING, int2bcd(wheel_girth % 1000), 0);
+    if (BUTTON[4]) {
+      press_times += BUTTON[1];
       if (press_times > 2){
         oled_block(7, IMG_empty);
         return wheel_girth;
       }
       if (press_times == 0){
-        wheel_3 = (wheel_3 + check_trip()) % 10;
+        wheel_3 = (wheel_3 + BUTTON[2]) % 10;
       }
       else if (press_times == 1){
-        wheel_2 = (wheel_2 + check_trip()) % 10;
+        wheel_2 = (wheel_2 + BUTTON[2]) % 10;
         oled_block(3, IMG_empty);
         oled_block(5, IMG_underline);
       }
       else if (press_times == 2){
-        wheel_1 = (wheel_1 + check_trip()) % 10;
+        wheel_1 = (wheel_1 + BUTTON[2]) % 10;
         oled_block(5, IMG_empty);
         oled_block(7, IMG_underline);
       }
       wheel_girth = 2000 + wheel_3 * 100 + wheel_2 * 10 + wheel_1;
-      display_segment(SETTING, int2bcd(wheel_girth % 1000), 0);
-      oled_block(4, wheel_3);
-      oled_block(6, wheel_2);
-      oled_block(8, wheel_1);
     }
   }
 }
@@ -228,28 +230,29 @@ uint32_t wait_for_wheel_girth(uint32_t wheel_girth) {
 
 int main(void) {
 
-  // variables
-  bool is_night;
-  uint32_t mode, wheel_girth;
+  // general initiate
+  bool is_night = false;
   uint32_t 
-    present_time, last_time, 
-    present_fork, 
-    present_cadence;
+    mode = ODOMETER,
+    wheel_girth = 2136;
+  uint32_t 
+    distance_int, distance_frac,
+    time_int, time_frac,
+    speed_int, speed_frac;
+  uint32_t 
+    present_time, 
+    last_time = 0,
+    present_fork,
+    num_int;
   float 
     delta_crank_time,
     delta_fork_time,
     present_distance, 
     present_speed;
-
-  // general initiate
-  wheel_girth = 2136; // setting
-  is_night = false;
-  last_time = 0;
-  mode = ODOMETER;
   display_segment(mode, 0, 0);
 
   // oled software initiate
-  oled_mode(true); // normal 8 bit sending mode
+  OLED[0] = 1; // normal 8 bit sending mode
   oled_send(0xFD, false); // CMD: unlock all commands
   oled_send(0xB1, true);
   oled_send(0xCA, false); // CMD: set MUX ratio to fit 128*96 OLED screen
@@ -262,22 +265,21 @@ int main(void) {
   oled_send(0xC8, true);
   oled_send(0x80, true);
   oled_send(0xC8, true);
-  oled_send(0xAF, false); // CMD: display on (Debug)
-  oled_send(0x15, false); // CMD: set col (Debug)
-  oled_send(0x00, true);  // (Debug)
-  oled_send(0x7F, true);  // (Debug)
-  oled_send(0x75, false); // CMD: set row (Debug)
-  oled_send(0x00, true);  // (Debug)
-  oled_send(0x5F, true);  // (Debug)
+  // oled_send(0x15, false); // CMD: set col (Debug)
+  // oled_send(0x00, true);  // (Debug)
+  // oled_send(0x7F, true);  // (Debug)
+  // oled_send(0x75, false); // CMD: set row (Debug)
+  // oled_send(0x00, true);  // (Debug)
+  // oled_send(0x5F, true);  // (Debug)
   oled_send(0x5C, false); // CMD: send pixels
-  // for (int i = 0; i < 128 * 96 * 2; i++)
-  //   oled_send(0xFF, true); // DATA: white colour0, colour1
+  for (int i = 0; i < 128 * 96 * 2; i++)
+    oled_send(0xFF, true); // DATA: white colour0, colour1
   
   // oled auto initiate
-  oled_mode(false); // auto block update mode
-  for (int i = 0; i < 20; i++)
-    oled_block(i, IMG_empty);
+  OLED[0] = 0; // auto block update mode
+  oled_block_clear();
   oled_update_icon(mode);
+  oled_send(0xAF, false); // CMD: display on
   
   // process start
   while(1) {
@@ -285,22 +287,22 @@ int main(void) {
     // I. Button interrupted 3 seconds wait
 
     if (wait_for_press()){
-      if (setting()){
+      if (BUTTON[3]){
         wheel_girth = wait_for_wheel_girth(wheel_girth);
         mode = ODOMETER;
         oled_update_icon(mode);
       }
-      else if (check_trip() != 0){
-        clear_fork();
-        write_trip_timer(0);
+      else if (BUTTON[2] != 0){
+        SENSOR[0] = 0;
+        TIMER[0] = 0;
         last_time = 0;
       } 
-      else if (press_ui()){
+      else if (BUTTON[0]){
         is_night = ! is_night;
         is_night ? oled_send(0xA7, false) : oled_send(0xA6, false); // night mode : day mode
       }
       else{
-        mode = mode + check_mode() % 4;
+        mode = mode + BUTTON[1] % 4;
         if (mode > CADENCE)
           mode = mode - 4;
         oled_update_icon(mode);
@@ -311,11 +313,11 @@ int main(void) {
     
     // 1. Time Stamp Data Read
 
-    present_time     = read_trip_time();
-    present_fork     = read_fork();
-    delta_fork_time  = read_delta_fork_time();
-    delta_crank_time = read_delta_crank_time();
-    claim_update();
+    present_time     = TIMER[0];
+    present_fork     = SENSOR[0];
+    delta_fork_time  = (float) SENSOR[2];
+    delta_crank_time = (float) SENSOR[1];
+    TIMER[1] = 0; // claim update
 
     // 2. Calculate
 
@@ -330,55 +332,48 @@ int main(void) {
     else
       present_speed = 0;
 
-    // Get cadence (unit: round/second) : present_cadence < 999
+    // Get cadence (unit: round/second) : num_int < 999
     if (delta_crank_time < 2990)
-      present_cadence = (uint32_t)(12 / (delta_crank_time / 1000)) * 5; // Precision: 5 round
+      num_int = (uint32_t)(12 / (delta_crank_time / 1000)) * 5; // Precision: 5 round
     else
-      present_cadence = 0;
+      num_int = 0;
 
     // Get present time (unit: second)
     if (delta_fork_time > 2990){ // if bicycle stopped
       present_time = last_time;
-      write_trip_timer(last_time);
+      TIMER[0] = last_time;
     }
     last_time = present_time;
 
     // 3. Refresh Segment & OLED
 
-    uint32_t main_int, main_frac, sub_int, sub_frac;
+    distance_int = (uint32_t) present_distance; // km
+    distance_frac = (uint32_t) ((present_distance - distance_int) * 100); // km
+    time_int = present_time / 3600; // hour
+    time_frac = (present_time % 3600) / 60; // minute
+    speed_int = (uint32_t) present_speed; // km/h
+    speed_frac = (uint32_t) ((present_speed - speed_int) * 100); // km/h
 
     if (mode == ODOMETER){
-      main_int  = (uint32_t) present_distance; // km
-      main_frac = (uint32_t) ((present_distance - main_int) * 100); // km
-      sub_int  = present_time / 3600; // hour
-      sub_frac = (present_time % 3600) / 60; // minute
-      oled_float_display(main_int, main_frac, 2, 4, 6, 8);
-      oled_float_display(sub_int, sub_frac, 15, 16, 17, 18);
+      display_segment(mode, int2bcd(distance_int), int2bcd(distance_frac));
+      oled_float_display(distance_int, distance_frac, 2, 4, 6, 8);
+      oled_float_display(time_int, time_frac, 15, 16, 17, 18);
     }
     else if (mode == DURATION){
-      main_int  = present_time / 3600; // hour
-      main_frac = (present_time % 3600) / 60; // minute
-      sub_int  = (uint32_t) present_speed; // km/h
-      sub_frac = (uint32_t) ((present_speed - sub_int) * 100); // km/h
-      oled_float_display(main_int, main_frac, 2, 4, 6, 8);
-      oled_float_display(sub_int, sub_frac, 15, 16, 17, 18);
+      display_segment(mode, int2bcd(time_int), int2bcd(time_frac));
+      oled_float_display(time_int, time_frac, 2, 4, 6, 8);
+      oled_float_display(speed_int, speed_frac, 15, 16, 17, 18);
     }
     else if (mode == SPEED){
-      main_int  = (uint32_t) present_speed; // km/h
-      main_frac = (uint32_t) ((present_speed - main_int) * 100); // km/h
-      oled_float_display(main_int, main_frac, 2, 4, 6, 8);
-      oled_cadence_display(present_cadence, 15, 16, 17, 18);
+      display_segment(mode, int2bcd(speed_int), int2bcd(speed_frac));
+      oled_float_display(speed_int, speed_frac, 2, 4, 6, 8);
+      oled_int_display(num_int, 15, 16, 17, 18);
     }
-    else if (mode == CADENCE){
-      main_int  = present_cadence; // r/s
-      main_frac = 0; // nothing to show
-      sub_int  = (uint32_t) present_distance; // km
-      sub_frac = (uint32_t) ((present_distance - sub_int) * 100); // km
-      oled_cadence_display(present_cadence, 2, 4, 6, 8);
-      oled_float_display(sub_int, sub_frac, 15, 16, 17, 18);
+    else{
+      display_segment(mode, int2bcd(num_int), int2bcd(0));
+      oled_int_display(num_int, 2, 4, 6, 8);
+      oled_float_display(distance_int, distance_frac, 15, 16, 17, 18);
     }
-
-    display_segment(mode, int2bcd(main_int), int2bcd(main_frac));
 
   }
 }

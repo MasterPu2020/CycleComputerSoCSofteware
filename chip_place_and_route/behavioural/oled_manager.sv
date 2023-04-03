@@ -37,11 +37,11 @@ timeunit 1ns; timeprecision 100ps;
 
 //------------------------------------------------------------------------------
 // Memory Map:
-// C[0]:     | Mode       : 0: Auto, 1: Normal
-// C[1]:     | Normal Mode: 2 bit D/C: 1/0 2: self update
-// C[2]:     | Normal Mode: 1 bit Ready flag.
-// C[3]:     | Normal Mode: 8 bit data.
-// C[3 + n]: | Pixel Block: 0 ~ n. Write Only
+// [0] C000_0000: 1bit | Mode        : 0 for Auto, 1 for Normal.
+// [1] C000_0004: 1bit | Normal Mode : 0 for Command 1 for Data.
+// [2] C000_0008: 1bit | Normal Mode : 0 for send data.
+// [3] C000_000C: 8bit | Normal Mode : 8 bit data.
+// [4 + n]        4bit | Pixel Block : 0 ~ n. Write Only
 //------------------------------------------------------------------------------
 
 localparam 
