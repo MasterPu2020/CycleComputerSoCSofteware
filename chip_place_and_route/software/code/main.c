@@ -147,7 +147,6 @@ void oled_icon_display(int pic1, int pic2, int pic3, int pic4, int pic5, int pic
 }
 
 void oled_update_icon(int mode){
-  // 0xA: Odometer  0xB: Duration  0xC: Speed  0xD: Cadence
   if (mode == ODOMETER)
     oled_icon_display(IMG_distance1, IMG_distance2, IMG_dot, IMG_timer1, IMG_timer2, IMG_colo, IMG_k, IMG_m, IMG_empty);
   else if (mode == DURATION)
@@ -215,7 +214,7 @@ uint32_t wait_for_wheel_girth(uint32_t wheel_girth) {
         oled_block(7, IMG_underline);
       }
       wheel_girth = 2000 + wheel_3 * 100 + wheel_2 * 10 + wheel_1;
-      display_segment(SETTING, int2bcd(wheel_girth % 1000), 0); // 0xE: Setting
+      display_segment(SETTING, int2bcd(wheel_girth % 1000), 0);
       oled_block(4, wheel_3);
       oled_block(6, wheel_2);
       oled_block(8, wheel_1);
@@ -246,7 +245,7 @@ int main(void) {
   wheel_girth = 2136; // setting
   is_night = false;
   last_time = 0;
-  mode = ODOMETER;  // 0xA: Odometer  0xB: Duration  0xC: Speed  0xD: Cadence
+  mode = ODOMETER;
   display_segment(mode, 0, 0);
 
   // oled software initiate
@@ -278,7 +277,7 @@ int main(void) {
   oled_mode(false); // auto block update mode
   for (int i = 0; i < 20; i++)
     oled_block(i, IMG_empty);
-  oled_icon_display(IMG_distance1, IMG_distance2, IMG_dot, IMG_timer1, IMG_timer2, IMG_colo, IMG_k, IMG_m, IMG_empty);
+  oled_update_icon(mode);
   
   // process start
   while(1) {
