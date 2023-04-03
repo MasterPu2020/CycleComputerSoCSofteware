@@ -89,8 +89,8 @@ void  oled_send(uint32_t Data, bool DnC){
 }
 
 // In Auto mode, let hardware manage sending a block of a picture to OLED
-void oled_block(int BlockID, uint32_t ResourceID){
-  OLED[BlockID + 4] = ResourceID; 
+void oled_block(int BlockID, uint32_t PictureID){
+  OLED[BlockID + 4] = PictureID;
   return;
 }
 
@@ -113,36 +113,46 @@ void oled_block_clear(void){
   return;
 }
 
-// In Auto mode, input : Integer, Fraction, Blocks for 4 digits
-void oled_float_display(int num_int, int num_frac, int num1, int num2, int num3, int num4){
-  oled_block(num1, num_int / 10 % 10);
-  oled_block(num2, num_int % 10);
-  oled_block(num3, num_frac / 10 % 10);
-  oled_block(num4, num_frac % 10);
+// In Auto mode, display a 00.00 format number to OLED 
+// input : Integer, Fraction, BlockIDs for 4 digits
+void oled_float_display(int num_int, int num_frac, int id1, int id2, int id3, int id4){
+  oled_block(id1, num_int / 10 % 10);
+  oled_block(id2, num_int % 10);
+  oled_block(id3, num_frac / 10 % 10);
+  oled_block(id4, num_frac % 10);
   if (num_int < 10)
-    oled_block(num1, IMG_empty);
+    oled_block(id1, IMG_empty);
   return;
 }
 
-// In Auto mode, input : Integer, Blocks for 4 digits
-void oled_int_display(int num_int, int num1, int num2, int num3, int num4){
-  oled_block(num1, IMG_empty);
-  oled_block(num2, num_int / 100 % 10);
-  oled_block(num3, num_int / 10 % 10);
-  oled_block(num4, num_int % 10);
+// In Auto mode, display a 000 format number to OLED 
+// input : Integer, BlockIDs for 4 digits
+void oled_int_display(int num_int, int id1, int id2, int id3, int id4){
+  oled_block(id1, IMG_empty);
+  oled_block(id2, num_int / 100 % 10);
+  oled_block(id3, num_int / 10 % 10);
+  oled_block(id4, num_int % 10);
   if (num_int < 100)
-    oled_block(num2, IMG_empty);
+    oled_block(id2, IMG_empty);
   if (num_int < 10)
-    oled_block(num3, IMG_empty);
+    oled_block(id3, IMG_empty);
   return;
 }
 
-void oled_icon_display(int pic1, int pic2, int pic3, int pic4, int pic5, int pic6,int pic7, int pic8, int pic9){
+// In Auto mode, display main and subsidiary icons and main unit to OLED
+// input : 
+//   3 picture ID for main icon
+//   3 picture ID for subsidiary icon 
+//   3 picture ID for main unit
+void oled_icon_display(
+  int pic1, int pic2, int pic3, 
+  int pic4, int pic5, int pic6,
+  int pic7, int pic8, int pic9){
   // main icon 
   oled_block(0, pic1);
   oled_block(1, pic2);
   oled_block(12, pic3);
-  // sub icon 
+  // subsidiary icon 
   oled_block(13, pic4);
   oled_block(14, pic5);
   oled_block(19, pic6);
@@ -153,18 +163,32 @@ void oled_icon_display(int pic1, int pic2, int pic3, int pic4, int pic5, int pic
   return;
 }
 
+// In Auto mode, display main and subsidiary icons and main unit to OLED
 void oled_update_icon(int mode){
   if (mode == ODOMETER)
-    oled_icon_display(IMG_distance1, IMG_distance2, IMG_dot, IMG_timer1, IMG_timer2, IMG_colo, IMG_k, IMG_m, IMG_empty);
+    oled_icon_display(
+      IMG_distance1, IMG_distance2, IMG_dot, 
+      IMG_timer1,    IMG_timer2,    IMG_colo, 
+      IMG_k,         IMG_m,         IMG_empty);
   else if (mode == DURATION)
-    oled_icon_display(IMG_timer1, IMG_timer2, IMG_colo, IMG_speed1, IMG_speed2, IMG_dot, IMG_empty, IMG_empty, IMG_empty);
+    oled_icon_display( 
+      IMG_timer1, IMG_timer2, IMG_colo, 
+      IMG_speed1, IMG_speed2, IMG_dot, 
+      IMG_empty,  IMG_empty,  IMG_empty);
   else if(mode == SPEED)
-    oled_icon_display(IMG_speed1, IMG_speed2, IMG_dot, IMG_candence1, IMG_candence2, IMG_empty, IMG_k, IMG_m, IMG_h);
+    oled_icon_display( 
+      IMG_speed1,    IMG_speed2,    IMG_dot, 
+      IMG_candence1, IMG_candence2, IMG_empty, 
+      IMG_k,         IMG_m,         IMG_h);
   else
-    oled_icon_display(IMG_candence1, IMG_candence2, IMG_empty, IMG_distance1, IMG_distance2, IMG_dot, IMG_rpm1, IMG_rpm2, IMG_m);
+    oled_icon_display( 
+      IMG_candence1, IMG_candence2, IMG_empty, 
+      IMG_distance1, IMG_distance2, IMG_dot, 
+      IMG_rpm1,      IMG_rpm2,      IMG_m);
   return;
 }
 
+// Encode integer with BCD style
 uint32_t int2bcd(uint32_t value){
     uint32_t bcd = 0, shift = 0;
     while (value != 0) {
@@ -175,6 +199,7 @@ uint32_t int2bcd(uint32_t value){
     return bcd;
 }
 
+// Busily waiting for button press until timer flag raises
 bool wait_for_press(void){
   while(1)
     if (BUTTON[4])
@@ -183,6 +208,7 @@ bool wait_for_press(void){
       return false;
 }
 
+// Busily waiting and dealing with setting operation and displays
 uint32_t wait_for_wheel_girth(uint32_t wheel_girth) {
   int press_times = 0;
   int wheel_3 = wheel_girth / 100 % 10;
@@ -231,7 +257,7 @@ uint32_t wait_for_wheel_girth(uint32_t wheel_girth) {
 int main(void) {
 
   // general initiate
-  bool is_night = false;
+  bool is_night_mode = false;
   uint32_t 
     mode = ODOMETER,
     wheel_girth = 2136;
@@ -252,7 +278,7 @@ int main(void) {
   display_segment(mode, 0, 0);
 
   // oled software initiate
-  OLED[0] = 1; // normal 8 bit sending mode
+  OLED[0] = 1;
   oled_send(0xFD, false); // CMD: unlock all commands
   oled_send(0xB1, true);
   oled_send(0xCA, false); // CMD: set MUX ratio to fit 128*96 OLED screen
@@ -265,6 +291,7 @@ int main(void) {
   oled_send(0xC8, true);
   oled_send(0x80, true);
   oled_send(0xC8, true);
+  oled_send(0xAF, false); // CMD: display on
   // oled_send(0x15, false); // CMD: set col (Debug)
   // oled_send(0x00, true);  // (Debug)
   // oled_send(0x7F, true);  // (Debug)
@@ -275,11 +302,10 @@ int main(void) {
   for (int i = 0; i < 128 * 96 * 2; i++)
     oled_send(0xFF, true); // DATA: white colour0, colour1
   
-  // oled auto initiate
-  OLED[0] = 0; // auto block update mode
+  // oled hardware auto initiate
+  OLED[0] = 0;
   oled_block_clear();
   oled_update_icon(mode);
-  oled_send(0xAF, false); // CMD: display on
   
   // process start
   while(1) {
@@ -298,8 +324,8 @@ int main(void) {
         last_time = 0;
       } 
       else if (BUTTON[0]){
-        is_night = ! is_night;
-        is_night ? oled_send(0xA7, false) : oled_send(0xA6, false); // night mode : day mode
+        is_night_mode = ! is_night_mode;
+        is_night_mode ? oled_send(0xA7, false) : oled_send(0xA6, false); // night mode : day mode
       }
       else{
         mode = mode + BUTTON[1] % 4;
