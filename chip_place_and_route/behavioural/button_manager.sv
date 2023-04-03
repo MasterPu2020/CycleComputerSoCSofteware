@@ -35,14 +35,13 @@ module button_manager(
 //------------------------------------------------------------------------------
 // Memory Map: (Only showing the valid bits)
 // 4000_0000: 1bit  | DayNight Switch Flag
-// 4000_0004: 4bit  | Mode Switch Times
-// 4000_0008: 4bit  | Trip Clear Times
+// 4000_0004: 1bit  | Mode Switch Flag
+// 4000_0008: 1bit  | Trip Clear Flag
 // 4000_000C: 1bit  | Wheel Setting Flag
 // 4000_0010: 1bit  | New button pressed Flag
 //------------------------------------------------------------------------------
   
-  logic [3:0] Mode_Store, Trip_Store;
-  logic DayNight_Store, Setting_Store;
+  logic Mode_Store, Trip_Store, DayNight_Store, Setting_Store;
   wire  NewData;
 
 //------------------------------------------------------------------------------
@@ -264,10 +263,10 @@ module button_manager(
         Setting_Store <= 1;
       
       if (Con_Trip)
-        Trip_Store <= Trip_Store + 1;
+        Trip_Store <= 1;
       
       if (Con_Mode)
-        Mode_Store <= Mode_Store + 1;
+        Mode_Store <= 1;
     end
   end
 

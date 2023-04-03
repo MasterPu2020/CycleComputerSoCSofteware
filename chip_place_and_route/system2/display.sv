@@ -69,7 +69,7 @@ initial begin
         oled_real_colour[0] = SDIN;
         if (oled_counter >= 15) begin
           oled_counter = 0;
-          if (oled_real_colour == 0) begin
+          if (oled_real_colour == 16'hFFFF) begin
             oled_ram[oled_x][oled_y] = 0;
             //$display(" Pixel(%d, %d) 0 is written into OLED RAM (%t)", oled_x, oled_y, $time);
           end
@@ -98,15 +98,15 @@ initial begin
       oled_command[0] = SDIN;
       if (oled_counter >= 7) begin
         oled_counter = 0;
-        // // Debug
+        // Debug
         // if (oled_command == 8'b0001_0101)
-        //   $display("CMD: oled_X location. Accepted.");
+        //   $display("CMD: oled_X location. Accepted. (%t)", $time);
         // else if (oled_command == 8'b0111_0101)
-        //   $display("CMD: oled_Y location. Accepted.");
+        //   $display("CMD: oled_Y location. Accepted. (%t)", $time);
         // else if (oled_command == 8'b0101_1100)
         //   $display("CMD: Colour. Accepted.");
-        if (oled_command != 8'b0001_0101 && oled_command != 8'b0111_0101 && oled_command != 8'b0101_1100)
-          $display("CMD: Unknown: %b.", oled_command, " Rejected.");
+        // if (oled_command != 8'b0001_0101 && oled_command != 8'b0111_0101 && oled_command != 8'b0101_1100)
+        //   $display("CMD: Unknown: %b.", oled_command, ". (%t)", $time);
       end
       else begin
         oled_counter ++;
@@ -128,9 +128,9 @@ initial begin
     for (integer j = 0; j < 96; j++) begin
       for (integer i = 0; i < 128; i++) begin
         if(oled_ram[i][j])
-          oled_row = {oled_row, "-"};
-        else
           oled_row = {oled_row, "#"};
+        else
+          oled_row = {oled_row, "_"};
       end
       $display("%s", oled_row);
       oled_row = "  ";

@@ -318,7 +318,7 @@ int main(void) {
         mode = ODOMETER;
         oled_update_icon(mode);
       }
-      else if (BUTTON[2] != 0){
+      else if (BUTTON[2]){
         SENSOR[0] = 0;
         TIMER[0] = 0;
         last_time = 0;
@@ -328,7 +328,7 @@ int main(void) {
         is_night_mode ? oled_send(0xA7, false) : oled_send(0xA6, false); // night mode : day mode
       }
       else{
-        mode = mode + BUTTON[1] % 4;
+        mode += BUTTON[1];
         if (mode > CADENCE)
           mode = mode - 4;
         oled_update_icon(mode);
