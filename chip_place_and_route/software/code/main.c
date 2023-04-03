@@ -325,7 +325,9 @@ int main(void) {
       } 
       else if (BUTTON[0]){
         is_night_mode = ! is_night_mode;
+        OLED[0] = 1;
         is_night_mode ? oled_send(0xA7, false) : oled_send(0xA6, false); // night mode : day mode
+        OLED[0] = 0;
       }
       else{
         mode += BUTTON[1];
