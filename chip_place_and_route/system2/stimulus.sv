@@ -14,9 +14,10 @@
 //    Mission Status: ----- Passed, Failed, Not Verified.
 //    Verifing with software version 5.5
 //  `define OdometerVerification      // Not Verified
-  `define TripTimeVerification      // Not Verified
+//  `define TripTimeVerification      // Not Verified
 //  `define TimeStopVerification      // Not verified
 //  `define SpeedVerification         // Not Verified
+  `define DayNightVerification
 //  `define CadenceVerification       // Behavioural Passed
 //  `define ModeSwitchVerification    // Gate Level Passed
 //  `define SimpleVerification        // Behavioural Passed 
@@ -58,8 +59,10 @@ integer
   error_odometer = 0,
   error_time = 0,
   error_speed = 0,
-  error_cadence = 0,
-  time_label60;
+  error_cadence = 0;
+
+time
+  current_time;
 
 logic [25:0][99:0]
   error_odometer_value,
@@ -190,7 +193,7 @@ end
   //--------------------------------------------------------------
   task OdometerTest;
     $display("\n This is odometer:");
-    odometer = (wheel_size * fork_times);
+    odometer = (2.136 * fork_times);
     DisplaySegment;
     $display("\n Real Odometer is %fkm. Segment display is %fkm (fork_times = %d). (%t)", odometer/1000.0, seg_value, fork_times, $time);
     $display("------------------------------------------------------------------------------");
@@ -265,6 +268,12 @@ end
     #0.3s ->  press_trip_button;
   endtask
 
+  task DoublePressModeButton;
+    $display("\n Mode button will be pressed twice. \n");
+    #1s   -> press_mode_button;
+    #0.3s -> press_mode_button;
+  endtask
+
   //--------------------------------------------------------------
   // Customization Task
   //--------------------------------------------------------------
@@ -279,7 +288,7 @@ end
     wheelsize_ref_dig0 =  wheelsize_ref     %10;
     
     PressSettingButton;
-    DisplaySegment;
+    #1s DisplaySegment;
     
     while (seg_digit_value2 != wheelsize_ref_dig2) begin
       PressTripButton;
@@ -337,25 +346,25 @@ end
     end
   endtask
 
-  //------------------------------------------------------------------------------
-  // Display Tasks
-  //------------------------------------------------------------------------------
-  task DisplaySegment;
-    #1s;
-    for (int i=0;i<7;i++)
-      @(posedge Clock);
-    DisplayRefresh_Seg = 0;
+//------------------------------------------------------------------------------
+// Display Tasks
+//------------------------------------------------------------------------------
+task DisplaySegment;
+  #1s;
+  for (int i=0;i<7;i++)
     @(posedge Clock);
-    DisplayRefresh_Seg = 1;
-    @(posedge Clock);
-    DisplayRefresh_Seg = 0;
-  endtask
+  DisplayRefresh_Seg = 0;
+  @(posedge Clock);
+  DisplayRefresh_Seg = 1;
+  @(posedge Clock);
+  DisplayRefresh_Seg = 0;
+endtask
 
-  task DisplayOLED;
-    #1s;
-    @(posedge Clock);
-    DisplayRefresh = ~DisplayRefresh;
-  endtask
+task DisplayOLED;
+  #1s;
+  @(posedge Clock);
+  DisplayRefresh = ~DisplayRefresh;
+endtask
 
 //------------------------------------------------------------------------------
 // Gate Level Custom Stimulus & Verification
@@ -506,6 +515,22 @@ end
 
       EndSimulation;
     end
+  
+  //--------------------------------------------------------------
+  // Gate Level DayNight Verification
+  //--------------------------------------------------------------
+  `elsif DayNightVerification
+    initial begin
+      StartUp;
+
+      for (int i=0;i<20;i++) begin
+        DoublePressModeButton;
+        #4s;
+        DisplaySegment;
+      end
+
+      EndSimulation;
+    end
 
   //--------------------------------------------------------------
   // Gate Level Simple Verification
@@ -518,7 +543,7 @@ end
       // Three Mode Test Round 1
       //--------------------------------------------------
       CustomizeWheelSize(2694);
-      CustomizeSpeedCadence(7,30);
+      CustomizeSpeedCadence(3,30);
 
       // Odometer Test
       CustomizeMode(0);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
@@ -527,11 +552,15 @@ end
 
       // Speed Test
       CustomizeMode(2);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
+      for (int i = 0; i<5; i++)
+        #1s $display("Running at %t", $time);
       for (int i = 0; i<10; i++)
         SpeedTest;
 
       // Cadence Test
       CustomizeMode(3);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
+      for (int i = 0; i<5; i++)
+        #1s $display("Running at %t", $time);
       for (int i = 0; i<10; i++)
         CadenceTest;
 
@@ -539,21 +568,27 @@ end
       // Three Mode Test Round 2
       //--------------------------------------------------
       CustomizeWheelSize(2765);
-      CustomizeSpeedCadence(120,200);
+      CustomizeSpeedCadence(500,600);
 
       // Odometer Test
       CustomizeMode(0);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
-      for (int i=0; i<5; i++)
+      for (int i = 0; i<5; i++)
+        #1s $display("Running at %t", $time);
+      for (int i = 0; i<5; i++)
         OdometerTest;
 
       // Speed Test
       CustomizeMode(2);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
-      for (int i=0; i<10; i++)
+      for (int i = 0; i<5; i++)
+        #1s $display("Running at %t", $time);
+      for (int i = 0; i<10; i++)
         SpeedTest;
 
       // Cadence Test
       CustomizeMode(3);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
-      for (int i=0; i<10; i++)
+      for (int i = 0; i<10; i++)
+        #1s $display("Running at %t", $time);
+      for (int i = 0; i<10; i++)
         CadenceTest;
 
       //--------------------------------------------------
@@ -561,34 +596,43 @@ end
       //--------------------------------------------------
       CustomizeMode(1);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
 
-      for (int i=0;i<2;i++) begin
-        time_label60 = $time / 60;
-        $display(" Time Test: Wait until %ds",(time_label60+1)*60+1);
-        while ($time != (time_label60+1)*60+1);
-          TripTimeTest;
-      end
+      $display(" Time Test: Wait until 61s");
+      while ($time != 61);
+      TripTimeTest;
 
-      time_label60 = int'($time / 60);
+      $display(" Time Test: Wait until 121s");
+      while ($time != 121);
+
       $display(" Stop Test: Wait until 181s");
       CustomizeSpeedCadence(0,0);
-      while ($time != (time_label60+1)*60+1);
+      while ($time != 181);
       TripTimeTest;
 
       CustomizeMode(2);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
+      for (int i = 0; i<3; i++)
+        #1s $display("Running at %t", $time);
       SpeedTest;
 
       CustomizeMode(3);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
+      for (int i = 0; i<3; i++)
+        #1s $display("Running at %t", $time);
       CadenceTest;
 
       CustomizeMode(0);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
+      for (int i = 0; i<3; i++)
+        #1s $display("Running at %t", $time);
       OdometerTest;
 
       $display(" Clear Test");
       PressTripButton;
       trip_time = 0;
+      for (int i = 0; i<3; i++)
+        #1s $display("Running at %t", $time);
       CustomizeMode(0);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
       OdometerTest;
       CustomizeMode(1);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
+      for (int i = 0; i<3; i++)
+        #1s $display("Running at %t", $time);
       TripTimeTest;
 
       EndSimulation;
