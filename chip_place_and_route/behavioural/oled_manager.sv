@@ -310,7 +310,8 @@ always_ff @(posedge HCLK, negedge HRESETn) begin
       SendData: begin
         if (counter == 7) begin
           counter <= 0;
-          ready   <= 1;
+          if (mode)
+            ready   <= 1;
           state   <= Wait;
         end
         else begin
