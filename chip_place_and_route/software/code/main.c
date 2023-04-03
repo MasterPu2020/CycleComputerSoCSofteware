@@ -52,7 +52,8 @@
 // [1] C000_0004: 1bit | Normal Mode : 0 for Command 1 for Data.
 // [2] C000_0008: 1bit | Normal Mode : 0 for send data.
 // [3] C000_000C: 8bit | Normal Mode : 8 bit data.
-// [4 + n]        4bit | Pixel Block : 0 ~ n. Write Only
+// [4] C000_0010: 1bit | Screen Mode: 0: Day   1: Night
+// [5 + n]        4bit | Pixel Block : 0 ~ n. Write Only
 volatile uint32_t* OLED = (volatile uint32_t*) AHB_OLEDR_MANAGER_BASE;
 
 // SEGMENT MANAGER
@@ -90,7 +91,7 @@ void  oled_send(uint32_t Data, bool DnC){
 
 // In Auto mode, let hardware manage sending a block of a picture to OLED
 void oled_block(int BlockID, uint32_t PictureID){
-  OLED[BlockID + 4] = PictureID;
+  OLED[BlockID + 5] = PictureID;
   return;
 }
 
@@ -290,10 +291,6 @@ int main(void) {
   oled_send(0x00, true); 
   oled_send(0xA0, false); // CMD: set colour format
   oled_send(0x74, true);
-  oled_send(0xC1, false); // CMD: set colour contrast
-  oled_send(0xC8, true);
-  oled_send(0x80, true);
-  oled_send(0xC8, true);
   oled_send(0xAF, false); // CMD: display on
   oled_send(0x5C, false); // CMD: send pixels
   for (int i = 0; i < 128 * 96 * 2; i++)
@@ -325,9 +322,7 @@ int main(void) {
       } 
       else if (BUTTON[0]){
         is_night_mode = ! is_night_mode;
-        OLED[0] = 1;
-        is_night_mode ? oled_send(0xA7, false) : oled_send(0xA6, false); // night mode : day mode
-        OLED[0] = 0;
+        OLED[4] = is_night_mode;
       }
       else{
         mode += BUTTON[1];
