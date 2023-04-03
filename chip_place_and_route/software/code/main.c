@@ -96,9 +96,9 @@ void oled_block(int BlockID, uint32_t PictureID){
 
 // Both integer and fraction must be in a BCD coding style
 void display_segment(uint32_t Mode, uint32_t Integer, uint32_t Fraction){
-  SEGMENT[0] = Fraction; 
-  SEGMENT[1] = Integer; 
-  SEGMENT[2] = Mode; 
+  SEGMENT[0] = Fraction;
+  SEGMENT[1] = Integer;
+  SEGMENT[2] = Mode;
   return;
 }
 

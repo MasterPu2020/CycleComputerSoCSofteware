@@ -248,7 +248,7 @@ always_ff @(posedge HCLK, negedge HRESETn) begin
     //--------------------------------------------------------------------------
     case (state)
       Wait: begin
-        if (mode) begin // normal mode
+        if (mode && auto_control == Finished) begin // normal mode
           data <= normal_data;
           search_ram_addr <= 0;
           if (ready == 0) 
