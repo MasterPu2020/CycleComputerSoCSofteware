@@ -66,13 +66,11 @@ timeprecision 100ps;
       begin
         read_enable <= '0;
         word_address <= '0;
-        byte_select <= '0;
       end
     else if ( HREADY && HSEL && (HTRANS != No_Transfer) )
       begin
         read_enable <= ! HWRITE;
         word_address <= HADDR[MEMWIDTH:2];
-        byte_select <= generate_byte_select( HSIZE, HADDR[1:0] );
      end
     else
       begin

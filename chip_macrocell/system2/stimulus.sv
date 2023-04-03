@@ -19,7 +19,7 @@
 //  `define SpeedVerification         // Not Verified
 //  `define CadenceVerification       // Behavioural Passed
 //  `define ModeSwitchVerification    // Gate Level Passed
-  `define SimpleVerification        // Behavioural Passed 
+//  `define SimpleVerification        // Behavioural Passed 
 //  `define FullVerification          // Not Verified
 //  `define MacroCellVerification     // Not Verified
 
@@ -267,6 +267,12 @@ end
     #0.3s ->  press_trip_button;
   endtask
 
+  task DoublePressModeButton;
+    $display("\n Mode button will be pressed twice. \n");
+    #1s   -> press_mode_button;
+    #0.3s -> press_mode_button;
+  endtask
+
   //--------------------------------------------------------------
   // Customization Task
   //--------------------------------------------------------------
@@ -505,6 +511,20 @@ endtask
         #4s;
         DisplaySegment;
       end
+
+      EndSimulation;
+    end
+  
+  //--------------------------------------------------------------
+  // Gate Level DayNight Verification
+  //--------------------------------------------------------------
+  `elsif DayNightVerification
+    initial begin
+      StartUp;
+
+      DoublePressModeButton;
+      #4s;
+      DisplaySegment;
 
       EndSimulation;
     end

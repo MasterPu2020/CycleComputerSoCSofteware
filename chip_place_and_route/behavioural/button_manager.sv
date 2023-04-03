@@ -48,6 +48,10 @@ module button_manager(
 // Control and Status Signals
 //------------------------------------------------------------------------------
 
+  // Input Synchronization
+  logic SYNC_MID_nMode, SYNC_nMode;
+  logic SYNC_MID_nTrip, SYNC_nTrip;
+
   // Button debounce
   logic Trip_Last, Mode_Last;
   logic [ 9:0] DebCount_Trip, DebCount_Mode;
@@ -64,13 +68,29 @@ module button_manager(
 
   localparam
     Time_25MS = 900,
-    Time_500MS = 16000,
+    Time_100MS = 3200,
+    Time_250MS = 8000,
     NewData_Reg_Addr = 4,
     Setting_Reg_Addr = 3,
     Trip_Reg_Addr = 2,
     Mode_Reg_Addr = 1,
     DayNight_Reg_Addr = 0,
     Stop_Transferring = 2'b0;
+
+//------------------------------------------------------------------------------
+// Input Synchronization : nMode, nTrip
+//------------------------------------------------------------------------------
+
+always_ff @(posedge HCLK, negedge HRESETn) begin
+  if (!HRESETn) begin
+    SYNC_MID_nMode <= '0;  SYNC_nMode <= '0;
+    SYNC_MID_nTrip <= '0;  SYNC_nTrip <= '0;
+  end
+  else begin
+    SYNC_nMode <= SYNC_MID_nMode; SYNC_MID_nMode <= Mode;
+    SYNC_nTrip <= SYNC_MID_nTrip; SYNC_MID_nTrip <= Trip;
+  end
+end
 
 //------------------------------------------------------------------------------
 // Button Debounce
@@ -83,8 +103,8 @@ module button_manager(
       Mode_Last <= '0;
     end
     else begin
-      Trip_Last <= Trip;
-      Mode_Last <= Mode;
+      Trip_Last <= SYNC_nTrip;
+      Mode_Last <= SYNC_nMode;
     end
   end
 
@@ -103,7 +123,7 @@ module button_manager(
           end
         end
         STATE_COUNT_DEBTRIP: begin
-          if ((DebCount_Trip == Time_25MS) || (Trip)) begin
+          if ((DebCount_Trip == Time_25MS) || (SYNC_nTrip)) begin
             state_debtrip <= STATE_IDLE_DEBTRIP;
             DebCount_Trip <= '0;
           end
@@ -135,7 +155,7 @@ module button_manager(
             end
           end
           STATE_COUNT_DEBMODE: begin
-            if ((DebCount_Mode == Time_25MS) || (Mode)) begin
+            if ((DebCount_Mode == Time_25MS) || (SYNC_nMode)) begin
               DebCount_Mode <= '0;
               state_debmode <= STATE_IDLE_DEBMODE;
             end
@@ -168,7 +188,7 @@ module button_manager(
             end
           end
           STATE_COUNT_INTERTRIP: begin
-            if ((InterCount_Trip == Time_500MS) || (DebFlag_Trip) || (DebFlag_Mode)) begin
+            if ((InterCount_Trip == Time_100MS) || (DebFlag_Trip) || (DebFlag_Mode)) begin
               state_intertrip <= STATE_IDLE_INTERTRIP;
               InterCount_Trip <= '0;
             end
@@ -193,7 +213,7 @@ module button_manager(
           end
         end
         STATE_COUNT_INTERTRIP: begin
-          if ((InterCount_Mode == Time_500MS) || (DebFlag_Mode) || (DebFlag_Trip)) begin
+          if ((InterCount_Mode == Time_250MS) || (DebFlag_Mode) || (DebFlag_Trip)) begin
             state_intermode <= STATE_IDLE_INTERMODE;
             InterCount_Mode <= '0;
           end
@@ -270,11 +290,11 @@ module button_manager(
     end
   end
 
-  assign Con_Trip = (InterCount_Trip == Time_500MS);
-  assign Con_Mode = (InterCount_Mode == Time_500MS);
-  assign Con_DayNight = (DebFlag_Mode) && (InterCount_Mode != Time_500MS) && (InterCount_Mode != 0);
-  assign Con_Setting = ((DebFlag_Mode) && (InterCount_Trip != Time_500MS) && (InterCount_Trip != 0)) ||
-                       ((DebFlag_Trip) && (InterCount_Mode != Time_500MS) && (InterCount_Mode != 0)) ||
+  assign Con_Trip = (InterCount_Trip == Time_100MS);
+  assign Con_Mode = (InterCount_Mode == Time_250MS);
+  assign Con_DayNight = (DebFlag_Mode) && (InterCount_Mode != Time_250MS) && (InterCount_Mode != 0);
+  assign Con_Setting = ((DebFlag_Mode) && (InterCount_Trip != Time_100MS) && (InterCount_Trip != 0)) ||
+                       ((DebFlag_Trip) && (InterCount_Mode != Time_250MS) && (InterCount_Mode != 0)) ||
                        ((DebFlag_Mode) && (DebFlag_Trip));
   assign NewData = Setting_Store || Trip_Store || Mode_Store || DayNight_Store; 
 
