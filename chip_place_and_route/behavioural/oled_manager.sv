@@ -365,6 +365,8 @@ always_comb begin
   HRDATA = 32'b0;
   if (ahb_addr == 2 && !ahb_write)
     HRDATA = {31'b0, ready};
+  else if (ahb_addr == 4 && !ahb_write)
+    HRDATA = {31'b0, screen_mode};
 end
 
 endmodule
