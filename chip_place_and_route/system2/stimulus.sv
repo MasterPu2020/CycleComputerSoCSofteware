@@ -19,8 +19,8 @@
 //  `define SpeedVerification         // Not Verified
 //  `define DayNightVerification      // Not Verified
 //  `define CadenceVerification       // Behavioural Passed
-  `define ModeSwitchVerification    // Gate Level Passed
-//  `define SimpleVerification        // Behavioural Passed 
+//  `define ModeSwitchVerification    // Gate Level Passed
+  `define SimpleVerification        // Behavioural Passed 
 //  `define FullVerification          // Not Verified
 //  `define MacroCellVerification     // Not Verified
 
@@ -255,23 +255,23 @@ end
   //--------------------------------------------------------------
   task PressModeButton;
     $display("\n Mode button will be pressed once.\n");
-    #0.35s -> press_mode_button;
+    #1s -> press_mode_button;
   endtask
 
   task PressTripButton;
     $display("\n Trip button will be pressed once.\n");
-    #0.3s -> press_trip_button;
+    #1s -> press_trip_button;
   endtask
 
   task PressSettingButton;
     $display("\n Setting mode will be entered.");
-    #0.3s   ->  press_mode_button;
+    #1s   ->  press_mode_button;
     #0.2s ->  press_trip_button;
   endtask
 
   task DoublePressModeButton;
     $display("\n Mode button will be pressed twice. \n");
-    #0.3s   -> press_mode_button;
+    #1s   -> press_mode_button;
     #0.2s -> press_mode_button;
   endtask
 
