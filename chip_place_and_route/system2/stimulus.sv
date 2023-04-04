@@ -266,7 +266,7 @@ end
   task PressSettingButton;
     $display("\n Setting mode will be entered.");
     #1s   ->  press_mode_button;
-    #0.2s ->  press_trip_button;
+    #0.3s ->  press_trip_button;
   endtask
 
   task DoublePressModeButton;
