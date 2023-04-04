@@ -51,16 +51,20 @@ if [ "$choice" = "1" ]; then
 	cp ./software/code.vmem ./behavioural/code.vmem
 elif [ "$choice" = "2" ]; then
 	echo -e "\n------------------------------------------\n Processing...\n"
-./simulate -no_graphics ./behavioural 500s \
+	mv ./behavioural/computer.sv ./computer.sv
+./simulate -no_graphics ./behavioural 200s \
 +define+stimulus=system2/stimulus.sv
+	mv ./computer.sv ./behavioural/computer.sv
 elif [ "$choice" = "3" ]; then
 	echo -e "\n------------------------------------------\n Processing...\n"
 ./simulate -no_graphics -gate -sdf ./gate_level/computer.sdf ./gate_level \
 +define+stimulus=system2/stimulus.sv
 elif [ "$choice" = "4" ]; then
 	echo -e "\n------------------------------------------\n Processing...\n"
-./simulate ./behavioural 500s \
+	mv ./behavioural/computer.sv ./computer.sv
+./simulate ./behavioural 200s \
 +define+stimulus=system2/stimulus.sv
+	mv ./computer.sv ./behavioural/computer.sv
 elif [ "$choice" = "5" ]; then
 	echo -e "\n------------------------------------------\n Processing...\n"
 ./simulate -gate -sdf ./gate_level/computer.sdf ./gate_level \
