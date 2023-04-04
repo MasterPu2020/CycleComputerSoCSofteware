@@ -6,7 +6,7 @@
 // Last Edition Date: 4/4/2023
 // Verification: Verified with FPGA.
 // Comment: Redesigned by Clark.
-// Resource Consumption: 6 ROM cells(3007 instructions).
+// Resource Consumption: 6 ROM cells(3014 instructions).
 //------------------------------------------------------------------------------
 
 # define __MAIN_C__
@@ -261,6 +261,16 @@ uint32_t wait_for_wheel_girth(uint32_t wheel_girth) {
   }
 }
 
+// Clear instant information in hardware registers
+void clear_hardware_registers(void){
+  BUTTON[3];
+  BUTTON[2];
+  BUTTON[1];
+  BUTTON[0];
+  SENSOR[0] = 0;
+  TIMER[0] = 0;
+}
+
 //------------------------------------------------------------------------------
 // Main Function
 //------------------------------------------------------------------------------
@@ -297,9 +307,10 @@ int main(void) {
   oled_send(0x00, true); 
   oled_send(0xA0, false);  // CMD: set colour format
   oled_send(0x74, true);
-  // oled_send(0x5C, false);  // CMD: send pixels
-  // for (uint32_t i = 0; i < 128 * 96 * 2; i++) // send a white background takes 45 seconds
-  //   oled_send(0xFF, true); // DATA: white {colour0, colour1}
+  oled_send(0x5C, false);  // CMD: send pixels
+  for (uint32_t i = 0; i < 128 * 96 * 2; i++) // send a white background takes 45 seconds
+    oled_send(0xFF, true); // DATA: white {colour0, colour1}
+  oled_send(0xAF, false);  // CMD: display on
   oled_send(0xAF, false);  // CMD: display on
   
   // oled hardware auto initiate
@@ -307,17 +318,12 @@ int main(void) {
   oled_block_clear();
   oled_update_icon(mode);
 
-  // wait 3 seconds and clear button registers
+  // wait 3 seconds and clear registers
   for (uint32_t i = 0; i < 3; i++){
     TIMER[1] = 0;
     while(TIMER[1] == 0);
   }
-  BUTTON[3];
-  BUTTON[2];
-  BUTTON[1];
-  BUTTON[0];
-  SENSOR[0] = 0;
-  TIMER[0] = 0;
+  clear_hardware_registers();
 
   // process start (initiate takes 48 seconds)
   while(1) {
@@ -329,12 +335,13 @@ int main(void) {
     if (wait_for_press()){
       if (BUTTON[3]){
         wheel_girth = wait_for_wheel_girth(wheel_girth);
+        clear_hardware_registers();
+        last_time = 0;
         mode = ODOMETER;
         oled_update_icon(mode);
       }
       else if (BUTTON[2]){
-        SENSOR[0] = 0;
-        TIMER[0] = 0;
+        clear_hardware_registers();
         last_time = 0;
       } 
       else if (BUTTON[0]){
