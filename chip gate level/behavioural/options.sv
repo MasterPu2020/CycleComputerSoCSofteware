@@ -25,13 +25,13 @@
 //  signals
 //   (Test, SDI, SDO)
 //
-//`define no_scan_signals
+`define no_scan_signals
 
 // The following line indicates that the model supports separate scan control
 //  signals
 //   (Test, ScanEnable)
 //
-`define scan_enable
+//`define scan_enable
 
 // The following line indicates that the model does not properly simulate
 //  the pullup behaviour of the pads and an external pullup should be
@@ -45,14 +45,14 @@
 //  synchronisation if you wish to control the choice of gates used in the
 //  synchroniser. 
 //
-//`define synchronise_inputs_within_wrapper
+`define synchronise_inputs_within_wrapper
 
 // The following line indicates that synchronisation of reset is a function
 //  of the wrapper file: "computer.sv". This is a good place to do the
 //  synchronisation if you wish to control the choice of gates used in the
 //  synchroniser. 
 //
-//`define synchronise_reset_within_wrapper
+`define synchronise_reset_within_wrapper
 
 // The following line indicates that the stimulus should ensure that the
 //  hall effect inputs and button signals are well behaved to avoid setup

@@ -17,10 +17,10 @@
 //  `define TripTimeVerification      // Not Verified
 //  `define TimeStopVerification      // Not verified
 //  `define SpeedVerification         // Not Verified
-  `define DayNightVerification
+//  `define DayNightVerification      // Not Verified
 //  `define CadenceVerification       // Behavioural Passed
 //  `define ModeSwitchVerification    // Gate Level Passed
-//  `define SimpleVerification        // Behavioural Passed 
+  `define SimpleVerification        // Behavioural Passed 
 //  `define FullVerification          // Not Verified
 //  `define MacroCellVerification     // Not Verified
 
@@ -52,7 +52,9 @@ real
   fork_cycle = 800,  // ms
   noise = 25, //ms
   ave_speed = 0,
-  ave_cadence = 0;
+  ave_cadence = 0,
+  crank_times = 0,
+  fork_times = 0;
 
 integer
   error_sum = 0,
@@ -81,15 +83,14 @@ integer
   segment_speed = 0,
   segment_cadence = 0,
   segment_time = 0,
-  crank_times = 0,
-  fork_times = 0,
   trip_time = 0,
   cadence = 0,
   speed = 0,
   clock_count = 0,
   wheelsize_ref_dig2 = 0,
   wheelsize_ref_dig1 = 0,
-  wheelsize_ref_dig0 = 0;
+  wheelsize_ref_dig0 = 0,
+  time_label_60 = 0;
 
 initial $timeformat(0, 2, "s", 10);
 
@@ -193,7 +194,7 @@ end
   //--------------------------------------------------------------
   task OdometerTest;
     $display("\n This is odometer:");
-    odometer = (2.136 * fork_times);
+    odometer = (wheel_size * fork_times);
     DisplaySegment;
     $display("\n Real Odometer is %fkm. Segment display is %fkm (fork_times = %d). (%t)", odometer/1000.0, seg_value, fork_times, $time);
     $display("------------------------------------------------------------------------------");
@@ -361,7 +362,7 @@ task DisplaySegment;
 endtask
 
 task DisplayOLED;
-  #1s;
+  #0.3s;
   @(posedge Clock);
   DisplayRefresh = ~DisplayRefresh;
 endtask
@@ -404,7 +405,12 @@ endtask
       CustomizeMode(1);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
 
       CustomizeSpeedCadence(20,150);
-      #60s;
+
+      time_label_60 = $time;
+
+      $display(" Time Test: Wait until %ds",(time_label_60+1)+1);
+      while ($time != (time_label_60+1)+1);
+        TripTimeTest;
       for (int i=0;i<3;i++)
         #3s TripTimeTest;
 
@@ -552,15 +558,11 @@ endtask
 
       // Speed Test
       CustomizeMode(2);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
-      for (int i = 0; i<5; i++)
-        #1s $display("Running at %t", $time);
       for (int i = 0; i<10; i++)
         SpeedTest;
 
       // Cadence Test
       CustomizeMode(3);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
-      for (int i = 0; i<5; i++)
-        #1s $display("Running at %t", $time);
       for (int i = 0; i<10; i++)
         CadenceTest;
 
@@ -568,26 +570,41 @@ endtask
       // Three Mode Test Round 2
       //--------------------------------------------------
       CustomizeWheelSize(2765);
-      CustomizeSpeedCadence(500,600);
+      CustomizeSpeedCadence(120,600);
 
       // Odometer Test
       CustomizeMode(0);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
-      for (int i = 0; i<5; i++)
-        #1s $display("Running at %t", $time);
       for (int i = 0; i<5; i++)
         OdometerTest;
 
       // Speed Test
       CustomizeMode(2);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
-      for (int i = 0; i<5; i++)
-        #1s $display("Running at %t", $time);
       for (int i = 0; i<10; i++)
         SpeedTest;
 
       // Cadence Test
       CustomizeMode(3);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
       for (int i = 0; i<10; i++)
-        #1s $display("Running at %t", $time);
+        CadenceTest;
+      
+      //--------------------------------------------------
+      // Three Mode Test Round 3
+      //--------------------------------------------------
+      CustomizeWheelSize(2505);
+      CustomizeSpeedCadence(210,400);
+
+      // Odometer Test
+      CustomizeMode(0);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
+      for (int i = 0; i<5; i++)
+        OdometerTest;
+
+      // Speed Test
+      CustomizeMode(2);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
+      for (int i = 0; i<10; i++)
+        SpeedTest;
+
+      // Cadence Test
+      CustomizeMode(3);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
       for (int i = 0; i<10; i++)
         CadenceTest;
 
@@ -596,17 +613,14 @@ endtask
       //--------------------------------------------------
       CustomizeMode(1);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
 
-      $display(" Time Test: Wait until 61s");
-      while ($time != 61);
-      TripTimeTest;
-
       $display(" Time Test: Wait until 121s");
       while ($time != 121);
+        TripTimeTest;
 
-      $display(" Stop Test: Wait until 181s");
       CustomizeSpeedCadence(0,0);
+      $display(" Stop Test: Wait until 181s");
       while ($time != 181);
-      TripTimeTest;
+        TripTimeTest;
 
       CustomizeMode(2);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
       for (int i = 0; i<3; i++)

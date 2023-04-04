@@ -50,30 +50,10 @@ if [ "$choice" = "1" ]; then
 elif [ "$choice" = "2" ]; then
 	echo -e "\n------------------------------------------\n Processing...\n"
 ./simulate -no_graphics -gate -sdf ./gate_level/computer.sdf ./gate_level \
-+define+clock_period=30517.6ns \
-+define+scan_enable \
-+define+external_pullup \
-+define+start_up_time=1s \
-+define+include_oled \
-+define+num_modes=4 \
-+define+Mode0=Distance \
-+define+Mode1=Duration \
-+define+Mode2=Speed \
-+define+Mode3=Cadence \
 +define+stimulus=system2/stimulus.sv
 elif [ "$choice" = "3" ]; then
 	echo -e "\n------------------------------------------\n Processing...\n"
 ./simulate -gate -sdf ./gate_level/computer.sdf ./gate_level \
-+define+clock_period=30517.6ns \
-+define+scan_enable \
-+define+external_pullup \
-+define+start_up_time=1s \
-+define+include_oled \
-+define+num_modes=4 \
-+define+Mode0=Distance \
-+define+Mode1=Duration \
-+define+Mode2=Speed \
-+define+Mode3=Cadence \
 +define+stimulus=system2/stimulus.sv
 elif [ "$choice" = "s" ]; then
 	echo -e "\n------------------------------------------\n Processing...\n"
