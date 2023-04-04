@@ -3,7 +3,7 @@
 // Titile:  Timer Behavioural
 // Author:  Clark Pu
 // Team:    C4 Chip Designed
-// Version: 2.0
+// Version: 2.1
 // Verification: Verified with Testbench. Verified with SoC.
 // Comment: Operation Data with Word Only
 //------------------------------------------------------------------------------
@@ -34,7 +34,7 @@ timeunit 1ns; timeprecision 100ps;
 //------------------------------------------------------------------------------
 // Memory Map:
 // 8000_0000: 32bit | Trip timer records less than 18 hours
-// 8000_0004: 32bit | 3 second flag
+// 8000_0004: 32bit | 1 second flag
 //------------------------------------------------------------------------------
 
 logic [15:0] trip_time;
@@ -49,7 +49,7 @@ logic [15:0] counter;
 logic [15:0] last_trip_time;
 // Parameters
 localparam
-  UpdateTime = 3,     // s
+  UpdateTime = 1,     // s
   ClockCycle = 30518, // ns = 30.5 us
   Count1S    = 32768, // = 1s / ClockCycle = 1,000,000 / 32,786.9
   NoTransfer = 2'b00; // AHB disabled

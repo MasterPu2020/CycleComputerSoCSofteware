@@ -41,7 +41,8 @@ timeunit 1ns; timeprecision 100ps;
 // [1] C000_0004: 1bit | Normal Mode : 0 for Command 1 for Data.
 // [2] C000_0008: 1bit | Normal Mode : 0 for send data.
 // [3] C000_000C: 8bit | Normal Mode : 8 bit data.
-// [4 + n]        4bit | Pixel Block : 0 ~ n. Write Only
+// [4] C000_0010: 1bit | Screen Mode: 0: Day   1: Night
+// [5 + n]        4bit | Pixel Block : 0 ~ n. Write Only
 //------------------------------------------------------------------------------
 
 localparam 
@@ -57,6 +58,7 @@ logic mode;
 logic dnc;
 logic ready;
 logic [7:0] normal_data;
+logic screen_mode;
 logic [ResourceAmoutWidth:0] block_ram [BlockAmout:0];
 
 //------------------------------------------------------------------------------
@@ -88,6 +90,7 @@ logic [6:0] pixel_pointer; // width is log2 of ResourceWidth : this is data bit-
 enum logic [3:0] {Start, Finished, PixelCMD, XCMD, YCMD, Pixel0, Pixel1, xStart, yStart, xEnd, yEnd} auto_control;
 logic [7:0] auto_data; // combinational
 logic auto_dnc;        // combinational
+logic last_screen_mode;
 
 //------------------------------------------------------------------------------
 // Local Read Only Memory
@@ -224,6 +227,8 @@ always_ff @(posedge HCLK, negedge HRESETn) begin
     // Mode Control
     mode <= 0;
     normal_data <= 0;
+    screen_mode <= 0;
+    last_screen_mode <= 0;
     // SDI Data
     state <= Wait;
     ready <= 1;
@@ -280,8 +285,18 @@ always_ff @(posedge HCLK, negedge HRESETn) begin
             end
             Pixel1   : auto_control <= Pixel0;
             Finished : begin
-              // If an OLED block (a resource picture) is out of date, update the block according to the privilege.
-              if (block_ram[search_ram_addr] != oled_block_ram[search_ram_addr]) begin
+              // If screen mode is been updated
+              // Else if an OLED block (a resource picture) is out of date, update the block according to the privilege.
+              if (screen_mode != last_screen_mode) begin
+                last_screen_mode <= screen_mode;
+                if (screen_mode == 0)
+                  data <= 8'hA6;
+                else
+                  data <= 8'hA7;
+                dnc <= 0;
+                state <= ChangeData;
+              end
+              else if (block_ram[search_ram_addr] != oled_block_ram[search_ram_addr]) begin
                   auto_control <= Start;
                   block_ram_addr <= search_ram_addr;
                   resource_rom_addr <= block_ram[search_ram_addr];
@@ -294,11 +309,12 @@ always_ff @(posedge HCLK, negedge HRESETn) begin
                 search_ram_addr <= search_ram_addr + 1;
             end
           endcase
-          // One cycle delayed, so it needs combinational logic provide an one-cycle-ahead value
-          data <= auto_data;
-          dnc <= auto_dnc;
-          if (auto_control != Finished)
+          if (auto_control != Finished) begin
             state <= ChangeData;
+            // One cycle delayed, so it needs combinational logic provide an one-cycle-ahead value
+            data <= auto_data;
+            dnc <= auto_dnc;
+          end
           //--------------------------------------------------------------------------
           // Auto Control State Machine End
           //--------------------------------------------------------------------------
@@ -332,8 +348,10 @@ always_ff @(posedge HCLK, negedge HRESETn) begin
         ready <= HWDATA;
       else if (ahb_addr == 3)
         normal_data <= HWDATA;
+      else if (ahb_addr == 4)
+        screen_mode <= HWDATA;
       else
-        block_ram[ahb_addr - 4] <= HWDATA;
+        block_ram[ahb_addr - 5] <= HWDATA;
     end
   end
 end
@@ -347,6 +365,8 @@ always_comb begin
   HRDATA = 32'b0;
   if (ahb_addr == 2 && !ahb_write)
     HRDATA = {31'b0, ready};
+  else if (ahb_addr == 4 && !ahb_write)
+    HRDATA = {31'b0, screen_mode};
 end
 
 endmodule
