@@ -19,8 +19,8 @@
 //  `define SpeedVerification         // Not Verified
 //  `define DayNightVerification      // Not Verified
 //  `define CadenceVerification       // Behavioural Passed
-//  `define ModeSwitchVerification    // Gate Level Passed
-  `define SimpleVerification        // Behavioural Passed 
+  `define ModeSwitchVerification    // Gate Level Passed
+//  `define SimpleVerification        // Behavioural Passed 
 //  `define FullVerification          // Not Verified
 //  `define MacroCellVerification     // Not Verified
 
@@ -255,23 +255,23 @@ end
   //--------------------------------------------------------------
   task PressModeButton;
     $display("\n Mode button will be pressed once.\n");
-    #1s -> press_mode_button;
+    #0.35s -> press_mode_button;
   endtask
 
   task PressTripButton;
     $display("\n Trip button will be pressed once.\n");
-    #1s -> press_trip_button;
+    #0.3s -> press_trip_button;
   endtask
 
   task PressSettingButton;
     $display("\n Setting mode will be entered.");
-    #1s   ->  press_mode_button;
+    #0.3s   ->  press_mode_button;
     #0.2s ->  press_trip_button;
   endtask
 
   task DoublePressModeButton;
     $display("\n Mode button will be pressed twice. \n");
-    #1s   -> press_mode_button;
+    #0.3s   -> press_mode_button;
     #0.2s -> press_mode_button;
   endtask
 
@@ -351,7 +351,7 @@ end
 // Display Tasks
 //------------------------------------------------------------------------------
 task DisplaySegment;
-  #1s;
+  #0.1s;
   for (int i=0;i<7;i++)
     @(posedge Clock);
   DisplayRefresh_Seg = 0;
@@ -513,12 +513,15 @@ endtask
     initial begin
       StartUp;
 
-      for (int i=0;i<20;i++) begin
+      for (int i=0;i<8;i++) begin
         PressModeButton;
-        #4s;
         DisplaySegment;
       end
 
+      if (seg_digit_value3 != 0) begin
+        $display("error: mode switch failed.");
+        error_sum = error_sum + 1;
+      end
       EndSimulation;
     end
   
