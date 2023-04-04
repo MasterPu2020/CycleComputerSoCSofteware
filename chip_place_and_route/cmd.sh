@@ -52,7 +52,7 @@ if [ "$choice" = "1" ]; then
 elif [ "$choice" = "2" ]; then
 	echo -e "\n------------------------------------------\n Processing...\n"
 	mv ./behavioural/computer.sv ./computer.sv
-./simulate -no_graphics ./behavioural 200s \
+./simulate -no_graphics ./behavioural 500s \
 +define+stimulus=system2/stimulus.sv
 	mv ./computer.sv ./behavioural/computer.sv
 elif [ "$choice" = "3" ]; then
@@ -62,7 +62,7 @@ elif [ "$choice" = "3" ]; then
 elif [ "$choice" = "4" ]; then
 	echo -e "\n------------------------------------------\n Processing...\n"
 	mv ./behavioural/computer.sv ./computer.sv
-./simulate ./behavioural 200s \
+./simulate ./behavioural 500s \
 +define+stimulus=system2/stimulus.sv
 	mv ./computer.sv ./behavioural/computer.sv
 elif [ "$choice" = "5" ]; then

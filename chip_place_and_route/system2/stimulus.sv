@@ -289,7 +289,7 @@ end
     wheelsize_ref_dig0 =  wheelsize_ref     %10;
     
     PressSettingButton;
-    #1s DisplaySegment;
+    #1s; DisplaySegment;
     
     while (seg_digit_value2 != wheelsize_ref_dig2) begin
       PressTripButton;
