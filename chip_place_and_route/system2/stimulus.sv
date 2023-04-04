@@ -351,7 +351,7 @@ end
 // Display Tasks
 //------------------------------------------------------------------------------
 task DisplaySegment;
-  #0.1s;
+  #1s;
   for (int i=0;i<7;i++)
     @(posedge Clock);
   DisplayRefresh_Seg = 0;
