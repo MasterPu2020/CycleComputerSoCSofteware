@@ -102,7 +102,7 @@ module seven_segment(
   end
 
   always_comb begin
-    nDigit = 4'b0;
+    nDigit = 4'b1110;
     unique case (Display_Counter)
       0: nDigit = 4'b1110;
       1: nDigit = 4'b1101;

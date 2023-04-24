@@ -1,3 +1,4 @@
+stop=0
 format(){
 files=""
 for anyFile in `ls`
@@ -16,10 +17,15 @@ do
 	fi
 done
 if [[ $dosFile != "" ]]; then
-	for fileName in $dosFile
-	do
-	dos2unix "$fileName"
-	done
+	echo -e "\n > Do you want to convert them all into Unix format? (PlEASE REMEBER BACKUP!)"
+	echo "    y for Yes, Enter Any Key Else to Quit."
+	read -p "Enter: " choice
+	if [ "$choice" = "y" ]; then
+		for fileName in $dosFile
+		do
+		dos2unix "$fileName"
+		done	 
+	fi
 else
 	echo -e "\nAll files are unix format.\n"
 fi
@@ -33,7 +39,6 @@ echo "3.Gate Level.         (3+gui with Graphics)"
 echo "4.Place and Route.    (4+gui with Graphics)"
 echo "s.Synthesis."
 echo "d.DOS Format Check."
-echo "u.Unify files sourced from './system'."
 echo "new_padring.New Padring   (Backup Needed!)"
 echo "new_layout.New Layout     (Backup Needed!)"
 echo "------------------------------------------"
@@ -83,18 +88,6 @@ elif [ "$choice" = "new_layout" ]; then # new_layout
 	cd ..
 	cp ./place_and_route/computer_final.v ./extracted/computer.v
 	cp ./place_and_route/SDF/computer_func_max.sdf ./extracted/computer.sdf
-elif [ "$choice" = "u" ]; then # unify
-	echo -e "\n------------------------------------------\n Processing...\n"
-	cp ./system/options.sv ./behavioural/options.sv
-	cp ./system/options.sv ./gate_level/options.sv
-	cp ./system/options.sv ./extracted/options.sv
-	cp ./system/system.tcl ./behavioural/system.tcl
-	cp ./system/system.tcl ./gate_level/system.tcl
-	cp ./system/system.tcl ./extracted/system.tcl
-	cp ./system/system.sv ./gate_level/system.sv
-	cp ./system/system.sv ./extracted/system.sv
-	echo -e "\n Unify options.sv, system.tcl and system.sv.\n"
-	echo -e "\n Note: You need to modify the options.sv file before simulation.\n"
 elif [ "$choice" = "s" ]; then # synthesis
 	echo -e "\n------------------------------------------\n Processing...\n"
 	cd ./synthesis
@@ -113,7 +106,10 @@ elif [ "$choice" = "s" ]; then # synthesis
 			do_c35b4_copy_synopsys_setup
 		fi
 	fi
-	dc_shell -gui
+dc_shell << EOF
+	source synthesis.tcl
+	quit
+EOF
 	cd ..
 elif [ "$choice" = "d" ]; then
 	echo -e "\n------------------------------------------\n Processing...\n"
@@ -148,4 +144,12 @@ elif [ "$choice" = "d" ]; then
 	echo "Check folder system:"
 	format
 	cd ..
+fi
+
+if [ $stop -eq 0 ]; then
+	echo -e "\n\n *********** Process Finished ************\n"
+	echo -e "------------------------------------------\n"
+else
+	echo -e "\n Process Stopped.\n"
+	echo -e "------------------------------------------\n"
 fi

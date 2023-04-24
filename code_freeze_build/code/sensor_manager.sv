@@ -53,9 +53,6 @@ logic [1:0] ahb_addr;
 logic last_fork, last_crank;
 logic [16:0] delta_crank_time, delta_fork_time;
 
-logic  SYNC_MID_nFork,  SYNC_nFork;
-logic  SYNC_MID_nCrank, SYNC_nCrank;
-
 // Parameters
 localparam
   MaxCount   = 17'h1FFFF, // 3999.9723496ms
@@ -79,21 +76,6 @@ always_ff @(posedge HCLK, negedge HRESETn) begin
       ahb_write <= 0;
       ahb_addr <= 0;
     end
-  end
-end
-
-//------------------------------------------------------------------------------
-// Input Synchronization : nFork, nCrank
-//------------------------------------------------------------------------------
-
-always_ff @(posedge HCLK, negedge HRESETn) begin
-  if (!HRESETn) begin
-    SYNC_MID_nCrank <= '0;  SYNC_nCrank <= '0;
-    SYNC_MID_nFork  <= '0;  SYNC_nFork <= '0;
-  end
-  else begin
-    SYNC_nCrank <= SYNC_MID_nCrank; SYNC_MID_nCrank <= nCrank;
-    SYNC_nFork  <= SYNC_MID_nFork;  SYNC_MID_nFork  <= nFork;
   end
 end
 
@@ -127,7 +109,7 @@ always_ff @(posedge HCLK, negedge HRESETn) begin
       fork_time <= delta_fork_time;
     
     // Increase fork and crank, Sample one cycle time
-    if (!SYNC_nFork)
+    if (!nFork)
       last_fork <= 1;
     else if (last_fork) begin
       fork_data <= fork_data + 1;
@@ -135,7 +117,7 @@ always_ff @(posedge HCLK, negedge HRESETn) begin
       delta_fork_time <= 0;
       last_fork <= 0;
     end
-    if (!SYNC_nCrank)
+    if (!nCrank)
       last_crank <= 1;
     else if (last_crank) begin
       crank_time <= delta_crank_time;

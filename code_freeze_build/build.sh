@@ -100,17 +100,13 @@ if [ $stop -eq 0 ]; then
 	do_c35b4_copy_synopsys_setup
 dc_shell << EOF
 	source synthesis.tcl
-	q
-	q
-	q
-	q
 	quit
 EOF
 	cd ..
 fi
 
 # place and route
-if [ $stop -eq 0 ]; then
+if [ $stop -eq 2 ]; then
 	echo -e "------------------------------------------\n"
     echo -e "Start place and route\n"
 	cp ./place_and_route/place_and_route.tcl ./place_and_route.tcl
