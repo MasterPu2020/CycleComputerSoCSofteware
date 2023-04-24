@@ -1,4 +1,3 @@
-stop=0
 format(){
 files=""
 for anyFile in `ls`
@@ -17,15 +16,10 @@ do
 	fi
 done
 if [[ $dosFile != "" ]]; then
-	echo -e "\n > Do you want to convert them all into Unix format? (PlEASE REMEBER BACKUP!)"
-	echo "    y for Yes, Enter Any Key Else to Quit."
-	read -p "Enter: " choice
-	if [ "$choice" = "y" ]; then
-		for fileName in $dosFile
-		do
-		dos2unix "$fileName"
-		done	 
-	fi
+	for fileName in $dosFile
+	do
+	dos2unix "$fileName"
+	done
 else
 	echo -e "\nAll files are unix format.\n"
 fi
@@ -86,6 +80,7 @@ elif [ "$choice" = "new_layout" ]; then # new_layout
 	mv ./place_and_route.tcl ./place_and_route/place_and_route.tcl
 	cd place_and_route
 	encounter
+	cd ..
 	cp ./place_and_route/computer_final.v ./extracted/computer.v
 	cp ./place_and_route/SDF/computer_func_max.sdf ./extracted/computer.sdf
 elif [ "$choice" = "u" ]; then # unify
@@ -153,12 +148,4 @@ elif [ "$choice" = "d" ]; then
 	echo "Check folder system:"
 	format
 	cd ..
-fi
-
-if [ $stop -eq 0 ]; then
-	echo -e "\n\n *********** Process Finished ************\n"
-	echo -e "------------------------------------------\n"
-else
-	echo -e "\n Process Stopped.\n"
-	echo -e "------------------------------------------\n"
 fi

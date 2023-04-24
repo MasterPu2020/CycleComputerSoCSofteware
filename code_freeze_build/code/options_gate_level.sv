@@ -8,7 +8,7 @@
 ///////////////////////////////////////////////////////////////////////
 
 // The following lines indicates that a stimulus time exists and contains
-// custom simulation time information
+// custom stimulus time information
 //
 // `define sim_time 200s
 
@@ -20,13 +20,13 @@
 //  signals
 //   (Test, SDI, SDO)
 //
-`define no_scan_signals
+// `define no_scan_signals
 
 // The following line indicates that the model supports separate scan control
 //  signals
 //   (Test, ScanEnable)
 //
-//`define scan_enable
+`define scan_enable
 
 // The following line indicates that the model does not properly simulate
 //  the pullup behaviour of the pads and an external pullup should be
@@ -74,5 +74,5 @@
 //
 `define Mode0 Distance
 `define Mode1 Duration
-`define Mode3 Speed
-`define Mode2 Cadence
+`define Mode2 Speed
+`define Mode3 Cadence
