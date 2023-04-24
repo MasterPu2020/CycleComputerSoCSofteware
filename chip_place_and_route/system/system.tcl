@@ -11,6 +11,10 @@ simvision {
   ecsWaves  {
     system.Clock
     system.nReset
+    system.nCS
+    system.DnC
+    system.SDIN
+    system.SCLK
     system.nMode
     system.nTrip
     system.nFork
@@ -24,7 +28,6 @@ simvision {
     system.SegG
     system.DP
     system.nDigit
-    system.mode_index
     } "Waves for Any Cycle Computer Design"
 
 

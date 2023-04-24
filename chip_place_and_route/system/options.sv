@@ -64,7 +64,7 @@
 // Uncomment the following line to indicate that your bicycle computer
 //  supports an OLED display
 //
-// `define include_oled
+`define include_oled
 
 // The following line specifies the number of operating modes
 //

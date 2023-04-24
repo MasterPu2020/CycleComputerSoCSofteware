@@ -34,12 +34,14 @@ fi
 echo "------------------------------------------"
 echo " > Select Command:"
 echo "1.Compile Software."
-echo "2.Behavioural.               (No Graphics)"
-echo "3.Gate Level.                (No Graphics)"
-echo "4.Behavioural Graphics."
-echo "5.Gate Level Graphics."
+echo "2.Behavioural.        (2+gui with Graphics)"
+echo "3.Gate Level.         (3+gui with Graphics)"
+echo "4.Place and Route.    (4+gui with Graphics)"
 echo "s.Synthesis."
 echo "d.DOS Format Check."
+echo "u.Unify files sourced from './system'."
+echo "new_padring.New Padring   (Backup Needed!)"
+echo "new_layout.New Layout     (Backup Needed!)"
 echo "------------------------------------------"
 echo " Enter Number to Run. Enter Any Key Else to Quit."
 read -p "Enter: " choice
@@ -49,27 +51,56 @@ if [ "$choice" = "1" ]; then
 	./compile_and_link
 	cd ..
 	cp ./software/code.vmem ./behavioural/code.vmem
-elif [ "$choice" = "2" ]; then
+elif [ "$choice" = "2" ]; then # Behavioural
 	echo -e "\n------------------------------------------\n Processing...\n"
 	mv ./behavioural/computer.sv ./computer.sv
-./simulate -no_graphics ./behavioural 200s \
-+define+stimulus=system2/stimulus.sv
+	./simulate -no_graphics ./behavioural 200s +define+stimulus=system2/stimulus.sv
 	mv ./computer.sv ./behavioural/computer.sv
-elif [ "$choice" = "3" ]; then
+elif [ "$choice" = "3" ]; then # Gate Level
 	echo -e "\n------------------------------------------\n Processing...\n"
-./simulate -no_graphics -gate -sdf ./gate_level/computer.sdf ./gate_level \
-+define+stimulus=system2/stimulus.sv
-elif [ "$choice" = "4" ]; then
+	./simulate -no_graphics -gate -sdf ./gate_level/computer.sdf ./gate_level +define+stimulus=system2/stimulus.sv
+elif [ "$choice" = "4" ]; then # Place and Route
+	echo -e "\n------------------------------------------\n Processing...\n"
+	./simulate -no_graphics -gate -sdf ./extracted/computer.sdf ./extracted +define+stimulus=system2/stimulus.sv
+elif [ "$choice" = "2+gui" ]; then # Behavioural
 	echo -e "\n------------------------------------------\n Processing...\n"
 	mv ./behavioural/computer.sv ./computer.sv
-./simulate ./behavioural 200s \
-+define+stimulus=system2/stimulus.sv
+	./simulate ./behavioural 200s +define+stimulus=system2/stimulus.sv
 	mv ./computer.sv ./behavioural/computer.sv
-elif [ "$choice" = "5" ]; then
+elif [ "$choice" = "3+gui" ]; then # Gate Level
 	echo -e "\n------------------------------------------\n Processing...\n"
-./simulate -gate -sdf ./gate_level/computer.sdf ./gate_level \
-+define+stimulus=system2/stimulus.sv
-elif [ "$choice" = "s" ]; then
+	./simulate -gate -sdf ./gate_level/computer.sdf ./gate_level +define+stimulus=system2/stimulus.sv
+elif [ "$choice" = "4+gui" ]; then # Place and Route
+	echo -e "\n------------------------------------------\n Processing...\n"
+	./simulate -gate -sdf ./extracted/computer.sdf ./extracted +define+stimulus=system2/stimulus.sv
+elif [ "$choice" = "new_padring" ]; then # new_padring
+	echo -e "\n------------------------------------------\n Processing...\n"
+	cd ./padring
+	process_pad_ring padring.txt
+	cp computer.sv ../behavioural/computer.sv
+elif [ "$choice" = "new_layout" ]; then # new_layout
+	echo -e "\n------------------------------------------\n Processing...\n"
+	cp ./place_and_route/place_and_route.tcl ./place_and_route.tcl
+	rm -rf place_and_route
+	prepare_edi computer place_and_route
+	mv ./place_and_route.tcl ./place_and_route/place_and_route.tcl
+	cd place_and_route
+	encounter
+	cp ./place_and_route/computer_final.v ./extracted/computer.v
+	cp ./place_and_route/SDF/computer_func_max.sdf ./extracted/computer.sdf
+elif [ "$choice" = "u" ]; then # unify
+	echo -e "\n------------------------------------------\n Processing...\n"
+	cp ./system/options.sv ./behavioural/options.sv
+	cp ./system/options.sv ./gate_level/options.sv
+	cp ./system/options.sv ./extracted/options.sv
+	cp ./system/system.tcl ./behavioural/system.tcl
+	cp ./system/system.tcl ./gate_level/system.tcl
+	cp ./system/system.tcl ./extracted/system.tcl
+	cp ./system/system.sv ./gate_level/system.sv
+	cp ./system/system.sv ./extracted/system.sv
+	echo -e "\n Unify options.sv, system.tcl and system.sv.\n"
+	echo -e "\n Note: You need to modify the options.sv file before simulation.\n"
+elif [ "$choice" = "s" ]; then # synthesis
 	echo -e "\n------------------------------------------\n Processing...\n"
 	cd ./synthesis
 	init=0
@@ -97,10 +128,15 @@ elif [ "$choice" = "d" ]; then
 	echo "Check folder behavioural:"
 	format
 	cd ..
-	cd ./software
-	echo "Check folder software:"
+	cd ./gate_level
+	echo "Check folder gate_level:"
 	format
-	cd ./code
+	cd ..
+	cd ./extracted
+	echo "Check folder extracted:"
+	format
+	cd ..
+	cd ./software/code
 	echo "Check folder software/code:"
 	format
 	cd ..
