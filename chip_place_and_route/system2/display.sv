@@ -128,9 +128,9 @@ initial begin
     for (integer j = 0; j < 96; j++) begin
       for (integer i = 0; i < 128; i++) begin
         if(oled_ram[i][j])
-          oled_row = {oled_row, "#"};
+          oled_row = {oled_row, "##"};
         else
-          oled_row = {oled_row, "_"};
+          oled_row = {oled_row, "__"};
       end
       $display("%s", oled_row);
       oled_row = "  ";

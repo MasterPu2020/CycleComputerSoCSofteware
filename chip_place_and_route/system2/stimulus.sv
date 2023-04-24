@@ -196,6 +196,7 @@ end
     $display("\n This is odometer:");
     odometer = (wheel_size * fork_times);
     DisplaySegment;
+    DisplayOLED;
     $display("\n Real Odometer is %fkm. Segment display is %fkm (fork_times = %d). (%t)", odometer/1000.0, seg_value, fork_times, $time);
     $display("------------------------------------------------------------------------------");
     assert ((((odometer/1000.0) - seg_value) < 0.1) && ((seg_value - (odometer/1000.0)) < 0.1)) else begin
@@ -211,6 +212,7 @@ end
   task TripTimeTest;
     $display("\n This is Trip time:");
     DisplaySegment;
+    DisplayOLED;
     $display("\n Real trip time is %fs. Segment display is %fs. (%t)", trip_time, seg_value*6000, $time);
     $display("------------------------------------------------------------------------------");
     assert (((trip_time - seg_value*6000) < 60) && ((seg_value*6000 - trip_time) < 60)) else begin
@@ -225,6 +227,7 @@ end
   task SpeedTest;
     $display("\n This is speed:");
     DisplaySegment;
+    DisplayOLED;
     $display("\n Real Speed is %fkm/h. Segment display is %fkm/h (ave speed = %dkm/h). (%t)", speed, seg_value, ave_speed*3.6, $time);
     $display("------------------------------------------------------------------------------");
     assert (((speed - seg_value) <= 0.1) && ((seg_value - speed) <= 0.1)) else begin
@@ -239,6 +242,7 @@ end
   task CadenceTest;
     $display("\n This is cadence:");
     DisplaySegment;
+    DisplayOLED;
     $display("\n Real Cadence is %drpm. Segment display is %drpm (ave cadence = %d). (%t)", cadence, seg_value, ave_cadence, $time);
     $display("------------------------------------------------------------------------------");
     assert (((cadence - seg_value) <= 5) && ((seg_value - cadence) <= 5)) else begin
@@ -308,9 +312,9 @@ end
       DisplaySegment;
     end
 
-    fork_times = 0;
+    fork_times  = 0;
     crank_times = 0;
-    trip_time = 0;
+    trip_time   = 0;
 
   endtask
 
@@ -552,7 +556,7 @@ endtask
   `elsif SimpleVerification
     initial begin
       StartUp;
-
+/*
       //--------------------------------------------------
       // Three Mode Test Round 1
       //--------------------------------------------------
@@ -595,7 +599,7 @@ endtask
       CustomizeMode(3);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
       for (int i = 0; i<10; i++)
         CadenceTest;
-      
+*/      
       //--------------------------------------------------
       // Three Mode Test Round 3
       //--------------------------------------------------

@@ -5,7 +5,7 @@
 // Team:          C4 Chip Designed
 // Version:       5.0
 // Verification:  Not Done
-// Comment:       Clark slightly modified
+// Comment:       Still need lots of optimization to decrease the hardware costs.
 //------------------------------------------------------------------------------
 
 module button_manager(
@@ -41,16 +41,18 @@ module button_manager(
 // 4000_0010: 1bit  | New button pressed Flag
 //------------------------------------------------------------------------------
   
-  logic Mode_Store, Trip_Store, DayNight_Store, Setting_Store;
+  logic DayNight_Store, Mode_Store, Trip_Store, Setting_Store;
   wire  NewData;
 
 //------------------------------------------------------------------------------
 // Control and Status Signals
 //------------------------------------------------------------------------------
 
+
   // Input Synchronization
   logic SYNC_MID_nMode, SYNC_nMode;
   logic SYNC_MID_nTrip, SYNC_nTrip;
+
 
   // Button debounce
   logic Trip_Last, Mode_Last;
@@ -68,8 +70,7 @@ module button_manager(
 
   localparam
     Time_25MS = 900,
-    Time_100MS = 3200,
-    Time_250MS = 8000,
+    Time_500MS = 16000,
     NewData_Reg_Addr = 4,
     Setting_Reg_Addr = 3,
     Trip_Reg_Addr = 2,
@@ -117,7 +118,7 @@ end
     else
       unique case (state_debtrip)
         STATE_IDLE_DEBTRIP: begin
-          if (!Trip && Trip_Last) begin
+          if (!SYNC_nTrip && Trip_Last) begin
             state_debtrip <= STATE_COUNT_DEBTRIP;
             DebCount_Trip <= DebCount_Trip + 1;
           end
@@ -149,7 +150,7 @@ end
       else
         unique case (state_debmode)
           STATE_IDLE_DEBMODE: begin
-            if (!Mode && Mode_Last) begin
+            if (!SYNC_nMode && Mode_Last) begin
               state_debmode <= STATE_COUNT_DEBMODE;
               DebCount_Mode <= DebCount_Mode + 1;
             end
@@ -188,7 +189,7 @@ end
             end
           end
           STATE_COUNT_INTERTRIP: begin
-            if ((InterCount_Trip == Time_100MS) || (DebFlag_Trip) || (DebFlag_Mode)) begin
+            if ((InterCount_Trip == Time_500MS) || (DebFlag_Trip) || (DebFlag_Mode)) begin
               state_intertrip <= STATE_IDLE_INTERTRIP;
               InterCount_Trip <= '0;
             end
@@ -213,7 +214,7 @@ end
           end
         end
         STATE_COUNT_INTERTRIP: begin
-          if ((InterCount_Mode == Time_250MS) || (DebFlag_Mode) || (DebFlag_Trip)) begin
+          if ((InterCount_Mode == Time_500MS) || (DebFlag_Mode) || (DebFlag_Trip)) begin
             state_intermode <= STATE_IDLE_INTERMODE;
             InterCount_Mode <= '0;
           end
@@ -246,11 +247,11 @@ end
     else
       HRDATA = '0;
       case (Addr_Reg)
-        DayNight_Reg_Addr:  begin HRDATA = DayNight_Store; end
-        Mode_Reg_Addr:      begin HRDATA = Mode_Store;     end
-        Trip_Reg_Addr:      begin HRDATA = Trip_Store;     end
-        Setting_Reg_Addr:   begin HRDATA = Setting_Store;  end
-        NewData_Reg_Addr:   begin HRDATA = NewData;        end
+        DayNight_Reg_Addr:  begin HRDATA = {31'b0, DayNight_Store}; end
+        Mode_Reg_Addr:      begin HRDATA = {31'b0, Mode_Store};     end
+        Trip_Reg_Addr:      begin HRDATA = {31'b0, Trip_Store};     end
+        Setting_Reg_Addr:   begin HRDATA = {31'b0, Setting_Store};  end
+        NewData_Reg_Addr:   begin HRDATA = {31'b0, NewData};        end
       endcase
   end
   
@@ -262,6 +263,17 @@ end
         Mode_Store <= '0;
         DayNight_Store <= '0;
     end
+    /*
+    // Software write
+    else if (Write)
+      case (Addr_Reg)
+        DayNight_Reg_Addr:  DayNight_Store <= HWDATA[0];
+        Mode_Reg_Addr:      Mode_Store <= HWDATA[0];
+        Trip_Reg_Addr:      Trip_Store <= HWDATA[0];
+        Setting_Reg_Addr:   Setting_Store <= HWDATA[0];
+        NewData_Reg_Addr:   NewData <= HWDATA[0];
+      endcase
+    */
     // Hardware write
     // Read register refresh
     else if (
@@ -290,11 +302,11 @@ end
     end
   end
 
-  assign Con_Trip = (InterCount_Trip == Time_100MS);
-  assign Con_Mode = (InterCount_Mode == Time_250MS);
-  assign Con_DayNight = (DebFlag_Mode) && (InterCount_Mode != Time_250MS) && (InterCount_Mode != 0);
-  assign Con_Setting = ((DebFlag_Mode) && (InterCount_Trip != Time_100MS) && (InterCount_Trip != 0)) ||
-                       ((DebFlag_Trip) && (InterCount_Mode != Time_250MS) && (InterCount_Mode != 0)) ||
+  assign Con_Trip = (InterCount_Trip == Time_500MS);
+  assign Con_Mode = (InterCount_Mode == Time_500MS);
+  assign Con_DayNight = (DebFlag_Mode) && (InterCount_Mode != Time_500MS) && (InterCount_Mode != 0);
+  assign Con_Setting = ((DebFlag_Mode) && (InterCount_Trip != Time_500MS) && (InterCount_Trip != 0)) ||
+                       ((DebFlag_Trip) && (InterCount_Mode != Time_500MS) && (InterCount_Mode != 0)) ||
                        ((DebFlag_Mode) && (DebFlag_Trip));
   assign NewData = Setting_Store || Trip_Store || Mode_Store || DayNight_Store; 
 

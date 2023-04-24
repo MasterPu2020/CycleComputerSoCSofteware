@@ -57,7 +57,7 @@ elif [ "$choice" = "2" ]; then
 	mv ./computer.sv ./behavioural/computer.sv
 elif [ "$choice" = "3" ]; then
 	echo -e "\n------------------------------------------\n Processing...\n"
-./simulate -no_graphics -gate -sdf ./gate_level/computer.sdf ./gate_level \
+./simulate -no_graphics -gate -sdf ./gate_level/computer.sdf ./gate_level 500s \
 +define+stimulus=system2/stimulus.sv
 elif [ "$choice" = "4" ]; then
 	echo -e "\n------------------------------------------\n Processing...\n"
@@ -67,7 +67,7 @@ elif [ "$choice" = "4" ]; then
 	mv ./computer.sv ./behavioural/computer.sv
 elif [ "$choice" = "5" ]; then
 	echo -e "\n------------------------------------------\n Processing...\n"
-./simulate -gate -sdf ./gate_level/computer.sdf ./gate_level \
+./simulate -gate -sdf ./gate_level/computer.sdf ./gate_level 500s \
 +define+stimulus=system2/stimulus.sv
 elif [ "$choice" = "s" ]; then
 	echo -e "\n------------------------------------------\n Processing...\n"
