@@ -266,7 +266,7 @@ end
   task PressSettingButton;
     $display("\n Setting mode will be entered.");
     #1s   ->  press_mode_button;
-    #0.2s ->  press_trip_button;
+    #0.3s ->  press_trip_button;
   endtask
 
   task DoublePressModeButton;
@@ -289,7 +289,7 @@ end
     wheelsize_ref_dig0 =  wheelsize_ref     %10;
     
     PressSettingButton;
-    #1s DisplaySegment;
+    #1s; DisplaySegment;
     
     while (seg_digit_value2 != wheelsize_ref_dig2) begin
       PressTripButton;
@@ -307,6 +307,11 @@ end
       PressTripButton;
       DisplaySegment;
     end
+
+    fork_times = 0;
+    crank_times = 0;
+    trip_time = 0;
+
   endtask
 
   task CustomizeSpeedCadence(int speed_ref, int cadence_ref);   // unit: speed km/h, cadence rpm.
@@ -513,12 +518,15 @@ endtask
     initial begin
       StartUp;
 
-      for (int i=0;i<20;i++) begin
+      for (int i=0;i<8;i++) begin
         PressModeButton;
-        #4s;
         DisplaySegment;
       end
 
+      if (seg_digit_value3 != 0) begin
+        $display("error: mode switch failed.");
+        error_sum = error_sum + 1;
+      end
       EndSimulation;
     end
   
@@ -549,6 +557,7 @@ endtask
       // Three Mode Test Round 1
       //--------------------------------------------------
       CustomizeWheelSize(2694);
+
       CustomizeSpeedCadence(3,20);
 
       // Odometer Test
@@ -614,12 +623,12 @@ endtask
       CustomizeMode(1);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
 
       $display(" Time Test: Wait until 241s");
-      while ($time != 241);
+      if ($time == 241)
         TripTimeTest;
 
       CustomizeSpeedCadence(0,0);
       $display(" Stop Test: Wait until 301s");
-      while ($time != 301);
+      if ($time == 301)
         TripTimeTest;
 
       CustomizeMode(2);  // 0:odometer(d), 1:timer(t), 2:speed(v), 3:cadence(c), 4:setting(2)
