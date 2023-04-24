@@ -307,9 +307,9 @@ int main(void) {
   oled_send(0x00, true); 
   oled_send(0xA0, false);  // CMD: set colour format
   oled_send(0x74, true);
-  oled_send(0x5C, false);  // CMD: send pixels
-  for (uint32_t i = 0; i < 128 * 96 * 2; i++) // send a white background takes 45 seconds
-    oled_send(0xFF, true); // DATA: white {colour0, colour1}
+  // oled_send(0x5C, false);  // CMD: send pixels
+  // for (uint32_t i = 0; i < 128 * 96 * 2; i++) // send a white background takes 45 seconds
+  //   oled_send(0xFF, true); // DATA: white {colour0, colour1}
   oled_send(0xAF, false);  // CMD: display on
   oled_send(0xAF, false);  // CMD: display on
   
