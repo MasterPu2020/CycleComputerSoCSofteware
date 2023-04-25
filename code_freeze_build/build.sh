@@ -69,7 +69,7 @@ if [ $stop -eq 0 ]; then
 	cp ./system/system.sv ./extracted/system.sv
 	cp ./code/options_gate_level.sv ./extracted/options.sv
 
-	cp ./code/options_behavioural.sv ./system/options.sv
+	cp ./code/options_gate_level.sv ./system/options.sv
 	cp ./code/system.tcl ./system/system.tcl
 
 	cp ./code/stimulus.sv ./system2/stimulus.sv

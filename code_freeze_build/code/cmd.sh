@@ -39,6 +39,7 @@ echo "3.Gate Level.         (3+gui with Graphics)"
 echo "4.Place and Route.    (4+gui with Graphics)"
 echo "s.Synthesis."
 echo "d.DOS Format Check."
+echo "u.Unify files sourced from './system'."
 echo "new_padring.New Padring   (Backup Needed!)"
 echo "new_layout.New Layout     (Backup Needed!)"
 echo "------------------------------------------"
@@ -77,6 +78,18 @@ elif [ "$choice" = "new_padring" ]; then # new_padring
 	cd ./padring
 	process_pad_ring padring.txt
 	cp computer.sv ../behavioural/computer.sv
+elif [ "$choice" = "u" ]; then # unify
+	echo -e "\n------------------------------------------\n Processing...\n"
+	cp ./system/options.sv ./behavioural/options.sv
+	cp ./system/options.sv ./gate_level/options.sv
+	cp ./system/options.sv ./extracted/options.sv
+	cp ./system/system.tcl ./behavioural/system.tcl
+	cp ./system/system.tcl ./gate_level/system.tcl
+	cp ./system/system.tcl ./extracted/system.tcl
+	cp ./system/system.sv ./gate_level/system.sv
+	cp ./system/system.sv ./extracted/system.sv
+	echo -e "\n Unify options.sv, system.tcl and system.sv.\n"
+	echo -e "\n Note: You need to modify the options.sv file before simulation.\n"
 elif [ "$choice" = "new_layout" ]; then # new_layout
 	echo -e "\n------------------------------------------\n Processing...\n"
 	cp ./place_and_route/place_and_route.tcl ./place_and_route.tcl
