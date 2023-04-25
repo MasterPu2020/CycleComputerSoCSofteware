@@ -103,7 +103,7 @@ module seven_segment(
 
   always_comb begin
     nDigit = 4'b1110;
-    unique case (Display_Counter)
+    case (Display_Counter)
       0: nDigit = 4'b1110;
       1: nDigit = 4'b1101;
       2: nDigit = 4'b1011;
@@ -115,7 +115,7 @@ module seven_segment(
   always_comb begin
     Disp_Data = '0; DP = '0;
     if (Store_Mode == 4'hd) begin
-      unique case (Display_Counter)
+      case (Display_Counter)
         0:  begin Disp_Data = Store_Int[3:0];  DP = '1; end
         1:  begin Disp_Data = Store_Int[7:4];  DP = '0; end
         2:  begin Disp_Data = Store_Int[11:8]; DP = '0; end
@@ -123,7 +123,7 @@ module seven_segment(
       endcase
     end
     else if (Store_Mode == 4'he) begin
-      unique case (Display_Counter)
+      case (Display_Counter)
         0:  begin Disp_Data = Store_Int[3:0];  DP = '1; end
         1:  begin Disp_Data = Store_Int[7:4];  DP = '0; end
         2:  begin Disp_Data = Store_Int[11:8]; DP = '0; end
@@ -132,21 +132,21 @@ module seven_segment(
     end
     else begin
       if (Store_Int[11:8] != '0)
-        unique case (Display_Counter)
+        case (Display_Counter)
           0:  begin Disp_Data = Store_Int[3:0];   DP = '1; end
           1:  begin Disp_Data = Store_Int[7:4];   DP = '0; end
           2:  begin Disp_Data = Store_Int[11:8];  DP = '0; end
           3:  begin Disp_Data = Store_Mode;       DP = '0; end
         endcase
       else if (Store_Int[7:4] != '0)
-        unique case (Display_Counter)
+        case (Display_Counter)
           0:  begin Disp_Data = Store_Frac[7:4];  DP = '0; end
           1:  begin Disp_Data = Store_Int[3:0];   DP = '1; end
           2:  begin Disp_Data = Store_Int[7:4];   DP = '0; end
           3:  begin Disp_Data = Store_Mode;       DP = '0; end
         endcase
       else
-        unique case (Display_Counter)
+        case (Display_Counter)
           0:  begin Disp_Data = Store_Frac[3:0];  DP = '0; end
           1:  begin Disp_Data = Store_Frac[7:4];  DP = '0; end
           2:  begin Disp_Data = Store_Int[3:0];   DP = '1; end
