@@ -1,0 +1,4 @@
+|Solution| Lines | Columns |  Words |    Area   |  Width | Width/ |Min. cycle|Consumption|
+|        |       |         |per line|   (um2)   |  (um)  | height |    (ns)  |   mA/MHz  |
+|--------|-------|---------|--------|-----------|--------|--------|----------|-----------|
+|    1   |   64  |    256  |    8   |   291141  |   789  |   2.14 |     5.00 |    0.363  |

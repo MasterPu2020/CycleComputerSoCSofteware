@@ -1,0 +1,20 @@
+* DIROM timings at 25.0 deg., 3.3V, Typical process
+* Units : Time in ns, capacity in pF
+* Data Valid for Solution Nb:  1 featuring: 
+* 512 Words
+* 32 Bits
+* 256 Columns
+* 64 Lines
+AD_SETUP_TIME   0.5200
+AD_HOLD_TIME   1.2400
+CYCLE_TIME   5.3000
+CS_HIGH_TIME   0.8000
+CS_LOW_TIME   0.9800
+NRST_HOLD_TIME   1.3700
+NRST_SETUP_TIME   0.4400
+HIGH_Z_TIME   1.2400
+LOW_Z_TIME   1.4300 +  0.2571 * CDOUT
+ACCESS_TIME   3.1800 +  0.1959 * CDOUT
+* Rise and Fall times
+RISE_DOUT   0.4600 +  0.5250 * CDOUT
+FALL_DOUT   0.2800 +  0.3641 * CDOUT

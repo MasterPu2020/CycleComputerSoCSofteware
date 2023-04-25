@@ -19,10 +19,6 @@ set_output_delay 2.0 -max -network_latency_included -clock master_clock [all_out
 set_output_delay 0.1 -min -network_latency_included -clock master_clock [all_outputs]
 set_max_area 0
 set_false_path -from [get_ports nReset]
-# set_dont_touch [get_cells FORK_SYNC_FF*]
-# set_dont_touch [get_cells CRANK_SYNC_FF*]
-# set_dont_touch [get_cells TRIP_SYNC_FF*]
-# set_dont_touch [get_cells MODE_SYNC_FF*]
 set_fix_hold master_clock
 
 # compile gates with timing constrains
@@ -44,7 +40,6 @@ set_scan_configuration -style multiplexed_flip_flop
 set_scan_configuration  -chain_count 1
 
 # insert scanpath
-dft_drc
 preview_dft
 insert_dft
 
@@ -61,7 +56,6 @@ change_names -rules verilog -hierarchy -verbose
 write -f verilog -hierarchy -output "../gate_level/computer.v"
 write_sdc ../constraints/computer.sdc
 write_sdf ../gate_level/computer.sdf
-write_sdf ../system2/computer.sdf
 
 # report and export reports
 report_power

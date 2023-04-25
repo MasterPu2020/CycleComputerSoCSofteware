@@ -1,0 +1,23 @@
+
+         DATA SET FOR ORDERING GDS
+    Please attach this file to your order
+
+ process: 0.35um CMOS process - C35
+ memory type:     dirom 
+ nominal supply:  3.3V 
+ metal variation: triple metal 
+
+ Number of words:        512
+ Number of address bits: 9
+ Number of data bits:    32
+ data bus configuration: unidir
+ instance name:          dirom512x32
+
+ choosen configuration:  1
+ key feature cycle time: 5.3000 [ns]
+ layout option:          cadence
+
+ originator:   wke
+ date:         Mon Mar 14 20:05:48 MET 2016
+ format:       dirom512x32_cadence_c35_vdd33.tar
+ compiler rev: NC

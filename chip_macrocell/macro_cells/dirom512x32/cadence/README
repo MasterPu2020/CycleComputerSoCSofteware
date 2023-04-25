@@ -1,0 +1,87 @@
+Dear customer,
+
+
+Please read the following notices concerning the memory Verilog
+model you have received.
+
+
+INSTALLATION:
+=============
+
+The shipment of Cadence Verilog model is done in with different
+options:
+   * as a Cadence cell with the following views:
+     symbol, functional, msps, abstract (Cellensemble)
+     and the compiled TLF file for this cell.
+   * LEF file for Silicon ensemble.
+   * source code of Verilog model for other simulators, source
+     code of TLF and a black box description of the outlines
+     in ASCII format.
+
+
+TIMING MODELS:
+==============
+
+The Verilog code of a memory is a FUNCTIONAL MODEL ONLY, which has
+no delay data and no setup/hold data included. Timing information
+MUST be added by annoatating a SDF file to the model.
+
+Therefore a "tlf" for Cadence Tools is added to this shipment.
+In the Delay Calculator (Cadence 4.4.1) or with Pearl (Cadence 4.4.3)
+exact timing data in dependeny of input slope/output load and
+temp/volt./process derating can be calculted for your design, the
+delay data are stored in a SDF file.
+This SDF file can be annotated into a Verilog simulation as well
+as into a VHDL simulation you have received.
+
+Please refer also to our design flow documentation.
+
+
+The timing data in the "tlf" file are vaild only for one nominal supply
+voltage 3.3V !
+
+3.3V models can be combined with the dig. Std. cell library "HRDLIB".
+
+
+ROM DATA INSERTION:
+===================
+
+ROM memory data are specified in a seperated file, located outside
+the simulation model.
+    
+The ROM data format is:
+
+                       00000000    -- first address
+                       00000001
+                       00000011
+                       00000111
+                       ....
+                       00001111
+                       00011110
+                       00111100   -- last address
+                       |      |
+                       |      |
+                      MSB    LSB
+
+
+In the Verilog model there is a "prog" parameter defined, where this
+romdata file is noticed to the Verilog model.
+The "prog" parameter string for defining the ROM data file MUST NOT
+exceed 28 characters in Cadence Design Frame work.
+
+In the compilation of the functional view of the Cadence cell, this
+"prog" parameter is undefined. The name of the data file must be added
+in the functional view and the view must be recompiled !
+
+
+In case of any questions, please contact the "Design Support Group",
+Attn. Peter Boesmueller.
+
+-------------------------------------------------------------------
+Peter Boesmueller                   phone:  ++43 3136 500-5339
+Design Support Group                fax:    ++43 3136 500-5755
+AUSTRIA MIKRO SYSTEME INT. AG       http://www.amsint.com
+Schloss Premstaetten                http://asic.amsint.com
+A-8141 Unterpremstaetten, AUSTRIA     
+              mailto:peter.boesmueller@amsint.com
+-------------------------------------------------------------------
