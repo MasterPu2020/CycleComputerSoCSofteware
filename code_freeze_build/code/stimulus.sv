@@ -21,8 +21,7 @@
 //  `define CadenceVerification       // Behavioural Passed
 //  `define ModeSwitchVerification    // Gate Level Passed
   `define SimpleVerification        // Behavioural Passed 
-//  `define FullVerification          // Not Verified
-//  `define MacroCellVerification     // Not Verified
+//  `define IainVerification          // Not Verified
 
 // 2. Monitor enable:
 `include "../system2/display.sv"
@@ -652,9 +651,9 @@ endtask
     end
 
   //--------------------------------------------------------------
-  // Gate Level Full Verification
+  // Gate Level Iain Test
   //--------------------------------------------------------------
-  `elsif FullVerification
+  `elsif IainlVerification
     initial begin
       StartUp;
 

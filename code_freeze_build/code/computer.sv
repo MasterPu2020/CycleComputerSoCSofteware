@@ -48,6 +48,11 @@ module computer (
   wire CORE_Clock;
   wire CORE_SegG;
 
+  // synopsys dc_tcl_script_begin
+  //   set_dont_touch [get_cells RESET_SYNC_FF*]
+  //   set_dont_use [get_ports nReset]
+  // synopsys dc_tcl_script_end
+
   // Reset Synchronization
   wire SYNC_IN_nReset, SYNC_MID_nReset;
   DFC1 RESET_SYNC_FF1   ( .D('1),              .Q(SYNC_MID_nReset), .C(CORE_Clock), .RN(SYNC_IN_nReset));
@@ -84,7 +89,7 @@ module computer (
   BU8P PAD_nDigit_1 ( .PAD(nDigit[1]), .A(CORE_nDigit[1]) );
   BU8P PAD_nDigit_2 ( .PAD(nDigit[2]), .A(CORE_nDigit[2]) );
   BU8P PAD_nDigit_3 ( .PAD(nDigit[3]), .A(CORE_nDigit[3]) );
-  ICP PAD_Clock ( .PAD(Clock), .Y(CORE_Clock) );
+  ICCK2P PAD_Clock ( .PAD(Clock), .Y(CORE_Clock) );
   BU8P PAD_SegA ( .PAD(SegA), .A(CORE_SegA) );
   BU8P PAD_SegB ( .PAD(SegB), .A(CORE_SegB) );
   BU8P PAD_SegC ( .PAD(SegC), .A(CORE_SegC) );
