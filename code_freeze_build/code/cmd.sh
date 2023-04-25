@@ -17,15 +17,15 @@ do
 	fi
 done
 if [[ $dosFile != "" ]]; then
-	echo -e "\n > Do you want to convert them all into Unix format? (PlEASE REMEBER BACKUP!)"
-	echo "    y for Yes, Enter Any Key Else to Quit."
-	read -p "Enter: " choice
-	if [ "$choice" = "y" ]; then
-		for fileName in $dosFile
-		do
-		dos2unix "$fileName"
-		done	 
-	fi
+	# echo -e "\n > Do you want to convert them all into Unix format? (PlEASE REMEBER BACKUP!)"
+	# echo "    y for Yes, Enter Any Key Else to Quit."
+	# read -p "Enter: " choice
+	# if [ "$choice" = "y" ]; then
+	for fileName in $dosFile
+	do
+	dos2unix "$fileName"
+	done	 
+	# fi
 else
 	echo -e "\nAll files are unix format.\n"
 fi
