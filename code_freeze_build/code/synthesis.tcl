@@ -19,7 +19,7 @@ set_output_delay 2.0 -max -network_latency_included -clock master_clock [all_out
 set_output_delay 0.1 -min -network_latency_included -clock master_clock [all_outputs]
 set_max_area 0
 set_false_path -from [get_ports nReset]
-# set_dont_touch [get_cells RESET_SYNC_FF*]
+set_dont_touch [get_cells RESET_SYNC_FF*]
 # set_dont_touch [get_cells FORK_SYNC_FF*]
 # set_dont_touch [get_cells CRANK_SYNC_FF*]
 # set_dont_touch [get_cells TRIP_SYNC_FF*]
