@@ -72,6 +72,10 @@ if [ $stop -eq 0 ]; then
 	cp ./code/options_gate_level.sv ./system/options.sv
 	cp ./code/system.tcl ./system/system.tcl
 
+	cp ./code/system.tcl ./behavioural/system.tcl
+	cp ./code/system.tcl ./gate_level/system.tcl
+	cp ./code/system.tcl ./extracted/system.tcl
+
 	cp ./code/stimulus.sv ./system2/stimulus.sv
 	cp ./code/display.sv ./system2/display.sv
 
