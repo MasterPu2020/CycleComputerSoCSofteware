@@ -1,3 +1,7 @@
+# read macro cell models
+read_lib ../macro_models/dirom512x32.lib
+read_lib ../macro_models/sram256x32.lib
+
 # create gate level logic
 analyze -format sv  "../behavioural/computer.sv ../behavioural/comp_core.sv ../behavioural/CORTEXM0DS.sv ../behavioural/cortexm0ds_logic.sv ../behavioural/ahb_interconnect.sv ../behavioural/ahb_ram.sv ../behavioural/ahb_rom.sv ../behavioural/button_manager.sv  ../behavioural/oled_manager.sv ../behavioural/sensor_manager.sv ../behavioural/seven_segment.sv ../behavioural/timer.sv"
 
