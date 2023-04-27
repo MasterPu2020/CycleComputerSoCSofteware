@@ -1,0 +1,28 @@
+* SPRAM timings at 25.0 deg., 3.3V, Typical process
+* Units : Time in ns, capacity in pF
+* Data Valid for Solution Nb:  1 featuring: 
+* 256 Words
+* 32 Bits
+* 128 Columns
+* 64 Lines
+AD_SETUP_TIME_LEC   0.79
+AD_SETUP_TIME_ECR   0.79
+AD_HOLD_TIME_LEC   1.29
+AD_HOLD_TIME_ECR   1.29
+DATA_SETUP_TIME_ECR   0.44
+DATA_HOLD_TIME_ECR   1.10
+HIGH_Z_TIME   1.34
+RD_SETUP_TIME   0.92
+RD_HOLD_TIME   0.20
+WR_SETUP_TIME   0.91
+WR_HOLD_TIME   0.20
+NRST_SETUP_TIME   0.41
+NRST_HOLD_TIME   2.60
+CYCLE_TIME   4.78
+CS_HIGH_TIME   0.79
+CS_LOW_TIME   1.75
+LOW_Z_TIME   1.2600 +  0.1238 * CDOUT
+ACCESS_TIME_LEC   3.1200 +  0.1556 * CDOUT
+* Rise and Fall times
+RISE_DOUT   0.5600 +  0.3851 * CDOUT
+FALL_DOUT   0.4200 +  0.2947 * CDOUT
