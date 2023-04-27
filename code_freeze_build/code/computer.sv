@@ -50,7 +50,6 @@ module computer (
 
   // synopsys dc_tcl_script_begin
   //   set_dont_touch [get_cells RESET_SYNC_FF*]
-  //   set_dont_use [get_ports nReset]
   // synopsys dc_tcl_script_end
 
   // Reset Synchronization
