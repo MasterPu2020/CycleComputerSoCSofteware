@@ -102,7 +102,7 @@ if [ $stop -eq 0 ]; then
     echo -e "Start synthesis\n"
 	cd ./synthesis
 	do_c35b4_copy_synopsys_setup
-dc_shell << EOF
+dc_shell -no_gui << EOF
 	source synthesis.tcl
 	quit
 EOF
@@ -110,7 +110,7 @@ EOF
 fi
 
 # place and route
-if [ $stop -eq 2 ]; then
+if [ $stop -eq 0 ]; then
 	echo -e "------------------------------------------\n"
     echo -e "Start place and route\n"
 	cp ./place_and_route/place_and_route.tcl ./place_and_route.tcl
@@ -118,7 +118,7 @@ if [ $stop -eq 2 ]; then
 	prepare_edi computer place_and_route
 	mv ./place_and_route.tcl ./place_and_route/place_and_route.tcl
 	cd ./place_and_route
-encounter << EOF
+encounter -no_gui << EOF
 	source place_and_route.tcl
 	exit
 EOF
