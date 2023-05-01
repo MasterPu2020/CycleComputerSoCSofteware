@@ -6,7 +6,7 @@
 // Last Edition Date: 4/4/2023
 // Verification: Verified with FPGA.
 // Comment: Redesigned by Clark.
-// Resource Consumption: 6 ROM cells(3014 instructions).
+// Resource Consumption: 6 ROM cells(3022 instructions).
 //------------------------------------------------------------------------------
 
 # define __MAIN_C__
@@ -22,22 +22,24 @@
 # define    IMG_candence1    10
 # define    IMG_candence2    11
 # define    IMG_colo         12
-# define    IMG_distance1    13
-# define    IMG_distance2    14
-# define    IMG_dot          15
-# define    IMG_empty        16
-# define    IMG_h            17
-# define    IMG_k            18
-# define    IMG_m            19
-# define    IMG_rpm1         20
-# define    IMG_rpm2         21
-# define    IMG_setting1     22
-# define    IMG_setting2     23
-# define    IMG_speed1       24
-# define    IMG_speed2       25
-# define    IMG_timer1       26
-# define    IMG_timer2       27
-# define    IMG_underline    28
+# define    IMG_colonfortime 13
+# define    IMG_distance1    14
+# define    IMG_distance2    15
+# define    IMG_dot          16
+# define    IMG_empty        17
+# define    IMG_h            18
+# define    IMG_k            19
+# define    IMG_m            20
+# define    IMG_rpm1         21
+# define    IMG_rpm2         22
+# define    IMG_s            23
+# define    IMG_setting1     24
+# define    IMG_setting2     25
+# define    IMG_speed1       26
+# define    IMG_speed2       27
+# define    IMG_timer1       28
+# define    IMG_timer2       29
+# define    IMG_underline    30
 
 # define    ODOMETER         0xA
 # define    DURATION         0xB
@@ -181,9 +183,9 @@ void oled_update_icon(uint32_t mode){
       IMG_k,         IMG_m,         IMG_empty);
   else if (mode == DURATION)
     oled_icon_display( 
-      IMG_timer1,    IMG_timer2,    IMG_colo, 
-      IMG_speed1,    IMG_speed2,    IMG_dot, 
-      IMG_empty,     IMG_empty,     IMG_empty);
+      IMG_timer1, IMG_timer2,       IMG_colo, 
+      IMG_speed1, IMG_speed2,       IMG_dot, 
+      IMG_empty,  IMG_colonfortime, IMG_empty);
   else if(mode == SPEED)
     oled_icon_display( 
       IMG_speed1,    IMG_speed2,    IMG_dot, 
@@ -415,10 +417,16 @@ int main(void) {
     }
     else if (mode == DURATION){
       display_segment(mode, int2bcd(time_hour), int2bcd(time_min));
-      if (time_hour != 0)
+      if (time_hour != 0){
         oled_float_display(time_hour, time_min, 2, 4, 6, 8);
-      else
+        oled_block(9, IMG_h);
+        oled_block(11, IMG_m);
+      }
+      else{
         oled_float_display(time_min, time_sec, 2, 4, 6, 8);
+        oled_block(9, IMG_m);
+        oled_block(11, IMG_s);
+      }
       oled_float_display(speed_int, speed_frac, 15, 16, 17, 18);
     }
     else if (mode == SPEED){
